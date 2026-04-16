@@ -130,3 +130,12 @@ export NVM_DIR="$HOME/.config/nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 export PATH="$PATH:/opt/nvim/"
+
+# Variables para .NET
+export DOTNET_ROOT=$HOME/.dotnet
+export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools
+export PATH="/home/joaquin/.config/herd-lite/bin:$PATH"
+export PHP_INI_SCAN_DIR="/home/joaquin/.config/herd-lite/bin:$PHP_INI_SCAN_DIR"
+
+# opencode
+export PATH=/home/joaquin/.opencode/bin:$PATH

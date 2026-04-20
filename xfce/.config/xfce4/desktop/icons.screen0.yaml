@@ -4,16 +4,6 @@
 configs:
 - level: 1
   monitors:
-  - id: "81c2094af46bd8bbfb9032bc1f4f62fe0e920eb3"
-    display_name: "Samsung Electric Company SAMSUNG 0x01000E00 (HDMI-A-0)"
-    geometry:
-      x: 1366
-      y: 0
-      width: 3840
-      height: 2160
-  icons: {}
-- level: 1
-  monitors:
   - id: "76d6a59a0de95b5116ab99b6000e03b2d9b7cccb"
     display_name: "HP Inc. HP P22 G5 3CM310112X (HDMI-A-0)"
     geometry:
@@ -53,15 +43,15 @@ configs:
     "/home/joaquin/Desktop/global.css":
       row: 0
       col: 0
-- level: 0
+- level: 1
   monitors:
-  - id: "5c16de0582e137f061dec906354fbfc390c918b9"
-    display_name: "HKC OVERSEAS LIMITED 0x15A2 (eDP)"
+  - id: "81c2094af46bd8bbfb9032bc1f4f62fe0e920eb3"
+    display_name: "Samsung Electric Company SAMSUNG 0x01000E00 (HDMI-A-0)"
     geometry:
-      x: 0
+      x: 1366
       y: 0
-      width: 1366
-      height: 768
+      width: 3840
+      height: 2160
   icons: {}
 - level: 0
   monitors:
@@ -72,4 +62,14 @@ configs:
       y: 0
       width: 1280
       height: 800
+  icons: {}
+- level: 0
+  monitors:
+  - id: "5c16de0582e137f061dec906354fbfc390c918b9"
+    display_name: "HKC OVERSEAS LIMITED 0x15A2 (eDP)"
+    geometry:
+      x: 0
+      y: 0
+      width: 1366
+      height: 768
   icons: {}

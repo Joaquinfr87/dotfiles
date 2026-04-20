@@ -11,7 +11,7 @@
   <property name="last-show-hidden" type="bool" value="false"/>
   <property name="last-side-pane" type="string" value="THUNAR_SIDEPANE_TYPE_SHORTCUTS"/>
   <property name="last-details-view-zoom-level" type="string" value="THUNAR_ZOOM_LEVEL_38_PERCENT"/>
-  <property name="last-details-view-column-widths" type="string" value="50,50,123,116,50,240,50,50,797,50,50,67,50,231"/>
+  <property name="last-details-view-column-widths" type="string" value="50,50,123,116,50,240,50,50,813,50,50,56,50,140"/>
   <property name="last-sort-column" type="string" value="THUNAR_COLUMN_DATE_MODIFIED"/>
   <property name="last-sort-order" type="string" value="GTK_SORT_DESCENDING"/>
 </channel>

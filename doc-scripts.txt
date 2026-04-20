@@ -1,0 +1,39 @@
+su -
+# se ingresa contrasena
+visduo
+# se abre nano y agrego debajo de %sudo ALL=(ALL:ALL) ALL la siguiente linea %joaquin ALL=(ALL:ALL) ALL y guardo
+sudo apt update
+# ingreso contrasena
+sudo apt upgrade -y
+sudo apt install git
+ssh-keygen -t rsa -b 4096 -C "joaquinfelipezrojas@gmail.com"
+# passfrase lo deje vacio
+ssh-add ~/.ssh/id_rsa
+cat ~/.ssh/id_rsa.pub
+#copie el contenido y lo anadi mi config de github
+mkdir repos
+git clone git@github.com:Joaquinfr87/dotfiles.git
+# This key is not known by any other names.
+# Are you sure you want to continue connecting (yes/no/[fingerprint])?
+#en ese mensaje le puse yes
+sudo apt install tree xclip htop fastfetch #utilidades extras
+sudo apt update && sudo apt install stow -y
+
+#hice lo siquiente que me dio la IA por errores de stow por que los xfce files ya estaban creados por debian
+# 1. Borramos la configuración básica que trajo la máquina nueva por defecto
+rm -rf ~/.config/xfce4
+
+# 2. Borramos ese enlace absoluto problemático de tu repositorio que detectamos antes
+rm ~/repos/dotfiles/xfce/.config/xfce4/desktop/icons.screen.latest.rc
+
+# 3. Ahora sí, enlazamos tu REPO hacia tu MÁQUINA NUEVA
+cd ~/repos/dotfiles
+stow -t ~ xfce
+
+# 1. Asegúrate de que la carpeta de destino exista en tu máquina nueva
+# (Debian a veces la llama "Imágenes" si lo instalaste en español)
+mkdir -p ~/Pictures
+
+# 2. Enlaza el contenido de tu repo hacia esa carpeta
+cd ~/repos/dotfiles
+stow -t ~/Pictures Pictures

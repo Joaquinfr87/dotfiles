@@ -116,12 +116,25 @@
     </property>
     <property name="plugin-13" type="string" value="separator">
       <property name="style" type="uint" value="0"/>
+      <property name="items" type="array">
+      </property>
     </property>
-    <property name="plugin-14" type="string" value="actions"/>
+    <property name="plugin-14" type="string" value="actions">
+      <property name="items" type="array">
+      </property>
+    </property>
     <property name="plugin-7" type="string" value="battery"/>
     <property name="notes" type="empty">
       <property name="global" type="empty">
         <property name="version" type="string" value="1.11.1"/>
+      </property>
+    </property>
+    <property name="plugin-15" type="empty">
+      <property name="items" type="array">
+      </property>
+    </property>
+    <property name="plugin-16" type="empty">
+      <property name="items" type="array">
       </property>
     </property>
   </property>

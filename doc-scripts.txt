@@ -37,3 +37,21 @@ mkdir -p ~/Pictures
 # 2. Enlaza el contenido de tu repo hacia esa carpeta
 cd ~/repos/dotfiles
 stow -t ~/Pictures Pictures
+
+
+
+#para aplicar wallpaper abre la app desktop y anade el folder de Pictures con las imagenes, y escoge la imagen wallpaper.jpg
+
+
+
+
+
+
+
+##instalar kitty
+sudo apt install curl -y
+curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
+#en las defaulut aplication anadir kitty como terminal predeterminada
+
+
+

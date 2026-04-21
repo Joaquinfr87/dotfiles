@@ -10,27 +10,27 @@
         <property name="color-style" type="empty"/>
         <property name="image-path" type="empty"/>
         <property name="image-show" type="empty"/>
-        <property name="last-image" type="empty"/>
+        <property name="last-image" type="string" value="/home/joaquin/Pictures/wallpaper.jpg"/>
         <property name="last-single-image" type="empty"/>
         <property name="workspace0" type="empty">
           <property name="color-style" type="int" value="1"/>
           <property name="image-style" type="int" value="5"/>
-          <property name="last-image" type="string" value="/usr/share/images/desktop-base/default"/>
+          <property name="last-image" type="string" value="/home/joaquin/Pictures/wallpaper.jpg"/>
         </property>
         <property name="workspace1" type="empty">
           <property name="color-style" type="int" value="1"/>
           <property name="image-style" type="int" value="5"/>
-          <property name="last-image" type="string" value="/usr/share/images/desktop-base/default"/>
+          <property name="last-image" type="string" value="/home/joaquin/Pictures/wallpaper.jpg"/>
         </property>
         <property name="workspace2" type="empty">
           <property name="color-style" type="int" value="1"/>
           <property name="image-style" type="int" value="5"/>
-          <property name="last-image" type="string" value="/usr/share/images/desktop-base/default"/>
+          <property name="last-image" type="string" value="/home/joaquin/Pictures/wallpaper.jpg"/>
         </property>
         <property name="workspace3" type="empty">
           <property name="color-style" type="int" value="1"/>
           <property name="image-style" type="int" value="5"/>
-          <property name="last-image" type="string" value="/usr/share/images/desktop-base/default"/>
+          <property name="last-image" type="string" value="/home/joaquin/Pictures/wallpaper.jpg"/>
         </property>
       </property>
       <property name="monitor1" type="empty">
@@ -40,51 +40,56 @@
         <property name="color-style" type="empty"/>
         <property name="image-path" type="empty"/>
         <property name="image-show" type="empty"/>
-        <property name="last-image" type="empty"/>
+        <property name="last-image" type="string" value="/home/joaquin/Pictures/wallpaper.jpg"/>
         <property name="last-single-image" type="empty"/>
       </property>
       <property name="monitoreDP" type="empty">
         <property name="workspace0" type="empty">
           <property name="color-style" type="int" value="1"/>
           <property name="image-style" type="int" value="5"/>
-          <property name="last-image" type="string" value="/home/joaquin/Pictures/wp4224009-albatross-wallpapers.jpg"/>
+          <property name="last-image" type="string" value="/home/joaquin/Pictures/wallpaper.jpg"/>
         </property>
         <property name="workspace1" type="empty">
           <property name="color-style" type="int" value="1"/>
           <property name="image-style" type="int" value="5"/>
-          <property name="last-image" type="string" value="/usr/share/images/desktop-base/default"/>
+          <property name="last-image" type="string" value="/home/joaquin/Pictures/wallpaper.jpg"/>
         </property>
         <property name="workspace2" type="empty">
           <property name="color-style" type="int" value="1"/>
           <property name="image-style" type="int" value="5"/>
-          <property name="last-image" type="string" value="/usr/share/images/desktop-base/default"/>
+          <property name="last-image" type="string" value="/home/joaquin/Pictures/wallpaper.jpg"/>
         </property>
         <property name="workspace3" type="empty">
           <property name="color-style" type="int" value="1"/>
           <property name="image-style" type="int" value="5"/>
-          <property name="last-image" type="string" value="/usr/share/images/desktop-base/default"/>
+          <property name="last-image" type="string" value="/home/joaquin/Pictures/wallpaper.jpg"/>
         </property>
       </property>
       <property name="monitorHDMI-A-0" type="empty">
         <property name="workspace0" type="empty">
           <property name="color-style" type="int" value="1"/>
           <property name="image-style" type="int" value="5"/>
-          <property name="last-image" type="string" value="/home/joaquin/Pictures/wp4224009-albatross-wallpapers.jpg"/>
+          <property name="last-image" type="string" value="/home/joaquin/Pictures/wallpaper.jpg"/>
         </property>
         <property name="workspace1" type="empty">
           <property name="color-style" type="int" value="1"/>
           <property name="image-style" type="int" value="5"/>
-          <property name="last-image" type="string" value="/usr/share/images/desktop-base/default"/>
+          <property name="last-image" type="string" value="/home/joaquin/Pictures/wallpaper.jpg"/>
         </property>
         <property name="workspace2" type="empty">
           <property name="color-style" type="int" value="1"/>
           <property name="image-style" type="int" value="5"/>
-          <property name="last-image" type="string" value="/usr/share/images/desktop-base/default"/>
+          <property name="last-image" type="string" value="/home/joaquin/Pictures/wallpaper.jpg"/>
         </property>
         <property name="workspace3" type="empty">
           <property name="color-style" type="int" value="1"/>
           <property name="image-style" type="int" value="5"/>
-          <property name="last-image" type="string" value="/usr/share/images/desktop-base/default"/>
+          <property name="last-image" type="string" value="/home/joaquin/Pictures/wallpaper.jpg"/>
+        </property>
+      </property>
+      <property name="monitorVirtual1" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="last-image" type="string" value="/home/joaquin/Pictures/wallpaper.jpg"/>
         </property>
       </property>
     </property>

@@ -39,7 +39,6 @@ cd ~/repos/dotfiles
 stow -t ~/Pictures Pictures
 
 
-
 #para aplicar wallpaper abre la app desktop y anade el folder de Pictures con las imagenes, y escoge la imagen wallpaper.jpg
 
 
@@ -53,5 +52,113 @@ sudo apt install curl -y
 curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
 #en las defaulut aplication anadir kitty como terminal predeterminada
 
+#abrir el archivo ~/.bashrc y andir la siguiente linea
+export PATH="$HOME/.local/bin:$PATH"
+#guardad y actualizar el source
+source ~/.bashrc
+
+#cabmiar la ruta del .desktop de kitty a una absoluta ~/.local/share/applications/kitty.desktop
+TryExec=/home/joaquin/.local/bin/kitty
+Exec=/home/joaquin/.local/bin/kitty
+
+#anadir el stow de kitty
+#borrar la carpeta de kitty para evitar conflictos
+# Elimina la carpeta local de Kitty si existe
+rm -rf ~/.config/kitty
+
+#anadir kitty a las default applicaction desde el ~/.local/bin
 
 
+
+
+
+
+##instalar zsh, oh-my-zsh, power10k
+sudo apt install zsh
+chsh -s $(which zsh)
+#cierra sesion y vuelve a entrar
+
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+#instalar fuentes de mezlo
+# 1. Crear el directorio de fuentes para tu usuario si no existe
+mkdir -p ~/.local/share/fonts/Meslo
+
+# 2. Descargar el archivo ZIP oficial de Meslo Nerd Font
+wget https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Meslo.zip -O /tmp/Meslo.zip
+
+# 3. Descomprimir la fuente en el directorio que creamos
+unzip /tmp/Meslo.zip -d ~/.local/share/fonts/Meslo/
+
+# 4. Eliminar el archivo ZIP temporal para mantener la limpieza
+rm /tmp/Meslo.zip
+
+# 5. Forzar a Debian a escanear y reconocer las nuevas fuentes
+fc-cache -fv
+
+sudo apt install zsh-autosuggestions zsh-syntax-highlighting
+
+
+#instalar p10k
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+
+
+#agregar el stow
+# Elimina cualquier archivo de configuración de zsh que exista en tu home
+rm -f ~/.zshrc ~/.p10k.zsh ~/.zlogin ~/.zprofile
+
+cd ~/repos/dotfiles
+stow -t ~ zsh
+#recargar la shell
+zsh
+
+#escoge la fuente
+kitten choose-fonts
+
+
+
+
+
+
+##instal nvim , lazyvim
+# 1. Descargar el archivo correcto
+curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+
+# 2. Descomprimir en la carpeta /opt
+sudo rm -rf /opt/nvim-linux-x86_64
+sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
+
+# 3. Crear el enlace simbólico global
+sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+
+# 4. Limpiar el instalador
+rm nvim-linux-x86_64.tar.gz
+
+
+#instalar lazygit
+sudo apt install lazygit tree-sitter-cli
+sudo apt update
+sudo apt install build-essential
+sudo apt intall fzf 
+sudo apt-get install ripgrep
+sudo apt-get install fd-find
+
+
+# Borramos la configuración y los datos internos de Neovim
+rm -rf ~/.config/nvim
+rm -rf ~/.local/share/nvim
+rm -rf ~/.local/state/nvim
+rm -rf ~/.cache/nvim
+
+cd ~/repos/dotfiles
+stow -t ~ nvim
+
+
+
+
+
+
+###MAQUINAS VIRTUALES
+#abrir el disco virtual
+bash /media/cdrom0/autorun.sh
+#cambiar la resolucion 

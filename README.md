@@ -306,3 +306,13 @@ Para más información y configuraciones adicionales, consulta:
 - https://github.com/neovim/neovim
 - https://sw.kovidgoyal.net/kitty/
 - https://www.lazyvim.org/
+
+## Lista de tareas
+
+- [ ] Instalación de Node.js
+- [ ] Instalación de pnpm
+- [ ] Instalacion de opencode
+- [ ] Instalación de Docker
+- [ ] Configuración GRUB
+- [ ] Configuración sesión
+- [ ] Posible configuración de Sway

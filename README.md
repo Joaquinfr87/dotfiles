@@ -10,9 +10,11 @@ Guia para configurar un entorno de desarrollo completo en Debian usando mis dotf
 
 ---
 
-## Paso 1: Configuración Inicial del Sistema
+## Configuración Inicial del Sistema
 
-### 1.1 Configurar permisos de sudo
+### Configurar Firefox
+Anadir cuenta de firefox, gmail y de github.
+### Configurar permisos de sudo
 
 ```bash
 su -
@@ -28,24 +30,28 @@ visudo
 Agrega la siguiente línea debajo de `%sudo ALL=(ALL:ALL) ALL`:
 
 ```
-%joaquin ALL=(ALL:ALL) ALL
+joaquin ALL=(ALL:ALL) ALL
 ```
 
 Guarda y sal del editor (Ctrl+O, Enter, Ctrl+X en nano).
 
-### 1.2 Actualizar el sistema
+### Actualizar el sistema
 
 ```bash
 sudo apt update
 sudo apt upgrade -y
 ```
 
-### 1.3 Instalar Git y configurar SSH
+### Instalar Git y configurar SSH
 
 ```bash
 sudo apt install git
 ```
-
+Agrega la configuracion Global
+```bash
+git config --global user.name "Joaquin Alessandro Felipez Rojas"
+git config --global user.email "joaquinfelipezrojas@gmail.com"
+```
 Genera tu clave SSH:
 
 ```bash
@@ -62,7 +68,7 @@ cat ~/.ssh/id_rsa.pub
 
 > Copia el contenido mostrado y añádelo a tu cuenta de GitHub en: Settings → SSH and GPG keys → New SSH key.
 
-### 1.4 Clonar el repositorio
+### Clonar el repositorio
 
 ```bash
 mkdir ~/repos
@@ -74,7 +80,7 @@ git clone git@github.com:JoaquinFr87/dotfiles.git
 
 ---
 
-## Paso 2: Instalar Utilidades Básicas
+## Instalar Utilidades Básicas
 
 ```bash
 sudo apt install tree xclip htop fastfetch
@@ -84,23 +90,8 @@ sudo apt update && sudo apt install stow -y
 
 ---
 
-## Paso 3: Configurar XFCE4
-
-### 3.1 Limpiar configuración existente
-
-```bash
-rm -rf ~/.config/xfce4
-rm ~/repos/dotfiles/xfce/.config/xfce4/desktop/icons.screen.latest.rc
-```
-
-### 3.2 Enlazar configuración con Stow
-
-```bash
-cd ~/repos/dotfiles
-stow -t ~ xfce
-```
-
-### 3.3 Configurar Wallpaper
+## Configurar XFCE4
+### Configurar Wallpaper
 
 ```bash
 mkdir -p ~/Pictures
@@ -108,13 +99,28 @@ cd ~/repos/dotfiles
 stow -t ~/Pictures Pictures
 ```
 
-> **Importante:** Abre la aplicación de escritorio (Desktop Settings), añade el folder `Pictures` y selecciona `wallpaper.jpg` como fondo de pantalla.
+###Limpiar configuración existente
+
+```bash
+rm -rf ~/.config/xfce4
+```
+
+### Enlazar configuración con Stow
+
+```bash
+cd ~/repos/dotfiles
+stow -t ~ xfce
+```
+
+> **Importante:** Reniciar el sistema.
+
+Abre la aplicación de escritorio (Desktop Settings), añade el folder `Pictures` y selecciona `wallpaper.jpg` como fondo de pantalla.
 
 ---
 
-## Paso 4: Instalar Kitty Terminal
+## Instalar Kitty Terminal
 
-### 4.1 Instalación
+### Instalación
 Instala herramientas básicas:
 ```bash
 sudo apt install curl -y
@@ -123,31 +129,21 @@ Instala Kitty usando el script oficial para obtener la última versión. Consult
 ```bash
 curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
 ```
-
-### 4.2 Configurar PATH
-
-Abre `~/.bashrc` y añade al final:
-
+### Crear un enlace de kitty
+Crear un enlace de kitty para que sea reconocido por el path del sistema. Crear symlink para kitty y kitten (necesario para herramientas integradas)
 ```bash
-export PATH="$HOME/.local/bin:$PATH"
+sudo ln -s ~/.local/kitty.app/bin/kitty /usr/local/bin/kitty
+sudo ln -s ~/.local/kitty.app/bin/kitten /usr/local/bin/kitten
+sudo ln -s ~/.local/kitty.app/share/applications/kitty.desktop /usr/share/applications/kitty.desktop
+sudo ln -s ~/.local/kitty.app/share/applications/kitty-open.desktop ~/.local/share/applications/kitty-open.desktop
 ```
-
-Luego ejecuta:
-
+Enlace recursivo
 ```bash
-source ~/.bashrc
+sudo cp -as ~/.local/kitty.app/share/icons/hicolor/* /usr/share/icons/hicolor/ 
 ```
+> **Nota**: comando sed puede modificar archivos desde solo terminal
 
-### 4.3 Configurar archivo .desktop
-
-Edita `~/.local/share/applications/kitty.desktop` y cambia las rutas a absolutas:
-
-```
-TryExec=/home/joaquin/.local/bin/kitty
-Exec=/home/joaquin/.local/bin/kitty
-```
-
-### 4.4 Enlazar configuración
+### Enlazar configuración
 
 ```bash
 rm -rf ~/.config/kitty
@@ -159,9 +155,9 @@ stow -t ~ kitty
 
 ---
 
-## Paso 5: Instalar ZSH + Oh-My-Zsh + Powerlevel10k
+## Instalar ZSH + Oh-My-Zsh + Powerlevel10k
 
-### 5.1 Instalar ZSH
+### Instalar ZSH
 
 ```bash
 sudo apt install zsh
@@ -169,14 +165,14 @@ chsh -s $(which zsh)
 ```
 > **Importante:** Cierra sesión y vuelve a entrar para que los cambios surtan efecto.
 
-### 5.2 Instalar Oh-My-Zsh
+### Instalar Oh-My-Zsh
 
 Usa el script oficial de instalación (más información: https://github.com/ohmyzsh/ohmyzsh/wiki):
 ```bash
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 ```
 
-### 5.3 Instalar fuentes Meslo Nerd Font
+### Instalar fuentes Meslo Nerd Font
 
 ```bash
 mkdir -p ~/.local/share/fonts/Meslo
@@ -186,19 +182,19 @@ rm /tmp/Meslo.zip
 fc-cache -fv
 ```
 
-### 5.4 Instalar plugins de ZSH
+### Instalar plugins de ZSH
 
 ```bash
 sudo apt install zsh-autosuggestions zsh-syntax-highlighting
 ```
 
-### 5.5 Instalar Powerlevel10k
+### Instalar Powerlevel10k
 
 ```bash
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
 ```
 
-### 5.6 Enlazar configuración de ZSH
+### Enlazar configuración de ZSH
 
 ```bash
 rm -f ~/.zshrc ~/.p10k.zsh ~/.zlogin ~/.zprofile
@@ -207,7 +203,7 @@ stow -t ~ zsh
 zsh
 ```
 
-### 5.7 Seleccionar fuente en Kitty
+### Seleccionar fuente en Kitty
 
 ```bash
 kitten choose-fonts
@@ -217,9 +213,9 @@ Sigue las instrucciones en pantalla para seleccionar una fuente Meslo.
 
 ---
 
-## Paso 6: Instalar Neovim + LazyVim
+## Instalar Neovim + LazyVim
 
-### 6.1 Descargar e instalar Neovim
+### Descargar e instalar Neovim
 
 ```bash
 curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
@@ -229,13 +225,13 @@ sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
 rm nvim-linux-x86_64.tar.gz
 ```
 
-### 6.2 Instalar dependencias
+### Instalar dependencias
 
 ```bash
 sudo apt install lazygit tree-sitter-cli build-essential fzf ripgrep fd-find
 ```
 
-### 6.3 Limpiar configuración previa de Neovim
+### Limpiar configuración previa de Neovim
 
 ```bash
 rm -rf ~/.config/nvim
@@ -244,7 +240,7 @@ rm -rf ~/.local/state/nvim
 rm -rf ~/.cache/nvim
 ```
 
-### 6.4 Enlazar configuración de Neovim
+### Enlazar configuración de Neovim
 
 ```bash
 cd ~/repos/dotfiles
@@ -253,9 +249,30 @@ stow -t ~ nvim
 
 > **Nota:** La primera vez que ejecutes `nvim`, LazyVim instalará automáticamente todos los plugins. Esto puede tardar unos minutos.
 
+## Instalar Node.js
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
+```
+```bash
+export NVM_DIR="$HOME/.config/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+```
+```bash
+nvm install 24
+```
+Instalar pnpm
+```bash
+corepack enable pnpm
+```
+Verificar
+```bash
+node -v 
+npm -v
+```
 ---
 
-## Paso 7: Configuración de Máquinas Virtuales (VirtualBox)
+## Configuración de Máquinas Virtuales (VirtualBox)
 
 Si estás usando una máquina virtual, instala las Guest Additions:
 
@@ -309,8 +326,8 @@ Para más información y configuraciones adicionales, consulta:
 
 ## Lista de tareas
 
-- [ ] Instalación de Node.js
-- [ ] Instalación de pnpm
+- [x] Instalación de Node.js
+- [x] Instalación de pnpm
 - [ ] Instalacion de opencode
 - [ ] Instalación de Docker
 - [ ] Configuración GRUB

@@ -269,6 +269,7 @@ Verificar
 ```bash
 node -v 
 npm -v
+pnpm -v
 ```
 ---
 

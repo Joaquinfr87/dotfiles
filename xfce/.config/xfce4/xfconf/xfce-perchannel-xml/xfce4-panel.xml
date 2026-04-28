@@ -6,45 +6,36 @@
     <value type="int" value="1"/>
     <property name="dark-mode" type="bool" value="true"/>
     <property name="panel-1" type="empty">
-      <property name="position" type="string" value="p=8;x=683;y=752"/>
+      <property name="position" type="string" value="p=8;x=960;y=1057"/>
       <property name="length" type="double" value="100"/>
-      <property name="position-locked" type="bool" value="false"/>
+      <property name="position-locked" type="bool" value="true"/>
       <property name="icon-size" type="uint" value="16"/>
-      <property name="size" type="uint" value="20"/>
+      <property name="size" type="uint" value="25"/>
       <property name="plugin-ids" type="array">
         <value type="int" value="1"/>
         <value type="int" value="2"/>
         <value type="int" value="3"/>
         <value type="int" value="4"/>
         <value type="int" value="5"/>
-        <value type="int" value="7"/>
         <value type="int" value="6"/>
-        <value type="int" value="8"/>
-        <value type="int" value="10"/>
         <value type="int" value="11"/>
+        <value type="int" value="7"/>
+        <value type="int" value="8"/>
+        <value type="int" value="9"/>
+        <value type="int" value="10"/>
         <value type="int" value="12"/>
-        <value type="int" value="13"/>
-        <value type="int" value="14"/>
       </property>
+      <property name="autohide-behavior" type="uint" value="2"/>
       <property name="mode" type="uint" value="0"/>
-      <property name="nrows" type="uint" value="1"/>
-      <property name="background-style" type="uint" value="2"/>
-      <property name="autohide-behavior" type="uint" value="1"/>
-      <property name="enable-struts" type="bool" value="true"/>
     </property>
   </property>
   <property name="plugins" type="empty">
     <property name="plugin-1" type="string" value="applicationsmenu">
-      <property name="show-generic-names" type="bool" value="false"/>
       <property name="button-icon" type="string" value="debian-logo"/>
-      <property name="custom-menu" type="bool" value="false"/>
+      <property name="show-button-title" type="bool" value="false"/>
     </property>
     <property name="plugin-2" type="string" value="tasklist">
       <property name="grouping" type="uint" value="1"/>
-      <property name="show-labels" type="bool" value="true"/>
-      <property name="flat-buttons" type="bool" value="false"/>
-      <property name="show-handle" type="bool" value="true"/>
-      <property name="show-tooltips" type="bool" value="true"/>
     </property>
     <property name="plugin-3" type="string" value="separator">
       <property name="expand" type="bool" value="true"/>
@@ -61,81 +52,36 @@
     <property name="plugin-6" type="string" value="systray">
       <property name="square-icons" type="bool" value="true"/>
       <property name="known-legacy-items" type="array">
-        <value type="string" value="ethernet network connection “wired connection 1” active"/>
-        <value type="string" value="wi-fi network connection “updswifi” active: updswifi (68%)"/>
-        <value type="string" value="wi-fi network connection “updswifi” active: updswifi (39%)"/>
-        <value type="string" value="wi-fi network connection “updswifi” active: updswifi (61%)"/>
-        <value type="string" value="wi-fi network connection “updswifi” active: updswifi (69%)"/>
-        <value type="string" value="wi-fi network connection “felipez wifi” active: felipez wifi (80%)"/>
-        <value type="string" value="wi-fi network connection “updswifi” active: updswifi (73%)"/>
-        <value type="string" value="wi-fi network connection “updswifi” active: updswifi (76%)"/>
-        <value type="string" value="wi-fi network connection “updswifi” active: updswifi (71%)"/>
-        <value type="string" value="wi-fi network connection “felipez wifi-5g” active: felipez wifi-5g (63%)"/>
-        <value type="string" value="wi-fi network connection “felipez wifi-5g” active: felipez wifi-5g (68%)"/>
-        <value type="string" value="wi-fi network connection “centurion” active: centurion (66%)"/>
-        <value type="string" value="wi-fi network connection “centurion” active: centurion (94%)"/>
-        <value type="string" value="wi-fi network connection “felipez wifi-5g” active: felipez wifi-5g (79%)"/>
-        <value type="string" value="wi-fi network connection “updswifi” active: updswifi (42%)"/>
-        <value type="string" value="wi-fi network connection “updswifi” active: updswifi (52%)"/>
-        <value type="string" value="polkit-mate-authentication-agent-1"/>
-        <value type="string" value="wi-fi network connection “updswifi” active: updswifi (58%)"/>
-        <value type="string" value="notes"/>
-        <value type="string" value="wi-fi network connection “axs_5g_kx3xfx” active: axs_5g_kx3xfx (87%)"/>
-        <value type="string" value="wi-fi network connection “axs_5g_kx3xfx” active: axs_5g_kx3xfx (88%)"/>
-        <value type="string" value="wi-fi network connection “updswifi” active: updswifi (50%)"/>
-        <value type="string" value="wi-fi network connection “updswifi” active: updswifi (48%)"/>
-        <value type="string" value="wi-fi network connection “updswifi” active: updswifi (47%)"/>
-        <value type="string" value="wi-fi network connection “updswifi” active: updswifi (49%)"/>
-        <value type="string" value="wi-fi network connection “updswifi” active: updswifi (56%)"/>
-        <value type="string" value="wi-fi network connection “felipez wifi-5g” active: felipez wifi-5g (50%)"/>
         <value type="string" value="no network connection"/>
+        <value type="string" value="system-config-printer"/>
         <value type="string" value="networkmanager applet"/>
-        <value type="string" value="wi-fi network connection “felipez wifi-5g” active: felipez wifi-5g (49%)"/>
-        <value type="string" value="wi-fi network connection “felipez wifi-5g” active: felipez wifi-5g (92%)"/>
-        <value type="string" value="wi-fi network connection “felipez wifi-5g” active: felipez wifi-5g (87%)"/>
+        <value type="string" value="requesting an ethernet network address for “wired connection 1”…"/>
+        <value type="string" value="ethernet network connection “wired connection 1” active"/>
       </property>
       <property name="known-items" type="array">
-        <value type="string" value="chrome_status_icon_1"/>
+        <value type="string" value="Mumble"/>
         <value type="string" value="obs"/>
+        <value type="string" value="vlc"/>
+        <value type="string" value="qBittorrent"/>
+        <value type="string" value="chrome_status_icon_1"/>
       </property>
+      <property name="single-row" type="bool" value="false"/>
+      <property name="hide-new-items" type="bool" value="false"/>
     </property>
-    <property name="plugin-8" type="string" value="pulseaudio">
-      <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
-      <property name="show-notifications" type="bool" value="true"/>
-      <property name="mpris-players" type="string" value="firefox.instance_1_107;firefox.instance_1_39;firefox.instance_1_42;firefox.instance_1_44;firefox.instance_1_45;firefox.instance_1_46;firefox.instance_1_47;firefox.instance_1_54;firefox.instance_1_59;firefox.instance_1_62"/>
-      <property name="known-players" type="string" value="firefox-esr"/>
-    </property>
-    <property name="plugin-10" type="string" value="notification-plugin"/>
-    <property name="plugin-11" type="string" value="separator">
+    <property name="plugin-7" type="string" value="separator">
       <property name="style" type="uint" value="0"/>
     </property>
-    <property name="plugin-12" type="string" value="clock">
+    <property name="plugin-8" type="string" value="clock">
       <property name="mode" type="uint" value="2"/>
-      <property name="tooltip-format" type="string" value="%x"/>
-      <property name="digital-time-font" type="string" value="Sans Bold 8"/>
     </property>
-    <property name="plugin-13" type="string" value="separator">
+    <property name="plugin-9" type="string" value="separator">
       <property name="style" type="uint" value="0"/>
-      <property name="items" type="array">
-      </property>
     </property>
-    <property name="plugin-14" type="string" value="actions">
-      <property name="items" type="array">
-      </property>
+    <property name="plugin-10" type="string" value="actions"/>
+    <property name="plugin-11" type="string" value="pulseaudio">
+      <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
+      <property name="known-players" type="string" value="Chromium;firefox-esr;qutebrowser;vlc"/>
     </property>
-    <property name="plugin-7" type="string" value="battery"/>
-    <property name="notes" type="empty">
-      <property name="global" type="empty">
-        <property name="version" type="string" value="1.11.1"/>
-      </property>
-    </property>
-    <property name="plugin-15" type="empty">
-      <property name="items" type="array">
-      </property>
-    </property>
-    <property name="plugin-16" type="empty">
-      <property name="items" type="array">
-      </property>
-    </property>
+    <property name="plugin-12" type="string" value="notification-plugin"/>
   </property>
 </channel>

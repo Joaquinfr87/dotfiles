@@ -61,8 +61,8 @@
     <property name="vblank_mode" type="string" value="auto"/>
     <property name="theme" type="string" value="Default"/>
     <property name="tile_on_move" type="bool" value="true"/>
-    <property name="title_alignment" type="string" value="center"/>
-    <property name="title_font" type="string" value="URW Gothic 9"/>
+    <property name="title_alignment" type="string" value="right"/>
+    <property name="title_font" type="string" value="URW Gothic Semi-Bold 10"/>
     <property name="title_horizontal_offset" type="int" value="0"/>
     <property name="titleless_maximize" type="bool" value="false"/>
     <property name="title_shadow_active" type="string" value="false"/>
@@ -87,5 +87,9 @@
       <value type="string" value="Workspace 3"/>
       <value type="string" value="Workspace 4"/>
     </property>
+    <property name="margin_top" type="int" value="0"/>
+    <property name="margin_right" type="int" value="0"/>
+    <property name="margin_left" type="int" value="0"/>
+    <property name="margin_bottom" type="int" value="0"/>
   </property>
 </channel>

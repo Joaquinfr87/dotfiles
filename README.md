@@ -271,6 +271,70 @@ node -v
 npm -v
 pnpm -v
 ```
+## Instalar opencode
+### Instalar mediante script
+Utilizar el script oficial de opencode (mas informacion: https://opencode.ai/docs)
+```bash
+curl -fsSL https://opencode.ai/install | bash
+```
+### Enlazar configuracion opencode
+```bash
+rm -f ~/.config/opencode
+cd ~/repos/dotfiles
+stow -t ~ opencode
+```
+
+## Instalar Docker Engine
+Desinstalar paquetes conflictivos
+```bash
+sudo apt remove $(dpkg --get-selections docker.io docker-compose docker-doc podman-docker containerd runc | cut -f1)
+```
+Anadir la oficial GPG key
+```bash
+sudo apt update
+sudo apt install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+```
+Anadir el repositorio a las fuentes de apt
+```bash
+sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/debian
+Suites: $(. /etc/os-release && echo "$VERSION_CODENAME")
+Components: stable
+Architectures: $(dpkg --print-architecture)
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+
+sudo apt update
+```
+Instalar los paquetes docker
+```bash
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+Verificar Instalacion
+```bash
+ sudo docker run hello-world
+```
+## Modificar GRUB
+Modificar el tiempo de carga de grub, para cargar el sistema operativo
+>*Nota*: cambiar de 0 por si tienes 2 sistemas
+```bash
+sudo sed -i 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=0/' /etc/default/grub
+```
+Actualizar grub
+```bash
+sudo update-grub
+```
+## Modificar lightdm (gestor sesiones)
+Inicio de sesion automatica al iniciar el sistema
+```bash
+sudo sed -i '/^\[Seat:\*\]/,/^\[/ s/^#\?autologin-user=.*/autologin-user=joaquin/' /etc/lightdm/lightdm.conf
+sudo sed -i '/^\[Seat:\*\]/,/^\[/ s/^#\?autologin-user-timeout=.*/autologin-user-timeout=0/' /etc/lightdm/lightdm.conf
+```
+
 ---
 
 ## Configuración de Máquinas Virtuales (VirtualBox)
@@ -329,8 +393,7 @@ Para más información y configuraciones adicionales, consulta:
 
 - [x] Instalación de Node.js
 - [x] Instalación de pnpm
-- [ ] Instalacion de opencode
-- [ ] Instalación de Docker
-- [ ] Configuración GRUB
-- [ ] Configuración sesión
-- [ ] Posible configuración de Sway
+- [x] Instalacion de opencode
+- [x] Instalación de Docker
+- [x] Configuración GRUB
+- [x] Configuración sesión

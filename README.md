@@ -217,12 +217,23 @@ Sigue las instrucciones en pantalla para seleccionar una fuente Meslo.
 
 ### Descargar e instalar Neovim
 
+Descargar e instalar Rust
 ```bash
-curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
-sudo rm -rf /opt/nvim-linux-x86_64
-sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
-sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
-rm nvim-linux-x86_64.tar.gz
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+Instalar Bob por medio del script
+```bash
+curl -fsSL https://raw.githubusercontent.com/MordechaiHadad/bob/master/scripts/install.sh | bash
+```
+Instalar nvim
+```bash
+bob use stable
+```
+> *Nota*: para actualizar nvim bob update stable
+
+anadir un enlace de nvim al share
+```bash
+sudo cp -as ~/.local/share/bob/{nvim-version}/share/* /usr/share/
 ```
 
 ### Instalar dependencias

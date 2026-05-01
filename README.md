@@ -59,6 +59,10 @@ ssh-keygen -t rsa -b 4096 -C "joaquinfelipezrojas@gmail.com"
 ```
 Dejar passphrase vacía cuando pregunte.
 
+Iniciar el agente
+```bash
+eval "$(ssh-agent -s)"
+```
 Agrega la clave al agente SSH:
 
 ```bash

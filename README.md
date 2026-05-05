@@ -446,3 +446,4 @@ Para más información y configuraciones adicionales, consulta:
 - [x] Configuración GRUB
 - [x] Configuración sesión
 - [ ] Mako
+- [ ] screen share

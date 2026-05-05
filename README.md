@@ -1,4 +1,4 @@
-# Guía de Instalación de Dotfiles
+# Guía de Instalación de Dotfiles SWAY o XFCE
 
 Guia para configurar un entorno de desarrollo completo en Debian usando mis dotfiles. Sigue los pasos en orden.
 
@@ -6,19 +6,20 @@ Guia para configurar un entorno de desarrollo completo en Debian usando mis dotf
 
 - Una instalación limpia de Debian
 - Acceso a internet
-- Permisos de sudo
+
 
 ---
 
 ## Configuración Inicial del Sistema
-
-### Configurar Firefox
-Anadir cuenta de firefox, gmail y de github.
 ### Configurar permisos de sudo
 
 ```bash
 su -
 # Ingresar contraseña de root
+```
+Instalar sudo
+```bash
+apt install sudo
 ```
 
 Edita la configuración de sudo:
@@ -34,12 +35,66 @@ joaquin ALL=(ALL:ALL) ALL
 ```
 
 Guarda y sal del editor (Ctrl+O, Enter, Ctrl+X en nano).
+```bash
+exit
+```
+## Instalar sway
+```bash 
+sudo apt install sway
+```
+
+### Instalar y Configurar Firefox
+
+```bash
+sudo apt install firefox-esr
+```
+
+Anadir cuenta de firefox, gmail y de github.
 
 ### Actualizar el sistema
 
 ```bash
 sudo apt update
 sudo apt upgrade -y
+```
+### Instalar grim shot para tomar captura de pantalla de sway
+```bash
+sudo apt install grimshot
+```
+### Creamos una carpeta de recortes
+
+```bash
+mkdir ~/recortes
+```
+### Instalar wofi
+```bash 
+sudo apt install wofi
+```
+```bash
+sudo apt update
+sudo apt install pipewire wireplumber pipewire-pulse pavucontrol brightnessctl network-manager 
+```
+
+modificar el archivo /etc/network/interfaces
+```bash
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+```
+
+iniciar los servicios
+```bash
+sudo systemctl enable --now NetworkManager
+systemctl --user enable --now pipewire wireplumber pipewire-pulse
+```
+copiar los archivos sway, wofi y waybar
+```bash
+cp -r ~/repos/dotfiles/{sway,wofi, waybar} ~/.config/
 ```
 
 ### Instalar Git y configurar SSH
@@ -87,20 +142,15 @@ git clone git@github.com:JoaquinFr87/dotfiles.git
 ## Instalar Utilidades Básicas
 
 ```bash
-sudo apt install tree xclip htop fastfetch
-sudo apt update && sudo apt install stow -y
+sudo apt install tree htop fastfetch build-essential 
 ```
-> **Stow** es fundamental para este setup - se usa para crear enlaces simbólicos de las configuraciones.
-
 ---
 
 ## Configurar XFCE4
 ### Configurar Wallpaper
 
 ```bash
-mkdir -p ~/Pictures
-cd ~/repos/dotfiles
-stow -t ~/Pictures Pictures
+cp -r ~/repos/dotfiles/Pictures ~/
 ```
 
 ###Limpiar configuración existente
@@ -109,18 +159,6 @@ stow -t ~/Pictures Pictures
 rm -rf ~/.config/xfce4
 ```
 
-### Enlazar configuración con Stow
-
-```bash
-cd ~/repos/dotfiles
-stow -t ~ xfce
-```
-
-> **Importante:** Reniciar el sistema.
-
-Abre la aplicación de escritorio (Desktop Settings), añade el folder `Pictures` y selecciona `wallpaper.jpg` como fondo de pantalla.
-
----
 
 ## Instalar Kitty Terminal
 
@@ -136,27 +174,22 @@ curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
 ### Crear un enlace de kitty
 Crear un enlace de kitty para que sea reconocido por el path del sistema. Crear symlink para kitty y kitten (necesario para herramientas integradas)
 ```bash
-sudo ln -s ~/.local/kitty.app/bin/kitty /usr/local/bin/kitty
-sudo ln -s ~/.local/kitty.app/bin/kitten /usr/local/bin/kitten
-sudo ln -s ~/.local/kitty.app/share/applications/kitty.desktop /usr/share/applications/kitty.desktop
-sudo ln -s ~/.local/kitty.app/share/applications/kitty-open.desktop ~/.local/share/applications/kitty-open.desktop
+sudo ln -s ~/.local/kitty.app/bin/kitty ~/.local/bin/kitty
+sudo ln -s ~/.local/kitty.app/bin/kitten ~/.local/bin/kitten
 ```
 Enlace recursivo
 ```bash
-sudo cp -as ~/.local/kitty.app/share/icons/hicolor/* /usr/share/icons/hicolor/ 
+sudo cp -as ~/.local/kitty.app/share/* ~/.local/share/icons/hicolor/ 
 ```
 > **Nota**: comando sed puede modificar archivos desde solo terminal
 
 ### Enlazar configuración
 
 ```bash
+
 rm -rf ~/.config/kitty
-cd ~/repos/dotfiles
-stow -t ~ kitty
+cp -r ~/repos/dotfiles/kitty/.config/kitty ~/.config/
 ```
-
-> **Nota:** Ve a Configuración → Aplicaciones por defecto y selecciona Kitty como terminal predeterminada.
-
 ---
 
 ## Instalar ZSH + Oh-My-Zsh + Powerlevel10k
@@ -258,8 +291,7 @@ rm -rf ~/.cache/nvim
 ### Enlazar configuración de Neovim
 
 ```bash
-cd ~/repos/dotfiles
-stow -t ~ nvim
+cp -r ~/repos/dotfile/nvim/.config/nvim ~/.config/
 ```
 
 > **Nota:** La primera vez que ejecutes `nvim`, LazyVim instalará automáticamente todos los plugins. Esto puede tardar unos minutos.
@@ -294,6 +326,7 @@ curl -fsSL https://opencode.ai/install | bash
 ```
 ### Enlazar configuracion opencode
 ```bash
+cp -r ~/repos/dotfiles/opencode/.config/opencode ~/.config/
 rm -f ~/.config/opencode
 cd ~/repos/dotfiles
 stow -t ~ opencode
@@ -412,3 +445,4 @@ Para más información y configuraciones adicionales, consulta:
 - [x] Instalación de Docker
 - [x] Configuración GRUB
 - [x] Configuración sesión
+- [ ] Mako

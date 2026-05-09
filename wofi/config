@@ -1,0 +1,19 @@
+# ~/.config/wofi/config
+
+show=drun
+prompt=Search...
+width=600
+height=400
+lines=5
+columns=1
+
+allow_markup=true
+allow_images=true
+image_size=24
+hide_scroll=true
+
+# Integración nativa
+term=kitty
+
+# Comportamiento de búsqueda
+matching=multi-contains

@@ -1,0 +1,103 @@
+* {
+    background-image: none;
+    box-shadow: none;
+    font-family:"MesloLGS NF", monospace;
+}
+
+/* Fondo general */
+window {
+    background-color: rgba(40, 40, 40, 0.95); /* bg0 */
+}
+
+/* Botones base */
+button {
+    border-radius: 8px;
+    border: 2px solid #504945; /* bg2 */
+    color: #ebdbb2; /* fg */
+    background-color: #3c3836; /* bg1 */
+    background-repeat: no-repeat;
+    background-position: center 30%;
+    background-size: 25%;
+    margin: 10px;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Hover general */
+button:hover {
+    background-color: #504945;
+    border-color: #665c54;
+}
+
+/* Focus/active */
+button:focus, button:active {
+    outline: none;
+    border-color: #d79921; /* yellow */
+}
+
+/* --- Acciones con colores Gruvbox --- */
+
+/* Lock */
+#lock {
+    background-image: image(
+        url("/usr/share/wlogout/icons/lock.png"),
+        url("/usr/local/share/wlogout/icons/lock.png")
+    );
+}
+#lock:hover {
+    background-color: #458588; /* blue */
+}
+
+/* Logout */
+#logout {
+    background-image: image(
+        url("/usr/share/wlogout/icons/logout.png"),
+        url("/usr/local/share/wlogout/icons/logout.png")
+    );
+}
+#logout:hover {
+    background-color: #689d6a; /* green */
+}
+
+/* Suspend */
+#suspend {
+    background-image: image(
+        url("/usr/share/wlogout/icons/suspend.png"),
+        url("/usr/local/share/wlogout/icons/suspend.png")
+    );
+}
+#suspend:hover {
+    background-color: #b16286; /* purple */
+}
+
+/* Hibernate */
+#hibernate {
+    background-image: image(
+        url("/usr/share/wlogout/icons/hibernate.png"),
+        url("/usr/local/share/wlogout/icons/hibernate.png")
+    );
+}
+#hibernate:hover {
+    background-color: #d79921; /* yellow */
+}
+
+/* Shutdown (peligro) */
+#shutdown {
+    background-image: image(
+        url("/usr/share/wlogout/icons/shutdown.png"),
+        url("/usr/local/share/wlogout/icons/shutdown.png")
+    );
+}
+#shutdown:hover {
+    background-color: #cc241d; /* red */
+}
+
+/* Reboot */
+#reboot {
+    background-image: image(
+        url("/usr/share/wlogout/icons/reboot.png"),
+        url("/usr/local/share/wlogout/icons/reboot.png")
+    );
+}
+#reboot:hover {
+    background-color: #d65d0e; /* orange */
+}

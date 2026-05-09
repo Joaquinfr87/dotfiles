@@ -1,0 +1,61 @@
+/* ~/.config/wofi/style.css */
+
+/* 1. Volvemos la ventana base invisible para eliminar las esquinas cuadradas */
+window {
+    margin: 0px;
+    background-color: transparent;
+    font-family: "Monospace", sans-serif; 
+    font-size: 14px;
+}
+
+/* 2. Aplicamos el diseño, borde y fondo semitransparente al contenedor principal */
+#outer-box {
+    margin: 0px;
+    border: 2px solid #d79921; /* Gruvbox Yellow */
+    border-radius: 12px;
+    /* Fondo #282828 convertido a RGBA con 85% de opacidad */
+    background-color: rgba(40, 40, 40, 0.85); 
+    padding: 5px;
+}
+
+#input {
+    margin: 10px;
+    border: none;
+    color: #ebdbb2; /* Gruvbox Foreground */
+    /* Fondo #3c3836 en RGBA, un poco más opaco para legibilidad */
+    background-color: rgba(60, 56, 54, 0.95); 
+    padding: 8px;
+    border-radius: 8px;
+}
+
+#inner-box {
+    margin: 5px;
+    border: none;
+    background-color: transparent;
+}
+
+#scroll {
+    margin: 0px;
+    border: none;
+}
+
+#text {
+    margin: 5px;
+    border: none;
+    color: #ebdbb2;
+}
+
+#entry {
+    padding: 2px;
+}
+
+#entry:selected {
+    background-color: #504945; /* Gruvbox Hover Background */
+    border-radius: 8px;
+    outline: none;
+}
+
+#entry:selected #text {
+    color: #b8bb26; /* Gruvbox Green para destacar el texto seleccionado */
+}
+

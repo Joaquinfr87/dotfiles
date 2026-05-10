@@ -22,19 +22,14 @@ Instalar sudo
 apt install sudo
 ```
 
-Edita la configuración de sudo:
+anadir el usuario al grupo sudo
 
 ```bash
-visudo
+sudo usermod -aG sudo joaquin
 ```
 
-Agrega la siguiente línea debajo de `%sudo ALL=(ALL:ALL) ALL`:
+Cerrar sesion y volver a iniciar para que los cambios esten 
 
-```
-joaquin ALL=(ALL:ALL) ALL
-```
-
-Guarda y sal del editor (Ctrl+O, Enter, Ctrl+X en nano).
 ```bash
 exit
 ```
@@ -64,7 +59,7 @@ sudo apt install grimshot
 ### Creamos una carpeta de recortes
 
 ```bash
-mkdir ~/recortes
+mkdir ~/screenshot
 ```
 ### Instalar wofi
 ```bash 
@@ -146,19 +141,11 @@ sudo apt install tree htop fastfetch build-essential
 ```
 ---
 
-## Configurar XFCE4
 ### Configurar Wallpaper
 
 ```bash
 cp -r ~/repos/dotfiles/Pictures ~/
 ```
-
-###Limpiar configuración existente
-
-```bash
-rm -rf ~/.config/xfce4
-```
-
 
 ## Instalar Kitty Terminal
 
@@ -179,7 +166,7 @@ sudo ln -s ~/.local/kitty.app/bin/kitten ~/.local/bin/kitten
 ```
 Enlace recursivo
 ```bash
-sudo cp -as ~/.local/kitty.app/share/* ~/.local/share/icons/hicolor/ 
+sudo cp -as ~/.local/kitty.app/share/* ~/.local/share/
 ```
 > **Nota**: comando sed puede modificar archivos desde solo terminal
 
@@ -210,15 +197,20 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 ```
 
 ### Instalar fuentes Meslo Nerd Font
-
 ```bash
+# Crear el directorio de fuentes de usuario si no existe
 mkdir -p ~/.local/share/fonts/Meslo
-wget https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Meslo.zip -O /tmp/Meslo.zip
-unzip /tmp/Meslo.zip -d ~/.local/share/fonts/Meslo/
-rm /tmp/Meslo.zip
+cd ~/.local/share/fonts/Meslo
+
+# Descargar las 4 variantes de la fuente optimizada
+wget https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
+wget https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
+wget https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
+wget https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
+
+# Actualizar la caché de fuentes del sistema
 fc-cache -fv
 ```
-
 ### Instalar plugins de ZSH
 
 ```bash
@@ -234,9 +226,7 @@ git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-
 ### Enlazar configuración de ZSH
 
 ```bash
-rm -f ~/.zshrc ~/.p10k.zsh ~/.zlogin ~/.zprofile
-cd ~/repos/dotfiles
-stow -t ~ zsh
+rm -f ~/.zshrc 
 zsh
 ```
 

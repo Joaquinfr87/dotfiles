@@ -1,4 +1,4 @@
-# Guía de Instalación de Dotfiles SWAY o XFCE
+# Guía de Instalación de Dotfiles SWAY 
 
 Guia para configurar un entorno de desarrollo completo en Debian usando mis dotfiles. Sigue los pasos en orden.
 
@@ -137,7 +137,7 @@ git clone git@github.com:JoaquinFr87/dotfiles.git
 ## Instalar Utilidades Básicas
 
 ```bash
-sudo apt install tree htop fastfetch build-essential 
+sudo apt install tree htop fastfetch build-essential xdg-desktop-portal xdg-desktop-portal-wlr
 ```
 ---
 

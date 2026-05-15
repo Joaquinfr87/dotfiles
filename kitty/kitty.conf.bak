@@ -1,7 +1,7 @@
 # vim:fileencoding=utf-8:foldmethod=marker
 
 # BEGIN_KITTY_FONTS
-font_family      family='MesloLGS NF' postscript_name=MesloLGS-NF-Regular
+font_family      family="IosevkaTerm Nerd Font Mono"
 bold_font        auto
 italic_font      auto
 bold_italic_font auto
@@ -27,7 +27,7 @@ bold_italic_font auto
 #: <https://sw.kovidgoyal.net/kitty/kittens/choose-fonts/#font-spec-
 #: syntax>.
 
-# font_size 11.0
+ font_size 14.0
 
 #: Font size (in pts).
 
@@ -296,7 +296,7 @@ bold_italic_font auto
 #: so if you want to override it, place your value after the lines
 #: where the theme file is included.
 
-# cursor_shape block
+cursor_shape block
 
 #: The cursor shape can be one of block, beam, underline. Note that
 #: when reloading the config this will be changed only if the cursor
@@ -321,7 +321,7 @@ bold_italic_font auto
 
 #: The thickness of the underline cursor (in pts).
 
-# cursor_blink_interval -1
+cursor_blink_interval -1
 
 #: The interval to blink the cursor (in seconds). Set to zero to
 #: disable blinking. Negative values mean use system default. Note
@@ -509,8 +509,9 @@ bold_italic_font auto
 #: If you would rather use neovim to view the scrollback, use
 #: something like this::
 
-#:     scrollback_pager nvim --cmd 'set eventignore=FileType' +'nnoremap q ZQ' +'call nvim_open_term(0, {})' +'set nomodified nolist' +'$' -
-
+#   scrollback_pager nvim --cmd 'set eventignore=FileType' +'nnoremap q ZQ' +'call nvim_open_term(0, {})' +'set nomodified nolist' +'$' -
+# En tu ~/.config/kitty/kitty.conf
+scrollback_pager nvim --cmd 'set eventignore=FileType' +'set laststatus=0 nonumber norelativenumber signcolumn=no showtabline=0 foldcolumn=0' +'nnoremap q ZQ' +'call nvim_open_term(0, {})' +'set nomodified nolist' +'$' -
 #: The above works for neovim 0.12 and newer. There is also a
 #: dedicated plugin kitty-scrollback.nvim
 #: <https://github.com/mikesmithgh/kitty-scrollback.nvim> you can use
@@ -1157,7 +1158,7 @@ bold_italic_font auto
 #: set the vertical and horizontal sides. Three values set top,
 #: horizontal and bottom. Four values set top, right, bottom and left.
 
-# window_padding_width 0
+window_padding_width 8
 
 #: The window padding (in pts) (blank area between the text and the
 #: window border). A single value sets all four sides. Two values set
@@ -1202,7 +1203,7 @@ bold_italic_font auto
 #: Fade the text in inactive windows by the specified amount (a number
 #: between zero and one, with zero being fully faded).
 
-# hide_window_decorations no
+hide_window_decorations yes
 
 #: Hide the window decorations (title-bar and window borders) with
 #: yes. On macOS, titlebar-only and titlebar-and-corners can be used
@@ -1284,7 +1285,7 @@ bold_italic_font auto
 #: insensitive, from the set 0-9A-Z\-=[];',./\\`. Specify your
 #: preference as a string of characters.
 
-# confirm_os_window_close -1
+confirm_os_window_close 0
 
 #: Ask for confirmation when closing an OS window or a tab with at
 #: least this number of kitty windows in it by window manager (e.g.
@@ -1387,7 +1388,7 @@ bold_italic_font auto
 #: The second number is the margin between the tab bar and the
 #: contents of the current tab.
 
-# tab_bar_style fade
+tab_bar_style powerline
 
 #: The tab bar style, can be one of:
 
@@ -1592,7 +1593,7 @@ bold_italic_font auto
 
 #: The foreground and background colors.
 
-# background_opacity 1.0
+background_opacity 0.8
 
 #: The opacity of the terminal background color. A number between zero
 #: and one, where one is opaque and zero is fully transparent. This
@@ -1622,7 +1623,7 @@ bold_italic_font auto
 #: will only work if dynamic_background_opacity was enabled in the
 #: original config.
 
-# background_blur 0
+#background_blur 64
 
 #: Set to a positive value to enable background blur (blurring of the
 #: visuals behind a transparent window) on platforms that support it.
@@ -1657,7 +1658,7 @@ bold_italic_font auto
 #: Note that you must also set background_opacity to something less
 #: than 1 for this setting to work properly.
 
-# dynamic_background_opacity no
+#dynamic_background_opacity yes
 
 #: Allow changing of the background_opacity dynamically, using either
 #: keyboard shortcuts (increase_background_opacity and
@@ -1827,7 +1828,7 @@ bold_italic_font auto
 #: interactive mode and reads its startup rc files. Environment
 #: variables are expanded in this setting.
 
-# editor .
+editor nvim
 
 #: The terminal based text editor (such as vim or nano) to use when
 #: editing the kitty config file or similar tasks.
@@ -3156,3 +3157,9 @@ bold_italic_font auto
 #: }}}
 
 #: }}}
+
+
+# BEGIN_KITTY_THEME
+# Gruvbox Dark Hard
+include current-theme.conf
+# END_KITTY_THEME

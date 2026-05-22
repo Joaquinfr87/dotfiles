@@ -137,7 +137,7 @@ git clone git@github.com:JoaquinFr87/dotfiles.git
 ## Instalar Utilidades Básicas
 
 ```bash
-sudo apt install tree htop fastfetch build-essential xdg-desktop-portal xdg-desktop-portal-wlr
+sudo apt install tree htop fastfetch build-essential xdg-desktop-portal xdg-desktop-portal-wlr xdg-desktop-portal-gtk
 sudo apt install fonts-noto-color-emoji fonts-symbola fonts-font-awesome
 ```
 ---

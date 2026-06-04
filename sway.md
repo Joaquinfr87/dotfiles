@@ -136,7 +136,7 @@ bob use stable
 
 anadir un enlace de nvim al share
 ```bash
-sudo cp -as ~/.local/share/bob/{nvim-version}/share/* /usr/share/
+sudo cp -as ~/.local/share/bob/{nvim-version}/share/* ~/.local/share/
 ```
 
 anadir un enlace al root

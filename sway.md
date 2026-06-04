@@ -157,9 +157,38 @@ rm -rf ~/.cache/nvim
 Enlazar configuración de Neovim
 
 ```bash
-cp -r ~/repos/dotfile/nvim ~/.config/
+cp -r ~/repos/dotfiles/nvim ~/.config/
 ```
 
 > **Nota:** La primera vez que ejecutes `nvim`, LazyVim instalará automáticamente todos los plugins. Esto puede tardar unos minutos.
 
+## SWAY
+instalar base
+```bash
+sudo apt install pipewire wireplumber pipewire-pulse pavucontrol brightnessctl network-manager fastfetch htop tree xdg-desktop-portal xdg-desktop-portal-wlr xdg-desktop-portal-gtk fonts-noto-color-emoji fonts-symbola fonts-font-awesome mako-notifier waybar wofi wlogout
+autotiling  
+```
+modificar el archivo /etc/network/interfaces
+```bash
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
 
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+```
+copiar las carpetas de dotfiles
+```bash
+cp -r ~/repos/dotfiles/{mako,sway,waybar,wlogout,wofi,fontconfig} ~/.config 
+```
+copiar la carpeta Pictures
+```bash
+cp -r ~/repos/dotfiles/Pictures ~/
+```
+crear carpeta la los screenshots
+```bash
+mkdir ~/Screenshot
+```
+f

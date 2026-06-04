@@ -191,4 +191,9 @@ crear carpeta la los screenshots
 ```bash
 mkdir ~/Screenshot
 ```
-f
+## siguientes pasos
+
+- Instalar Nodejs
+- Instalar Opencode
+- Instalar Docker
+- Modificar grub

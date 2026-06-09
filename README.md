@@ -1,4 +1,6 @@
 # DESACTUALIZADO
+
+Esta guia no es la actualizada utilizar la siguiente [sway](sway.md)
 - [ ] cambiar el readme.md
 # Guía de Instalación de Dotfiles SWAY 
 

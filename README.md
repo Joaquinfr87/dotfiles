@@ -1,5 +1,5 @@
 # DESACTUALIZADO
- [ ] cambiar el readme.md
+- [ ] cambiar el readme.md
 # Guía de Instalación de Dotfiles SWAY 
 
 Guia para configurar un entorno de desarrollo completo en Debian usando mis dotfiles. Sigue los pasos en orden.

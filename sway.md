@@ -1,4 +1,7 @@
 # Guia de instalacion SWAY - DEBIAN
+
+Este guia se hizo gracias al repo de [arkboix](https://github.com/arkboix/sway) muchas configuraciones se basan en la suya.
+
 Al tener una instalacion fresca de debian, se redactar los pasos que se tienen que realizar para tener sway configurado
 
 ## SUDO

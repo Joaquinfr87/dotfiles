@@ -2,7 +2,7 @@
 
 Este guia se hizo gracias al repo de [arkboix](https://github.com/arkboix/sway) muchas configuraciones se basan en la suya.
 
-Al tener una instalacion fresca de debian, se redactar los pasos que se tienen que realizar para tener sway configurado
+Al tener una instalacion fresca de debian sin entorno de escritorio, se redactaran los pasos que se tienen que realizar para tener sway configurado
 
 ## SUDO
 ```bash
@@ -29,12 +29,12 @@ Anade la cuenta de firefox para tener los pluggins, anade la cuenta de gmail, as
 ### GIT
 anadir el git config
 ```bash
-git config --global user.name "Joaquin Alessandro Felipez Rojas"
-git config --global user.email "joaquinfelipezrojas@gmail.com"
+git config --global user.name "Tu nombre"
+git config --global user.email "tu email.com"
 ```
 generara la clave ssh, deja la passphrase vacia
 ```bash
-ssh-keygen -t rsa -b 4096 -C "joaquinfelipezrojas@gmail.com"
+ssh-keygen -t rsa -b 4096 -C "tu email"
 ```
 Iniciar el agente
 ```bash

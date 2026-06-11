@@ -23,6 +23,7 @@ Instalar herramientas necesarias
 sudo apt install firefox-esr sway git curl unzip wl-clipboard 
 zsh zsh-autosuggestions zsh-syntax-highlighting
 lazygit tree-sitter-cli build-essential fzf ripgrep fd-find
+clang libclang-dev
 ```
 Anade la cuenta de firefox para tener los pluggins, anade la cuenta de gmail, asi tambien como la de github
 
@@ -147,7 +148,12 @@ anadir un enlace al root
 sudo ln -s ~/.local/share/bob/nvim-bin/nvim /usr/bin/
 ```
 
+instalar tree-sitter-cli
+> Se puede instalar por apt install pero la version es antigua para nvim-tree-sitter
 
+```bash
+cargo install tree-sitter-cli
+```
 Limpiar configuración previa de Neovim
 
 ```bash

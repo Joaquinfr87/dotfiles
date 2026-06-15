@@ -11,6 +11,7 @@
     "frameless": false,
     "transparent": false,
     "winCtrlQ": false,
+    "windowsMaterial": "none",
     "disableMinSize": false,
     "winNativeTitleBar": false,
     "plugins": {
@@ -287,6 +288,9 @@
         "NoMiddleClickPaste": {
             "enabled": false
         },
+        "NoMosaic": {
+            "enabled": false
+        },
         "NoOnboardingDelay": {
             "enabled": false
         },
@@ -538,18 +542,6 @@
             "enabled": true,
             "settingsLocation": "aboveNitro",
             "includeVencordInfoWhenCopying": true
-        },
-        "ConcatenatedComponentExtractor": {
-            "enabled": true
-        },
-        "DisableDeepLinks": {
-            "enabled": true
-        },
-        "SupportHelper": {
-            "enabled": true
-        },
-        "WebContextMenus": {
-            "enabled": true
         }
     },
     "uiElements": {
@@ -566,6 +558,6 @@
         "authenticated": false,
         "url": "https://api.vencord.dev/",
         "settingsSync": false,
-        "settingsSyncVersion": 1778016524793
+        "settingsSyncVersion": 1781005887624
     }
 }

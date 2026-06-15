@@ -14,6 +14,7 @@ set $right l
 # Aplicaciones por defecto
 set $term kitty
 set $menu wofi --show drun
+set $web-browser firefox
 
 # Colores (Gruvbox + Transparencias: E6=90%, 80=50%, CC=80%, B3=70%)
 set $bg0    #282828
@@ -65,8 +66,8 @@ mode $mode_display {
 }
 
 # Atajo para invocar el modo (ej. Super + p)
-bindsym $mod+p mode $mode_display
-
+# bindsym $mod+p mode $mode_display
+bindsym $mod+p exec wdisplays
 # Touchpad
 input type:touchpad {
     natural_scroll enabled
@@ -81,7 +82,7 @@ seat * hide_cursor 2000
 # 3. Apariencia y Comportamiento de Ventanas (Gaps & Borders)
 # ------------------------------------------------------------------------------
 # Fuente para los títulos de las ventanas y la barra por defecto (si no usas Waybar)
-font pango:IosevkaTerm Nerd Font, Noto Color Emoji 10
+font pango:MesloLGS NF, Noto Color Emoji 10
 # Focused window (active)
 client.focused $cyan $bg1 $fg $yellow $cyan
 
@@ -122,9 +123,16 @@ exec waybar
 exec_always mako
 ## Autostart Applications
 
-exec swaymsg "workspace 1; exec firefox"
+exec swaymsg "workspace 1; exec zen"
 exec swaymsg "workspace 2; exec kitty --hold -e fastfetch"
 exec swaymsg "workspace 3"
+
+## Sway Automatic Tiling
+exec_always autotiling -l 0
+
+# Start xdg-desktop-portal services (ensure wlr starts first)
+exec --no-startup-id /usr/lib/xdg-desktop-portal-wlr &
+exec --no-startup-id /usr/lib/xdg-desktop-portal -r
 
 # Set XDG_CURRENT_DESKTOP for proper Wayland support
 exec --no-startup-id dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
@@ -178,7 +186,7 @@ bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
 bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
 # --- Capturas de Pantalla ---
 bindsym Print exec grimshot copy area
-bindsym Shift+Print exec grimshot save area ~/recortes/Screenshot-$(date +%F-%T).png
+bindsym Shift+Print exec grimshot save area ~/Screenshot/Screenshot-$(date +%F-%T).png
 
 # --- wdisplays ---
 # bindsym $mod+F9 exec wdisplays
@@ -269,6 +277,7 @@ bindsym $mod+r mode "resize"
 for_window [app_id="nmtui-float"] floating enable, resize set 600 500
 for_window [app_id="cal-float"] floating enable, resize set 400 300
 for_window [app_id="pavucontrol"] floating enable, resize set 700 500
+for_window [app_id="org.pulseaudio.pavucontrol"] floating enable, move position center, resize set 600 400
 
 # waybar
 bindsym $mod+Shift+p exec ~/.config/waybar/launch.sh

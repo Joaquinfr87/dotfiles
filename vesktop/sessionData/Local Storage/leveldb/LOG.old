@@ -1,6 +1,0 @@
-2026/05/06-17:19:28.156 e27 Reusing MANIFEST /home/joaquin/.config/vesktop/sessionData/Local Storage/leveldb/MANIFEST-000001
-2026/05/06-17:19:28.168 e27 Recovering log #4
-2026/05/06-17:19:28.169 e27 Reusing old log /home/joaquin/.config/vesktop/sessionData/Local Storage/leveldb/000004.log 
-2026/05/06-17:20:28.171 e27 Level-0 table #7: started
-2026/05/06-17:20:28.176 e27 Level-0 table #7: 24957 bytes OK
-2026/05/06-17:20:28.178 e27 Delete type=0 #4

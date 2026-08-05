@@ -1,108 +1,101 @@
-# Guia de instalacion SWAY - DEBIAN
+# Guía de instalación SWAY + NOCTALIA — DEBIAN 13 (Trixie)
 
-Este guia se hizo gracias al repo de [arkboix](https://github.com/arkboix/sway) muchas configuraciones se basan en la suya.
+Entorno de escritorio Wayland basado en:
 
-Al tener una instalacion fresca de debian sin entorno de escritorio, se redactaran los pasos que se tienen que realizar para tener sway configurado
+- [Sway](https://swaywm.org) — compositor / tiling WM
+- [Noctalia](https://noctalia.dev) — shell (barra, launcher, notificaciones, lock screen, OSD, fondo, clipboard)
+- Repo de referencia: [piratheon/sway-noctalia-dots](https://github.com/piratheon/sway-noctalia-dots)
+- Paleta: **Gruvbox Material Dark**
 
-## SUDO
+> **Noctalia v5 reemplaza**: waybar, mako, wofi, swaybg, swaylock, swayidle, wlogout, grimshot, brightnessctl y los bindings de wpctl. Todo se controla con `noctalia msg`.
+
+---
+
+## 1. SUDO
+
 ```bash
- su -
+su -
+# ingresar contraseña de root
 ```
-Ingresas tu contrasena del root
 
 ```bash
 apt install sudo
 sudo usermod -aG sudo {nombre_usuario}
-exit #sale root
-exit #sale al tty
+exit # sale de root
+exit # sale al tty
 ```
-Logeas con tu tty
-## BASE
-Instalar herramientas necesarias
-```bash
-sudo apt install firefox-esr sway git curl unzip wl-clipboard 
-zsh zsh-autosuggestions zsh-syntax-highlighting
-lazygit tree-sitter-cli build-essential fzf ripgrep fd-find
-clang libclang-dev
-```
-Anade la cuenta de firefox para tener los pluggins, anade la cuenta de gmail, asi tambien como la de github
 
-### GIT
-anadir el git config
+---
+
+## 2. BASE
+
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install git curl unzip wl-clipboard zsh \
+  lazygit build-essential fzf ripgrep fd-find \
+  clang libclang-dev htop tree fastfetch
+```
+
+---
+
+## 3. GIT
+
 ```bash
 git config --global user.name "Tu nombre"
 git config --global user.email "tu email.com"
-```
-generara la clave ssh, deja la passphrase vacia
-```bash
-ssh-keygen -t rsa -b 4096 -C "tu email"
-```
-Iniciar el agente
-```bash
+ssh-keygen -t rsa -b 4096 -C "tu email"   # passphrase vacía
 eval "$(ssh-agent -s)"
-```
-agregar la clave al agente ssh, y copiar la clave a ssh config github.
-```bash
 ssh-add ~/.ssh/id_rsa
-cat ~/.ssh/id_rsa.pub | wl-copy
+cat ~/.ssh/id_rsa.pub | wl-copy            # agregar a GitHub → Settings → SSH keys
 ```
-Clonar el repo de github dotfiles
+
+Clonar los dotfiles:
+
 ```bash
-mkdir ~/repos
+mkdir -p ~/repos
 cd ~/repos
-git clone  git@github.com:Joaquinfr87/dotfiles.git
+git clone git@github.com:Joaquinfr87/dotfiles.git
 cd ~
 ```
-## KITTY
-Instalar por script de la pagina oficial [Kitty](https://sw.kovidgoyal.net/kitty/)
+
+---
+
+## 4. Fuentes
+
+Instalar **Iosevka Nerd Font** (la usa la variable `$font` de sway):
+
+```bash
+mkdir -p ~/.local/share/fonts/Iosevka
+unzip ~/Downloads/{Iosevka-Term-Nerd-Font}.zip -d ~/.local/share/fonts/Iosevka/
+fc-cache -fv
+```
+
+Instalar la fuente de emojis (fallback de `$font`):
+
+```bash
+sudo apt install fonts-noto-color-emoji
+```
+
+---
+
+## 5. KITTY
+
 ```bash
 curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
-```
-copiar los enlaces simbolicos para el bin
-```bash
 mkdir -p ~/.local/{bin,share}
 ln -s ~/.local/kitty.app/bin/kitty ~/.local/bin/kitty
 ln -s ~/.local/kitty.app/bin/kitten ~/.local/bin/kitten
 cp -as ~/.local/kitty.app/share/* ~/.local/share/
-```
-enlazar config dotfiles con la maquina
-```bash
 rm -rf ~/.config/kitty
 cp -r ~/repos/dotfiles/kitty ~/.config/
-```
-instalar fuente personalizada o
-escoger una fuente de NerdFont o utilizar la recomendada por p10k
-### NerdFont 
-dirigirte a la pagina de [Nerd Font](https://www.nerdfonts.com/font-downloads) y descargar la fuente que gustes
-```bash
- mkdir -p ~/.local/share/fonts/{fuente-NerdFonts}
- unzip ~/Downloads/{fuente-NerdFonts}.zip -d ~/.local/share/fonts/{fuente-NerdFonts}/
- fc-cache -fv
-```
-### Meslo
-```bash
-mkdir -p ~/.local/share/fonts/Meslo
-cd ~/.local/share/fonts/Meslo
-
-wget https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
-wget https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
-wget https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
-wget https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
-
-cd ~
-fc-cache -fv
-```
-cambiar la fuente
-```bash
-kitten choose-fonts
-```
-cambiar el tema
-```bash
-kitten themes
+kitten themes   # opcional
 ```
 
-## ZSH
-cambiar la shell 
+---
+
+## 5.1 ZSH
+
+cambiar la shell
 ```bash
 chsh -s $(which zsh)
 ```
@@ -123,7 +116,10 @@ configurar p10k
 p10k configure
 ```
 
-## NVIM
+---
+
+## 5.2 NVIM
+
 Descargar e instalar [Rust](https://rust-lang.org/tools/install/)
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -136,7 +132,7 @@ Instalar nvim
 ```bash
 bob use stable
 ```
-> *Nota*: para actualizar nvim bob update stable
+> *Nota*: para actualizar nvim `bob update stable`
 
 anadir un enlace de nvim al share
 ```bash
@@ -171,38 +167,155 @@ cp -r ~/repos/dotfiles/nvim ~/.config/
 
 > **Nota:** La primera vez que ejecutes `nvim`, LazyVim instalará automáticamente todos los plugins. Esto puede tardar unos minutos.
 
-## SWAY
-instalar base
+---
+
+## 6. SWAY
+
 ```bash
-sudo apt install pipewire wireplumber pipewire-pulse pavucontrol brightnessctl network-manager fastfetch htop tree xdg-desktop-portal xdg-desktop-portal-wlr xdg-desktop-portal-gtk fonts-noto-color-emoji fonts-symbola fonts-font-awesome mako-notifier waybar wofi wlogout wdisplays
-autotiling  
+sudo apt install sway
 ```
-modificar el archivo /etc/network/interfaces
+
+Iniciar la pila de audio PipeWire:
+
 ```bash
-# This file describes the network interfaces available on your system
-# and how to activate them. For more information, see interfaces(5).
+sudo apt install pipewire wireplumber pipewire-pulse
+systemctl --user enable --now pipewire wireplumber pipewire-pulse
+```
 
+Red: editar `/etc/network/interfaces` (o instalar `network-manager`, ver [Opcionales](#13-opcionales)):
+
+```bash
 source /etc/network/interfaces.d/*
-
-# The loopback network interface
 auto lo
 iface lo inet loopback
+allow-hotplug enp4s0
+iface enp4s0 inet dhcp
+iface enp4s0 inet6 auto
 ```
-copiar las carpetas de dotfiles
-```bash
-cp -r ~/repos/dotfiles/{mako,sway,waybar,wlogout,wofi,fontconfig} ~/.config 
-```
-copiar la carpeta Pictures
-```bash
-cp -r ~/repos/dotfiles/Pictures ~/
-```
-crear carpeta la los screenshots
-```bash
-mkdir ~/Screenshot
-```
-## siguientes pasos
 
-- Instalar Nodejs
-- Instalar Opencode
-- Instalar Docker
-- Modificar grub
+---
+
+## 7. NOCTALIA
+
+Añadir el repositorio APT oficial (Debian Trixie):
+
+```bash
+wget https://pkg.noctalia.dev/deb/nickh-archive-keyring.deb
+sudo dpkg -i nickh-archive-keyring.deb
+sudo wget -O /etc/apt/sources.list.d/noctalia-trixie.sources https://pkg.noctalia.dev/deb/noctalia-trixie.sources
+sudo apt update
+sudo apt install noctalia
+```
+
+> Noctalia necesita en runtime: daemon PipeWire, un proveedor de Secret Service (`gnome-keyring`) y `upower`/`ddcutil` como opcionales para batería/brillo.
+
+---
+
+## 8. Dependencias de la config
+
+```bash
+sudo apt install xdg-desktop-portal xdg-desktop-portal-wlr \
+  wl-clipboard pavucontrol gnome-keyring autotiling
+```
+
+- `autotiling` — lo arranca `config.d/06-autostart`
+- `xdg-desktop-portal-wlr` — compartir pantalla / diálogos de archivos
+- `wl-clipboard` — portapapeles CLI de Wayland (`wl-copy`/`wl-paste`) para la terminal y scripts (Noctalia no lo instala ni lo sustituye)
+- `pavucontrol` — ajustes finos de audio (opcional)
+- `gnome-keyring` — Secret Service (clipboard encriptado y calendario de Noctalia)
+
+---
+
+## 9. Configuración (dotfiles)
+
+```bash
+rm -rf ~/.config/sway ~/.config/noctalia
+cp -r ~/repos/dotfiles/{sway,noctalia} ~/.config/
+```
+
+> Los cambios de la GUI de Noctalia (Settings) se guardan en `~/.local/state/noctalia/settings.toml`, que **gana** sobre tu `config.toml` si hay valores duplicados. No se edita a mano.
+
+---
+
+## 10. Estructura de archivos
+
+```
+~/.config/sway/
+├── config                        # entrada delgada (solo includes)
+├── config.d/
+│   ├── 00-variables              # $mod, $term, $font, paleta Gruvbox
+│   ├── 01-outputs                # eDP-1 1366x768, HDMI-A-1, modo pantallas
+│   ├── 02-input                  # touchpad, teclado (layout us), cursor
+│   ├── 03-theme                  # client colors, gaps, borders
+│   ├── 04-bindings               # atajos sway + IPC noctalia
+│   ├── 05-floating               # reglas de ventanas flotantes
+│   └── 06-autostart              # noctalia, autotiling, portals, gsettings
+├── user/                         # fragmentos extra (vacío, .gitkeep)
+└── walls/                        # fondos de pantalla
+~/.config/noctalia/
+└── config.toml                   # configuración del shell (TOML, v5)
+```
+
+> ⚠️ El repo `piratheon/sway-noctalia-dots` trae un `settings.json` de **Noctalia v4 (JSON)**. No se copia: en v5 la config es **TOML** en `~/.config/noctalia/`.
+
+---
+
+## 11. Atajos de teclado
+
+| Atajo | Acción |
+|---|---|
+| `$mod+Return` | terminal (kitty) |
+| `$mod+d` | launcher Noctalia |
+| `$mod+i` | control center |
+| `$mod+comma` | settings Noctalia |
+| `$mod+t` | lock screen |
+| `$mod+p` | modo pantallas [E]xterno / [D]esconectar |
+| `Print` / `$mod+Print` | screenshot región / pantalla completa |
+| `$mod+Shift+c` | recargar config |
+| `$mod+Shift+e` | cerrar sesión |
+| `$mod+Shift+q` | matar ventana |
+| `$mod+1…0` / `$mod+Shift+1…0` | workspaces / mover a workspace |
+| `$mod+$left/…/$right` | mover foco |
+| `$mod+Shift+$left/…` | mover ventana |
+| `$mod+b` / `$mod+v` / `$mod+s` / `$mod+w` / `$mod+e` | splith / splitv / stacking / tabbed / toggle split |
+| `$mod+f` | fullscreen |
+| `$mod+space` / `$mod+Shift+space` | focus mode_toggle / floating toggle |
+| `$mod+r` | modo resize |
+| `$mod+minus` / `$mod+Shift+minus` | scratchpad show / move |
+| `XF86AudioPlay/Next/Prev` | control de medios |
+| `XF86Audio*/XF86MonBrightness*` | volumen / brillo (noctalia) |
+
+---
+
+## 12. Verificación y primeros pasos
+
+```bash
+# Validar configs sin reiniciar
+sway --validate -c ~/.config/sway/config
+noctalia config validate
+```
+
+1. Recarga sway con `$mod+Shift+c` (o reinicia la sesión para que Noctalia lea `config.toml`).
+2. Configura la barra/widgets en Settings (`$mod+comma`).
+3. Ajusta la localización y el clima en Settings → Location.
+4. Si el cursor brilla demasiado: `seat * hide_cursor 2000` en `config.d/02-input`.
+
+---
+
+## 13. Opcionales
+
+- **NetworkManager** — si quieres que el widget de red de la barra funcione:
+  ```bash
+  sudo apt install network-manager
+  sudo systemctl enable --now NetworkManager
+  ```
+- **wdisplays** — gestor gráfico de monitores (`sudo apt install wdisplays`).
+- **swayfx** — el repo de referencia usa blur/redondeo (`config.d/swayfx`), pero requiere el fork `swayfx`; con sway stock se omite.
+
+---
+
+## 14. Referencia
+
+- Sway: `man 5 sway`
+- Noctalia: https://docs.noctalia.dev/v5/
+- IPC de Noctalia: `noctalia msg --help`

@@ -1,0 +1,32 @@
+# ==============================================================================
+# 00 - Variables globales & paleta (Gruvbox Material Dark)
+# ==============================================================================
+set $mod Mod4
+set $left h
+set $down j
+set $up k
+set $right l
+
+# Aplicaciones por defecto
+set $term kitty
+set $web-browser firefox
+
+# Fuente (títulos de ventanas y UI de sway)
+set $font pango:IosevkaTerm Nerd Font, Noto Color Emoji 10
+
+# Noctalia IPC
+set $ipc noctalia msg
+
+# Colores (Gruvbox + transparencias: E6=90%, 80=50%, CC=80%, B3=70%)
+set $bg0    #282828
+set $bg1    #3c3836
+set $fg     #ebdbb2
+set $green  #b8bb26
+set $blue   #83a598
+set $yellow #fabd2f
+set $gray   #928374
+set $red    #fb4934
+set $magenta #d3869b
+set $cyan   #8ec07c
+set $white  #ebdbb2
+set $orange #fe8019

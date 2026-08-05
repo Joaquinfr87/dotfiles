@@ -1,0 +1,105 @@
+# ==============================================================================
+# Noctalia v5 - config.toml
+# Referencia: https://docs.noctalia.dev/v5/
+# Validar con: noctalia config validate
+# ==============================================================================
+
+# --- Shell ---------------------------------------------------------------
+[shell]
+font_family = "sans-serif"
+polkit_agent = true            # agente de autenticación integrado
+password_style = "random"
+clipboard_enabled = true
+
+[shell.panel]
+transparency_mode = "solid"
+
+[shell.launcher]
+categories = true
+show_icons = true
+sort_by_usage = true
+
+# --- Fondo de pantalla -----------------------------------------------------
+[wallpaper]
+enabled = true
+fill_mode = "crop"
+directory = "~/.config/sway/walls"
+
+# --- Tema (Gruvbox, igual que la paleta de Sway) ---------------------------
+[theme]
+mode = "dark"
+source = "builtin"
+builtin = "Gruvbox"
+pure_black_dark = false
+
+# --- Barra -----------------------------------------------------------------
+[bar.main]
+position = "top"
+thickness = 34
+background_opacity = 0.95
+radius = 12
+margin_ends = 8
+margin_edge = 8
+padding = 14
+widget_spacing = 6
+shadow = true
+auto_hide = false
+reserve_space = true
+capsule = false
+
+start  = ["launcher", "workspaces"]
+center = ["clock"]
+end    = ["media", "tray", "notifications", "clipboard", "network", "volume", "brightness", "battery", "control-center", "session"]
+
+# --- Dock (desactivado, nunca lo usaste) -----------------------------------
+[dock]
+enabled = false
+
+# --- Notificaciones ---------------------------------------------------------
+[notification]
+enable_daemon = true
+show_app_name = true
+show_actions = true
+background_opacity = 0.97
+
+# --- OSD --------------------------------------------------------------------
+[osd]
+position = "top_right"
+background_opacity = 0.97
+
+# --- Lock screen & idle ------------------------------------------------------
+[lockscreen]
+enabled = true
+blur_intensity = 0.5
+
+[idle.behavior.lock]
+timeout = 600
+action = "lock"
+enabled = true
+
+[idle.behavior.screen-off]
+timeout = 660
+action = "screen_off"
+enabled = true
+
+# --- Audio -------------------------------------------------------------------
+[audio]
+enable_overdrive = false
+enable_sounds = false
+
+# --- Brillo ------------------------------------------------------------------
+[brightness]
+enable_ddcutil = false
+
+# --- Localización & clima -----------------------------------------------------
+[location]
+auto_locate = true
+
+[weather]
+enabled = true
+unit = "celsius"
+effects = true
+
+# --- Sistema ------------------------------------------------------------------
+[system.monitor]
+enabled = true

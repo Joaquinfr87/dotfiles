@@ -1,0 +1,21 @@
+# ==============================================================================
+# 03 - Apariencia y comportamiento de ventanas (gaps & borders)
+# ==============================================================================
+font $font
+
+# Focused window (active)
+client.focused $cyan $bg1 $fg $yellow $cyan
+# Unfocused window (inactive)
+client.unfocused $bg0 $bg1 $gray $bg0 $bg1
+# Urgent window (e.g., alerts)
+client.urgent $yellow $bg1 $fg $yellow $yellow
+
+# Borders and Gaps
+gaps inner 4
+gaps outer 4
+smart_borders on
+default_border pixel 2
+default_floating_border pixel 2
+
+titlebar_padding 8 2
+titlebar_border_thickness 2

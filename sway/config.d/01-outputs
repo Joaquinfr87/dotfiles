@@ -1,0 +1,27 @@
+# ==============================================================================
+# 01 - Outputs (pantallas)
+# ==============================================================================
+set $laptop eDP-1
+set $externo HDMI-A-1
+set $res_laptop 1366x768
+
+output $laptop res $res_laptop@60Hz
+output eDP-1 res 1366x768
+
+# Modo para cambiar entre pantallas
+set $mode_display "Pantallas: [E]xterna, [D]esconectar"
+mode $mode_display {
+    # 'e' para Externo (desactiva el portátil)
+    bindsym e exec swaymsg output $externo enable pos 0 0, output $laptop disable, mode "default"
+
+    # 'd' para volver solo al portátil (ahorra energía si el externo sigue enchufado)
+    bindsym d exec swaymsg output $externo disable, output $laptop enable, mode "default"
+
+    # Teclas para cancelar y volver al modo normal
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+    bindsym $mod+p mode "default"
+}
+
+# Atajo para invocar el modo de pantallas
+bindsym $mod+p mode $mode_display

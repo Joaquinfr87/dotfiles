@@ -1,0 +1,24 @@
+# ==============================================================================
+# 06 - Autoarranque (autostart)
+# ==============================================================================
+# Noctalia shell (barra, launcher, notificaciones, fondo, lock, OSD...)
+exec noctalia
+
+# Sway Automatic Tiling
+exec_always autotiling
+
+# Gestión de energía de la sesión Wayland
+exec --no-startup-id dbus-update-activation-environment --systemd XDG_CURRENT_DESKTOP=sway
+exec --no-startup-id /usr/lib/xdg-desktop-portal-wlr &
+exec --no-startup-id /usr/lib/xdg-desktop-portal -r
+
+# Tema oscuro GTK
+set $gnome-schema org.gnome.desktop.interface
+exec_always {
+    gsettings set $gnome-schema gtk-theme 'Adwaita-dark'
+    gsettings set $gnome-schema color-scheme 'prefer-dark'
+}
+
+# Aplicaciones iniciales por workspace (ajusta a tu gusto)
+# exec swaymsg "workspace 1; exec firefox"
+# exec swaymsg "workspace 2; exec kitty"

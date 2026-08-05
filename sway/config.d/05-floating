@@ -1,0 +1,21 @@
+# ==============================================================================
+# 05 - Reglas para ventanas flotantes
+# ==============================================================================
+for_window [app_id="nmtui-float"] floating enable, resize set 600 500
+for_window [app_id="cal-float"] floating enable, resize set 400 300
+for_window [app_id="pavucontrol"] floating enable, resize set 700 500
+for_window [app_id="org.pulseaudio.pavucontrol"] floating enable, move position center, resize set 600 400
+
+# Diálogos y roles comunes como flotantes
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="bubble"] floating enable
+for_window [window_role="task_dialog"] floating enable
+for_window [window_role="Preferences"] floating enable
+for_window [window_role="About"] floating enable
+for_window [window_type="dialog"] floating enable
+for_window [window_type="menu"] floating enable
+for_window [title="Picture in picture"] floating enable, sticky enable
+
+# Límites de tamaño de ventanas flotantes
+floating_minimum_size 400 x 300
+floating_maximum_size 1200 x 600

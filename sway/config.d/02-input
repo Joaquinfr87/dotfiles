@@ -1,0 +1,16 @@
+# ==============================================================================
+# 02 - Input (teclado, touchpad, cursor)
+# ==============================================================================
+input type:keyboard {
+    repeat_delay 250
+    repeat_rate 50
+    xkb_layout "us"
+}
+
+input type:touchpad {
+    natural_scroll enabled
+    tap enabled
+}
+
+# Ocultar el cursor tras 2 segundos de inactividad
+seat * hide_cursor 2000

@@ -10,7 +10,7 @@
 vim.api.nvim_create_autocmd("User", {
   pattern = "ObsidianNoteEnter",
   callback = function(ev)
-    local note = ev.data.note
+    local note = ev.data and ev.data.note
 
     -- Conceal level 2: oculta el syntax markdown y muestra la UI bonita
     vim.opt_local.conceallevel = 2

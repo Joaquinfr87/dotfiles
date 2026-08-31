@@ -399,6 +399,19 @@ noctalia config validate
   sudo systemctl enable --now NetworkManager
   ```
 
+  > **Nota:** Asegúrese de que `/etc/network/interfaces` no tenga configuración manual de la interfaz WiFi (como `allow-hotplug` o `iface ... inet dhcp`), ya que esto puede bloquear NetworkManager. El archivo debería contener solo:
+  > ```
+  > source /etc/network/interfaces.d/*
+  > auto lo
+  > iface lo inet loopback
+  > ```
+
+  Añadir `nm-applet` al autostart de Sway (en `config.d/06-autostart`):
+
+  ```
+  exec nm-applet
+  ```
+
 - **wdisplays** — gestor gráfico de monitores (`sudo apt install wdisplays`).
 - **swayfx** — el repo de referencia usa blur/redondeo (`config.d/swayfx`), pero requiere el fork `swayfx`; con sway stock se omite.
 

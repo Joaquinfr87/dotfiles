@@ -12,6 +12,9 @@ exec --no-startup-id dbus-update-activation-environment --systemd XDG_CURRENT_DE
 exec --no-startup-id /usr/lib/xdg-desktop-portal-wlr &
 exec --no-startup-id /usr/lib/xdg-desktop-portal -r
 
+# NetworkManager (applet de red en la bandeja)
+exec nm-applet
+
 # Tema oscuro GTK
 set $gnome-schema org.gnome.desktop.interface
 exec_always {

@@ -25,6 +25,55 @@ exit # sale de root
 exit # sale al tty
 ```
 
+### Instalacion de Zen y Firefox
+
+```bash
+sudo apt install firefox-esr
+```
+
+```bash
+wget https://github.com/zen-browser/desktop/releases/latest/download/zen.linux-x86_64.tar.xz
+
+tar -xf zen.linux-x86_64.tar.xz
+
+# Crear las estructuras de directorios locales si no existen
+mkdir -p ~/.local/share/zen
+mkdir -p ~/.local/bin
+mkdir -p ~/.local/share/icons/hicolor/128x128/apps
+mkdir -p ~/.local/share/applications
+
+cd zen/
+# Mover todo el contenido actual al directorio base de la aplicación
+mv * ~/.local/share/zen/
+```
+
+```bash
+# Enlazar el binario a tu PATH local
+ln -s ~/.local/share/zen/zen ~/.local/bin/zen
+
+# Enlazar el ícono de 128px al directorio de íconos del sistema
+ln -s ~/.local/share/zen/browser/chrome/icons/default/default128.png ~/.local/share/icons/hicolor/128x128/apps/zen.png
+
+# Opcional: Refrescar la caché de íconos para que tu entorno gráfico lo
+# detecte de inmediato
+gtk-update-icon-cache ~/.local/share/icons/hicolor
+```
+
+creado el acceso directo en `~/.local/share/applications/zen.desktop`
+
+```txt
+[Desktop Entry]
+Name=Zen Browser
+Comment=Navegador web rápido y privado
+Exec=zen %u
+Icon=zen
+Type=Application
+Categories=Network;WebBrowser;
+Terminal=false
+StartupNotify=true
+MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/vnd.mozilla.xul+xml;application/rss+xml;application/rdf+xml;image/gif;image/jpeg;image/png;x-scheme-handler/http;x-scheme-handler/https;
+```
+
 ---
 
 ## 2. BASE
@@ -96,24 +145,47 @@ kitten themes   # opcional
 ## 5.1 ZSH
 
 cambiar la shell
+
 ```bash
 chsh -s $(which zsh)
 ```
+
+> **Importante:** Cierra sesión y vuelve a entrar para que el cambio de shell surta efecto.
 instalar [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh/)
+
 ```bash
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 ```
+
+instalar plugins de zsh
+
+```bash
+sudo apt install zsh-autosuggestions zsh-syntax-highlighting
+```
+
 instalar [p10k](https://github.com/romkatv/powerlevel10k)
+
 ```bash
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
 ```
+
 copiar la config
+
 ```bash
+rm -f ~/.zshrc ~/.p10k.zsh
 cp ~/repos/dotfiles/{.zprofile,.zshrc} ~/
 ```
+
 configurar p10k
+
 ```bash
 p10k configure
+```
+
+seleccionar fuente en kitty
+
+```bash
+kitten choose-fonts
 ```
 
 ---
@@ -121,25 +193,33 @@ p10k configure
 ## 5.2 NVIM
 
 Descargar e instalar [Rust](https://rust-lang.org/tools/install/)
+
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
+
 Instalar por medio del script [Bob](https://github.com/mordechaihadad/bob)
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/MordechaiHadad/bob/master/scripts/install.sh | bash
 ```
+
 Instalar nvim
+
 ```bash
 bob use stable
 ```
+
 > *Nota*: para actualizar nvim `bob update stable`
 
 anadir un enlace de nvim al share
+
 ```bash
 sudo cp -as ~/.local/share/bob/{nvim-version}/share/* ~/.local/share/
 ```
 
 anadir un enlace al root
+
 ```bash
 sudo ln -s ~/.local/share/bob/nvim-bin/nvim /usr/bin/
 ```
@@ -150,6 +230,7 @@ instalar tree-sitter-cli
 ```bash
 cargo install tree-sitter-cli
 ```
+
 Limpiar configuración previa de Neovim
 
 ```bash
@@ -263,7 +344,7 @@ cp -r ~/repos/dotfiles/{sway,noctalia} ~/.config/
 ## 11. Atajos de teclado
 
 | Atajo | Acción |
-|---|---|
+| --- | --- |
 | `$mod+Return` | terminal (kitty) |
 | `$mod+d` | launcher Noctalia |
 | `$mod+i` | control center |
@@ -305,10 +386,12 @@ noctalia config validate
 ## 13. Opcionales
 
 - **NetworkManager** — si quieres que el widget de red de la barra funcione:
+
   ```bash
   sudo apt install network-manager
   sudo systemctl enable --now NetworkManager
   ```
+
 - **wdisplays** — gestor gráfico de monitores (`sudo apt install wdisplays`).
 - **swayfx** — el repo de referencia usa blur/redondeo (`config.d/swayfx`), pero requiere el fork `swayfx`; con sway stock se omite.
 
@@ -317,5 +400,5 @@ noctalia config validate
 ## 14. Referencia
 
 - Sway: `man 5 sway`
-- Noctalia: https://docs.noctalia.dev/v5/
+- Noctalia: <https://docs.noctalia.dev/v5/>
 - IPC de Noctalia: `noctalia msg --help`

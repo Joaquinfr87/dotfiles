@@ -1,14 +1,18 @@
-# Guía de Freebuff — Skills y MCPs
+# Guía de Agentes AI — Freebuff y OpenCode
 
-Configuración del agente AI Freebuff para proyectos.
+Configuración de agentes AI para proyectos: Freebuff y OpenCode.
 
-> **Repo de referencia:** [CodebuffAI/freebuff](https://github.com/CodebuffAI/freebuff)
+> **Repos:**
+> - Freebuff: [CodebuffAI/freebuff](https://github.com/CodebuffAI/freebuff)
+> - OpenCode: [opencode-ai/opencode](https://github.com/opencode-ai/opencode)
 
 ---
 
 ## 1. Estructura
 
-Cada proyecto tiene su propia configuración de Freebuff en `.agents/`:
+### Freebuff
+
+Cada proyecto tiene su configuración en `.agents/`:
 
 ```
 ~/tu-proyecto/
@@ -22,11 +26,35 @@ Cada proyecto tiene su propia configuración de Freebuff en `.agents/`:
     └── mcp.json             # servidores MCP configurados
 ```
 
+### OpenCode
+
+OpenCode busca skills en múltiples ubicaciones:
+
+```
+# Proyecto (prioridad alta)
+~/tu-proyecto/
+├── .opencode/
+│   └── skills/<name>/SKILL.md
+├── .claude/
+│   └── skills/<name>/SKILL.md
+└── .agents/
+    └── skills/<name>/SKILL.md
+
+# Global (todas las sesiones)
+~/.config/opencode/
+├── opencode.jsonc           # configuración global
+└── skills/<name>/SKILL.md
+~/.claude/skills/<name>/SKILL.md
+~/.agents/skills/<name>/SKILL.md
+```
+
+> **Ventaja:** OpenCode reutiliza los mismos `.agents/skills/` que Freebuff. Instalar skills una vez funciona para ambos.
+
 ---
 
 ## 2. Skills
 
-Los skills son instrucciones reutilizables que Freebuff carga para tareas específicas.
+Los skills son instrucciones reutilizables que los agentes cargan para tareas específicas.
 
 ### Instalar un skill (comunidad)
 
@@ -40,6 +68,26 @@ npx skills add <owner/repo> --list
 # Instalar un skill específico
 npx skills add <owner/repo> --skill <nombre> --yes
 ```
+
+### Crear un skill personalizado
+
+Crear `SKILL.md` con frontmatter YAML:
+
+```markdown
+---
+name: mi-skill
+description: Descripción clara del skill
+license: MIT
+---
+
+## Qué hago
+- Instrucciones específicas...
+
+## Cuándo usarme
+- Cuándo activar este skill...
+```
+
+**Reglas de nombre:** minúsculas, alfanumérico, guiones simples (`^[a-z0-9]+(-[a-z0-9]+)*$`), 1-64 caracteres.
 
 ### Skills instalados en este proyecto
 
@@ -59,21 +107,13 @@ npx skills add <owner/repo> --skill <nombre> --yes
 | `web-design-guidelines` | Guías de diseño web |
 | `writing-guidelines` | Guías de escritura |
 
-### Listar skills instalados
-
-```bash
-npx skills add <owner/repo> --list
-```
-
 ---
 
 ## 3. MCP Servers (Model Context Protocol)
 
-Los MCPs permiten a Freebuff conectarse a servicios externos.
+Los MCPs permiten a los agentes conectarse a servicios externos.
 
-### Configuración
-
-El archivo `.agents/mcp.json` define los servidores MCP:
+### Freebuff — `.agents/mcp.json`
 
 ```json
 {
@@ -89,30 +129,31 @@ El archivo `.agents/mcp.json` define los servidores MCP:
 }
 ```
 
+### OpenCode — `~/.config/opencode/opencode.jsonc`
+
+```jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "Authorization": "ctx7sk-TU_API_KEY"
+      },
+      "enabled": true
+    }
+  }
+}
+```
+
+> **Diferencia:** Freebuff usa MCPs vía `npx` (local), OpenCode soporta MCPs remotos directamente.
+
 ### MCPs disponibles
 
 | MCP | Descripción | Variable de entorno |
 |---|---|---|
 | `context7` | Documentación contextual de librerías | `CONTEXT7_API_KEY` |
-
-### Agregar un nuevo MCP
-
-Editar `.agents/mcp.json` y agregar:
-
-```json
-{
-  "mcpServers": {
-    "context7": { ... },
-    "nuevo-mcp": {
-      "command": "npx",
-      "args": ["-y", "paquete-del-mcp"],
-      "env": {
-        "API_KEY": "$NUEVA_API_KEY"
-      }
-    }
-  }
-}
-```
 
 ---
 
@@ -128,7 +169,7 @@ cat .gitignore | grep -v ".agents"
 
 # Agregar y commitear
 git add .agents/
-git commit -m "feat: agregar skills y MCPs de Freebuff"
+git commit -m "feat: agregar skills y MCPs"
 git push
 ```
 
@@ -150,9 +191,9 @@ nano .gitignore
 
 ---
 
-## 5. Configuración global de Freebuff
+## 5. Configuración global
 
-Freebuff guarda configuración global en `~/.config/manicode/`:
+### Freebuff — `~/.config/manicode/`
 
 | Archivo | Contenido |
 |---|---|
@@ -161,12 +202,28 @@ Freebuff guarda configuración global en `~/.config/manicode/`:
 | `freebuff-metadata.json` | Metadata de la instalación |
 | `projects/` | Historial de chats por proyecto |
 
-> **Nota:** `~/.config/manicode/settings.json` se sincroniza automáticamente con tu cuenta. No es necesario copiarlo manualmente.
+### OpenCode — `~/.config/opencode/`
+
+| Archivo | Contenido |
+|---|---|
+| `opencode.jsonc` | Configuración global (MCPs, permisos, modelo) |
+| `skills/` | Skills globales (disponibles en todos los proyectos) |
+
+> **Freebuff:** `settings.json` se sincroniza automáticamente con tu cuenta.
+> **OpenCode:** `opencode.jsonc` se sincroniza vía git (agregar a dotfiles).
 
 ---
 
 ## 6. Referencia
 
-- Freebuff: https://freebuff.com
-- Codebuff Docs: https://www.codebuff.com/docs
+### Freebuff
+- Sitio: https://freebuff.com
+- Docs: https://www.codebuff.com/docs
 - Skills CLI: `npx skills --help`
+
+### OpenCode
+- Sitio: https://opencode.ai
+- Docs: https://opencode.ai/docs
+- Skills: https://opencode.ai/docs/skills/
+- Agents: https://opencode.ai/docs/agents/
+- Config: `~/.config/opencode/opencode.jsonc`

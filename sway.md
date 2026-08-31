@@ -314,6 +314,13 @@ rm -rf ~/.config/sway ~/.config/noctalia
 cp -r ~/repos/dotfiles/{sway,noctalia} ~/.config/
 ```
 
+Copiar wallpapers:
+
+```bash
+mkdir -p ~/Pictures
+cp -r ~/repos/dotfiles/Pictures/* ~/Pictures/
+```
+
 > Los cambios de la GUI de Noctalia (Settings) se guardan en `~/.local/state/noctalia/settings.toml`, que **gana** sobre tu `config.toml` si hay valores duplicados. No se edita a mano.
 
 ---

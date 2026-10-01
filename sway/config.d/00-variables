@@ -9,7 +9,7 @@ set $right l
 
 # Aplicaciones por defecto
 set $term kitty
-set $web-browser firefox
+set $web-browser zen
 
 # Fuente (títulos de ventanas y UI de sway)
 set $font pango:IosevkaTerm Nerd Font, Noto Color Emoji 10

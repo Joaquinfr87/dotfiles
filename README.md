@@ -1,280 +1,237 @@
-# DESACTUALIZADO
+# Guía de instalación SWAY + NOCTALIA — DEBIAN 13 (Trixie)
 
-Esta guia no es la actualizada, utilizar la siguiente -> [sway](sway.md)
-- [ ] cambiar el readme.md
-# Guía de Instalación de Dotfiles SWAY 
+Entorno de escritorio Wayland basado en:
 
-Guia para configurar un entorno de desarrollo completo en Debian usando mis dotfiles. Sigue los pasos en orden.
+- [Sway](https://swaywm.org) — compositor / tiling WM
+- [Noctalia](https://noctalia.dev) — shell (barra, launcher, notificaciones, lock screen, OSD, fondo, clipboard)
+- Repo de referencia: [piratheon/sway-noctalia-dots](https://github.com/piratheon/sway-noctalia-dots)
+- Paleta: **Gruvbox Material Dark**
 
-## Requisitos Previos
-
-- Una instalación limpia de Debian
-- Acceso a internet
-
+> **Noctalia v5 reemplaza**: waybar, mako, wofi, swaybg, swaylock, swayidle, wlogout, grimshot, brightnessctl y los bindings de wpctl. Todo se controla con `noctalia msg`.
 
 ---
 
-## Configuración Inicial del Sistema
-### Configurar permisos de sudo
+## 1. SUDO
 
 ```bash
 su -
-# Ingresar contraseña de root
+# ingresar contraseña de root
 ```
-Instalar sudo
+
 ```bash
 apt install sudo
+sudo usermod -aG sudo {nombre_usuario}
+exit # sale de root
+exit # sale al tty
 ```
 
-anadir el usuario al grupo sudo
-
-```bash
-sudo usermod -aG sudo joaquin
-```
-
-Cerrar sesion y volver a iniciar para que los cambios esten 
-
-```bash
-exit
-```
-## Instalar sway
-```bash 
-sudo apt install sway
-```
-
-### Instalar y Configurar Firefox
+### Instalacion de Zen y Firefox
 
 ```bash
 sudo apt install firefox-esr
 ```
 
-Anadir cuenta de firefox, gmail y de github.
+```bash
+wget https://github.com/zen-browser/desktop/releases/latest/download/zen.linux-x86_64.tar.xz
 
-### Actualizar el sistema
+tar -xf zen.linux-x86_64.tar.xz
 
-```bash
-sudo apt update
-sudo apt upgrade -y
-```
-### Instalar grim shot para tomar captura de pantalla de sway
-```bash
-sudo apt install grimshot
-```
-### Creamos una carpeta de recortes
+# Crear las estructuras de directorios locales si no existen
+mkdir -p ~/.local/share/zen
+mkdir -p ~/.local/bin
+mkdir -p ~/.local/share/icons/hicolor/128x128/apps
+mkdir -p ~/.local/share/applications
 
-```bash
-mkdir ~/screenshot
-```
-### Instalar wofi
-```bash 
-sudo apt install wofi
-```
-```bash
-sudo apt update
-sudo apt install pipewire wireplumber pipewire-pulse pavucontrol brightnessctl network-manager 
+cd zen/
+# Mover todo el contenido actual al directorio base de la aplicación
+mv * ~/.local/share/zen/
 ```
 
-modificar el archivo /etc/network/interfaces
 ```bash
-# This file describes the network interfaces available on your system
-# and how to activate them. For more information, see interfaces(5).
+# Enlazar el binario a tu PATH local
+ln -s ~/.local/share/zen/zen ~/.local/bin/zen
 
-source /etc/network/interfaces.d/*
+# Enlazar el ícono de 128px al directorio de íconos del sistema
+ln -s ~/.local/share/zen/browser/chrome/icons/default/default128.png ~/.local/share/icons/hicolor/128x128/apps/zen.png
 
-# The loopback network interface
-auto lo
-iface lo inet loopback
+# Opcional: Refrescar la caché de íconos para que tu entorno gráfico lo
+# detecte de inmediato
+gtk-update-icon-cache ~/.local/share/icons/hicolor
 ```
 
-iniciar los servicios
-```bash
-sudo systemctl enable --now NetworkManager
-systemctl --user enable --now pipewire wireplumber pipewire-pulse
-```
-copiar los archivos sway, wofi y waybar
-```bash
-cp -r ~/repos/dotfiles/{sway,wofi, waybar} ~/.config/
+creado el acceso directo en `~/.local/share/applications/zen.desktop`
+
+```txt
+[Desktop Entry]
+Name=Zen Browser
+Comment=Navegador web rápido y privado
+Exec=zen %u
+Icon=zen
+Type=Application
+Categories=Network;WebBrowser;
+Terminal=false
+StartupNotify=true
+MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/vnd.mozilla.xul+xml;application/rss+xml;application/rdf+xml;image/gif;image/jpeg;image/png;x-scheme-handler/http;x-scheme-handler/https;
 ```
 
-### Instalar Git y configurar SSH
+---
+
+## 2. BASE
 
 ```bash
-sudo apt install git
+sudo apt update && sudo apt upgrade -y
+sudo apt install git curl unzip wl-clipboard zsh \
+  lazygit build-essential fzf ripgrep fd-find \
+  clang libclang-dev htop tree fastfetch
 ```
-Agrega la configuracion Global
-```bash
-git config --global user.name "Joaquin Alessandro Felipez Rojas"
-git config --global user.email "joaquinfelipezrojas@gmail.com"
-```
-Genera tu clave SSH:
+
+---
+
+## 3. GIT
 
 ```bash
-ssh-keygen -t rsa -b 4096 -C "joaquinfelipezrojas@gmail.com"
-```
-Dejar passphrase vacía cuando pregunte.
-
-Iniciar el agente
-```bash
+git config --global user.name "Tu nombre"
+git config --global user.email "tu email.com"
+ssh-keygen -t rsa -b 4096 -C "tu email"   # passphrase vacía
 eval "$(ssh-agent -s)"
-```
-Agrega la clave al agente SSH:
-
-```bash
 ssh-add ~/.ssh/id_rsa
-cat ~/.ssh/id_rsa.pub
+cat ~/.ssh/id_rsa.pub | wl-copy            # agregar a GitHub → Settings → SSH keys
 ```
 
-> Copia el contenido mostrado y añádelo a tu cuenta de GitHub en: Settings → SSH and GPG keys → New SSH key.
-
-### Clonar el repositorio
+Clonar los dotfiles:
 
 ```bash
-mkdir ~/repos
+mkdir -p ~/repos
 cd ~/repos
-git clone git@github.com:JoaquinFr87/dotfiles.git
+git clone git@github.com:Joaquinfr87/dotfiles.git
+cd ~
 ```
-
-> Cuando pregunte "Are you sure you want to continue connecting?", escribe: `yes`
 
 ---
 
-## Instalar Utilidades Básicas
+## 4. Fuentes
+
+Instalar **Iosevka Nerd Font** (la usa la variable `$font` de sway):
 
 ```bash
-sudo apt install tree htop fastfetch build-essential xdg-desktop-portal xdg-desktop-portal-wlr xdg-desktop-portal-gtk
-sudo apt install fonts-noto-color-emoji fonts-symbola fonts-font-awesome
+mkdir -p ~/.local/share/fonts/Iosevka
+unzip ~/Downloads/{Iosevka-Term-Nerd-Font}.zip -d ~/.local/share/fonts/Iosevka/
+fc-cache -fv
 ```
+
+Instalar la fuente de emojis (fallback de `$font`):
+
+```bash
+sudo apt install fonts-noto-color-emoji
+```
+
 ---
 
-### Configurar Wallpaper
+## 5. KITTY
 
-```bash
-cp -r ~/repos/dotfiles/Pictures ~/
-```
-
-## Instalar Kitty Terminal
-
-### Instalación
-Instala herramientas básicas:
-```bash
-sudo apt install curl -y
-```
-Instala Kitty usando el script oficial para obtener la última versión. Consulta la guía oficial: https://sw.kovidgoyal.net/kitty/binary/
 ```bash
 curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
-```
-### Crear un enlace de kitty
-Crear un enlace de kitty para que sea reconocido por el path del sistema. Crear symlink para kitty y kitten (necesario para herramientas integradas)
-```bash
-sudo ln -s ~/.local/kitty.app/bin/kitty ~/.local/bin/kitty
-sudo ln -s ~/.local/kitty.app/bin/kitten ~/.local/bin/kitten
-```
-Enlace recursivo
-```bash
-sudo cp -as ~/.local/kitty.app/share/* ~/.local/share/
-```
-> **Nota**: comando sed puede modificar archivos desde solo terminal
-
-### Enlazar configuración
-
-```bash
-
+mkdir -p ~/.local/{bin,share}
+ln -s ~/.local/kitty.app/bin/kitty ~/.local/bin/kitty
+ln -s ~/.local/kitty.app/bin/kitten ~/.local/bin/kitten
+cp -as ~/.local/kitty.app/share/* ~/.local/share/
 rm -rf ~/.config/kitty
-cp -r ~/repos/dotfiles/kitty/.config/kitty ~/.config/
+cp -r ~/repos/dotfiles/kitty ~/.config/
+kitten themes   # opcional
 ```
+
 ---
 
-## Instalar ZSH + Oh-My-Zsh + Powerlevel10k
+## 5.1 ZSH
 
-### Instalar ZSH
+cambiar la shell
 
 ```bash
-sudo apt install zsh
 chsh -s $(which zsh)
 ```
-> **Importante:** Cierra sesión y vuelve a entrar para que los cambios surtan efecto.
 
-### Instalar Oh-My-Zsh
+> **Importante:** Cierra sesión y vuelve a entrar para que el cambio de shell surta efecto.
+instalar [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh/)
 
-Usa el script oficial de instalación (más información: https://github.com/ohmyzsh/ohmyzsh/wiki):
 ```bash
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 ```
 
-### Instalar fuentes Meslo Nerd Font
-```bash
-# Crear el directorio de fuentes de usuario si no existe
-mkdir -p ~/.local/share/fonts/Meslo
-cd ~/.local/share/fonts/Meslo
-
-# Descargar las 4 variantes de la fuente optimizada
-wget https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
-wget https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
-wget https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
-wget https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
-
-# Actualizar la caché de fuentes del sistema
-fc-cache -fv
-```
-### Instalar plugins de ZSH
+instalar plugins de zsh
 
 ```bash
 sudo apt install zsh-autosuggestions zsh-syntax-highlighting
 ```
 
-### Instalar Powerlevel10k
+instalar [p10k](https://github.com/romkatv/powerlevel10k)
 
 ```bash
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
 ```
 
-### Enlazar configuración de ZSH
+copiar la config
 
 ```bash
-rm -f ~/.zshrc 
-zsh
+rm -f ~/.zshrc ~/.p10k.zsh
+cp ~/repos/dotfiles/{.zprofile,.zshrc} ~/
 ```
 
-### Seleccionar fuente en Kitty
+configurar p10k
+
+```bash
+p10k configure
+```
+
+seleccionar fuente en kitty
 
 ```bash
 kitten choose-fonts
 ```
 
-Sigue las instrucciones en pantalla para seleccionar una fuente Meslo.
-
 ---
 
-## Instalar Neovim + LazyVim
+## 5.2 NVIM
 
-### Descargar e instalar Neovim
+Descargar e instalar [Rust](https://rust-lang.org/tools/install/)
 
-Descargar e instalar Rust
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
-Instalar Bob por medio del script
+
+Instalar por medio del script [Bob](https://github.com/mordechaihadad/bob)
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/MordechaiHadad/bob/master/scripts/install.sh | bash
 ```
+
 Instalar nvim
+
 ```bash
 bob use stable
 ```
-> *Nota*: para actualizar nvim bob update stable
+
+> *Nota*: para actualizar nvim `bob update stable`
 
 anadir un enlace de nvim al share
-```bash
-sudo cp -as ~/.local/share/bob/{nvim-version}/share/* /usr/share/
-```
-
-### Instalar dependencias
 
 ```bash
-sudo apt install lazygit tree-sitter-cli build-essential fzf ripgrep fd-find
+sudo cp -as ~/.local/share/bob/{nvim-version}/share/* ~/.local/share/
 ```
 
-### Limpiar configuración previa de Neovim
+anadir un enlace al root
+
+```bash
+sudo ln -s ~/.local/share/bob/nvim-bin/nvim /usr/bin/
+```
+
+instalar tree-sitter-cli
+> Se puede instalar por apt install pero la version es antigua para nvim-tree-sitter
+
+```bash
+cargo install tree-sitter-cli
+```
+
+Limpiar configuración previa de Neovim
 
 ```bash
 rm -rf ~/.config/nvim
@@ -283,162 +240,227 @@ rm -rf ~/.local/state/nvim
 rm -rf ~/.cache/nvim
 ```
 
-### Enlazar configuración de Neovim
+Enlazar configuración de Neovim
 
 ```bash
-cp -r ~/repos/dotfile/nvim/.config/nvim ~/.config/
+cp -r ~/repos/dotfiles/nvim ~/.config/
 ```
 
 > **Nota:** La primera vez que ejecutes `nvim`, LazyVim instalará automáticamente todos los plugins. Esto puede tardar unos minutos.
 
-## Instalar Node.js
+---
+
+## 6. SWAY
+
 ```bash
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
-```
-```bash
-export NVM_DIR="$HOME/.config/nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-```
-```bash
-nvm install 24
-```
-Instalar pnpm
-```bash
-corepack enable pnpm
-```
-Verificar
-```bash
-node -v 
-npm -v
-pnpm -v
-```
-## Instalar opencode
-### Instalar mediante script
-Utilizar el script oficial de opencode (mas informacion: https://opencode.ai/docs)
-```bash
-curl -fsSL https://opencode.ai/install | bash
-```
-### Enlazar configuracion opencode
-```bash
-cp -r ~/repos/dotfiles/opencode/.config/opencode ~/.config/
-rm -f ~/.config/opencode
-cd ~/repos/dotfiles
-stow -t ~ opencode
+sudo apt install sway
 ```
 
-## Instalar Docker Engine
-Desinstalar paquetes conflictivos
+Iniciar la pila de audio PipeWire:
+
 ```bash
-sudo apt remove $(dpkg --get-selections docker.io docker-compose docker-doc podman-docker containerd runc | cut -f1)
+sudo apt install pipewire wireplumber pipewire-pulse
+systemctl --user enable --now pipewire wireplumber pipewire-pulse
 ```
-Anadir la oficial GPG key
+
+Red: editar `/etc/network/interfaces` (o instalar `network-manager`, ver [Opcionales](#13-opcionales)):
+
 ```bash
+source /etc/network/interfaces.d/*
+auto lo
+iface lo inet loopback
+allow-hotplug enp4s0
+iface enp4s0 inet dhcp
+iface enp4s0 inet6 auto
+```
+
+Instalar **kanshi** (cambio automático de pantallas, lo arranca `config.d/06-autostart`):
+
+```bash
+sudo apt install kanshi
+```
+
+> Perfiles en `~/.config/kanshi/config`: **laptop** (eDP-1 1366x768), **presentacion**
+> (laptop + HDMI-A-1 1920x1080 a la derecha, moviendo el workspace 1 al HDMI) y
+> **externo** (solo HDMI, portátil apagada). Sway no necesita `output` extra:
+> `config.d/01-outputs` solo fija la base de la laptop y delega el resto en kanshi.
+
+---
+
+## 7. NOCTALIA
+
+Añadir el repositorio APT oficial (Debian Trixie):
+
+```bash
+wget https://pkg.noctalia.dev/deb/nickh-archive-keyring.deb
+sudo dpkg -i nickh-archive-keyring.deb
+sudo wget -O /etc/apt/sources.list.d/noctalia-trixie.sources https://pkg.noctalia.dev/deb/noctalia-trixie.sources
 sudo apt update
-sudo apt install ca-certificates curl
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
-sudo chmod a+r /etc/apt/keyrings/docker.asc
+sudo apt install noctalia
 ```
-Anadir el repositorio a las fuentes de apt
-```bash
-sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
-Types: deb
-URIs: https://download.docker.com/linux/debian
-Suites: $(. /etc/os-release && echo "$VERSION_CODENAME")
-Components: stable
-Architectures: $(dpkg --print-architecture)
-Signed-By: /etc/apt/keyrings/docker.asc
-EOF
 
-sudo apt update
-```
-Instalar los paquetes docker
-```bash
-sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-```
-Verificar Instalacion
-```bash
- sudo docker run hello-world
-```
-## Modificar GRUB
-Modificar el tiempo de carga de grub, para cargar el sistema operativo
->*Nota*: cambiar de 0 por si tienes 2 sistemas
-```bash
-sudo sed -i 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=0/' /etc/default/grub
-```
-Actualizar grub
-```bash
-sudo update-grub
-```
-## Modificar lightdm (gestor sesiones)
-Inicio de sesion automatica al iniciar el sistema
-```bash
-sudo sed -i '/^\[Seat:\*\]/,/^\[/ s/^#\?autologin-user=.*/autologin-user=joaquin/' /etc/lightdm/lightdm.conf
-sudo sed -i '/^\[Seat:\*\]/,/^\[/ s/^#\?autologin-user-timeout=.*/autologin-user-timeout=0/' /etc/lightdm/lightdm.conf
-```
+> Noctalia necesita en runtime: daemon PipeWire, un proveedor de Secret Service (`gnome-keyring`) y `upower`/`ddcutil` como opcionales para batería/brillo.
+
+> **Acciones de sesión:** las barritas de suspender/apagar/reiniciar de Noctalia usan
+> `[shell.session.power]` de `config.toml` (`systemctl suspend|reboot|poweroff`, por
+> polkit/`logind`, permitido sin contraseña para la sesión activa). El default de
+> Noctalia (`sudo -n ...`) falla si no hay regla NOPASSWD en sudoers.
 
 ---
 
-## Configuración de Máquinas Virtuales (VirtualBox)
-
-Si estás usando una máquina virtual, instala las Guest Additions:
+## 8. Dependencias de la config
 
 ```bash
-bash /media/cdrom0/autorun.sh
+sudo apt install xdg-desktop-portal xdg-desktop-portal-wlr xdg-desktop-portal-gtk \
+  xwayland kanshi wl-clipboard pavucontrol gnome-keyring
 ```
 
-Luego cambia la resolución de pantalla desde la configuración de display de tu VM.
+- `xdg-desktop-portal` + `xdg-desktop-portal-wlr` — compartir pantalla (screencast) y
+  el backend de portales; en Debian 13 viven en `/usr/libexec` y systemd los activa
+  por D-Bus (no hace falta ejecutarlos desde `06-autostart`)
+- `xdg-desktop-portal-gtk` — selector de archivos / backend GTK de los portales
+- `xwayland` — apps X11; **sin él no funcionan las reglas
+  `for_window [window_type=...]`** de `config.d/05-floating` (solo matchean
+  ventanas Xwayland)
+- `kanshi` — perfiles de pantallas (lo arranca `06-autostart`)
+- `wl-clipboard` — portapapeles CLI de Wayland (`wl-copy`/`wl-paste`) para la terminal y scripts (Noctalia no lo instala ni lo sustituye)
+- `pavucontrol` — ajustes finos de audio (opcional)
+- `gnome-keyring` — Secret Service (clipboard encriptado y calendario de Noctalia)
+- ~~`autotiling`~~ — **ya no se usa**: se quitó de `06-autostart`. Si lo querés volver
+  a activar: `sudo apt install autotiling` y agregar `exec_always autotiling`
 
 ---
 
-## Solución de Problemas
-
-### Stow muestra errores de conflictos
-
-Si Stow te da errores porque los archivos ya existen, elimina los archivos existentes en tu home antes de ejecutar stow:
+## 9. Configuración (dotfiles)
 
 ```bash
-rm -rf ~/.config/<nombre-del-programa>
-cd ~/repos/dotfiles
-stow -t ~ <nombre-del-programa>
+rm -rf ~/.config/sway ~/.config/noctalia ~/.config/kanshi
+cp -r ~/repos/dotfiles/{sway,noctalia,kanshi} ~/.config/
 ```
 
-### ZSH no se activa
+Copiar wallpapers:
 
-Asegúrate de cerrar sesión completamente y volver a entrar, o reinicia la máquina.
+```bash
+mkdir -p ~/Pictures
+cp -r ~/repos/dotfiles/Pictures/* ~/Pictures/
+```
 
-### Neovim no encuentra los plugins
-
-Ejecuta `:Lazy sync` dentro de Neovim para sincronizar los plugins manualmente.
+> Los cambios de la GUI de Noctalia (Settings) se guardan en `~/.local/state/noctalia/settings.toml`, que **gana** sobre tu `config.toml` si hay valores duplicados. No se edita a mano.
+>
+> Los valores de la barra (`reserve_space = false`, `smart_auto_hide = true`) están
+> alineados en ambos archivos, así que `config.toml` es el único lugar donde
+> editarlos: la barra se oculta cuando la workspace tiene ventanas y se superpone
+> a las ventanas (no reserva zona exclusiva).
 
 ---
 
-## Estructura del Repositorio
+## 10. Estructura de archivos
 
 ```
-dotfiles/
-├── xfce/          # Configuración de XFCE4
-├── kitty/         # Configuración de Kitty terminal
-├── zsh/           # Configuración de ZSH + Powerlevel10k
-├── nvim/          # Configuración de Neovim + LazyVim
-└── Pictures/      # Wallpapers e imágenes
+~/.config/sway/
+├── config                        # entrada delgada (solo includes)
+├── config.d/
+│   ├── 00-variables              # $mod, $term, $font, $web-browser, paleta Gruvbox
+│   ├── 01-outputs                # base de eDP-1 1366x768 (el externo lo gestiona kanshi)
+│   ├── 02-input                  # touchpad, teclado (layout us), cursor
+│   ├── 03-theme                  # client colors, gaps, borders
+│   ├── 04-bindings               # atajos sway + IPC noctalia
+│   ├── 05-floating               # reglas de ventanas flotantes
+│   └── 06-autostart              # entorno D-Bus, kanshi, noctalia, portals, gsettings
+├── user/                         # fragmentos extra (vacío, .gitkeep)
+└── walls/                        # fondos de pantalla
+~/.config/noctalia/
+└── config.toml                   # configuración del shell (TOML, v5)
+~/.config/kanshi/
+└── config                        # perfiles de pantallas (laptop / presentación / externo)
 ```
 
-Para más información y configuraciones adicionales, consulta:
+> ⚠️ El repo `piratheon/sway-noctalia-dots` trae un `settings.json` de **Noctalia v4 (JSON)**. No se copia: en v5 la config es **TOML** en `~/.config/noctalia/`.
 
-- https://github.com/ohmyzsh/ohmyzsh/wiki
-- https://github.com/neovim/neovim
-- https://sw.kovidgoyal.net/kitty/
-- https://www.lazyvim.org/
+---
 
-## Lista de tareas
+## 11. Atajos de teclado
 
-- [x] Instalación de Node.js
-- [x] Instalación de pnpm
-- [x] Instalacion de opencode
-- [x] Instalación de Docker
-- [x] Configuración GRUB
-- [x] Configuración sesión
-- [ ] Mako
-- [ ] screen share
+| Atajo | Acción |
+| --- | --- |
+| `$mod+Return` | terminal (kitty) |
+| `$mod+Shift+b` | navegador (Zen, `$web-browser`) |
+| `$mod+d` | launcher Noctalia |
+| `$mod+i` | control center |
+| `$mod+comma` | settings Noctalia |
+| `$mod+t` | lock screen |
+| `Ctrl+Alt+Delete` | panel de sesión (apagar / reiniciar / suspender) |
+| `Print` / `$mod+Print` | screenshot región / pantalla completa |
+| `$mod+Shift+c` | recargar config |
+| `$mod+Shift+e` | cerrar sesión |
+| `$mod+Shift+q` | matar ventana |
+| `$mod+1…0` / `$mod+Shift+1…0` | workspaces / mover a workspace |
+| `$mod+$left/…/$right` | mover foco |
+| `$mod+Shift+$left/…` | mover ventana |
+| `$mod+b` / `$mod+v` / `$mod+s` / `$mod+w` / `$mod+e` | splith / splitv / stacking / tabbed / toggle split |
+| `$mod+f` | fullscreen |
+| `$mod+space` / `$mod+Shift+space` | focus mode_toggle / floating toggle |
+| `$mod+r` | modo resize |
+| `$mod+minus` / `$mod+Shift+minus` | scratchpad show / move |
+| `XF86AudioPlay/Next/Prev` | control de medios |
+| `XF86Audio*/XF86MonBrightness*` | volumen / brillo (noctalia) |
+
+> **Pantallas:** no hay atajo manual: **kanshi** cambia solo al conectar/desconectar
+> el HDMI según los perfiles de `~/.config/kanshi/config`. Para forzar algo puntual:
+> `swaymsg output HDMI-A-1 enable pos 1366,0 mode 1920x1080@60Hz`.
+
+---
+
+## 12. Verificación y primeros pasos
+
+```bash
+# Validar configs sin reiniciar
+sway --validate -c ~/.config/sway/config
+noctalia config validate
+
+# Estado de la shell (barra visible, panel abierto, bloqueo)
+noctalia msg status
+```
+
+1. Recarga sway con `$mod+Shift+c` (o reinicia la sesión para que Noctalia lea `config.toml`).
+   Para aplicar cambios de `config.toml` **sin** reiniciar: `noctalia msg config-reload`.
+2. Configura la barra/widgets en Settings (`$mod+comma`).
+3. Ajusta la localización y el clima en Settings → Location.
+4. Si el cursor brilla demasiado: `seat * hide_cursor 2000` en `config.d/02-input`.
+
+---
+
+## 13. Opcionales
+
+- **NetworkManager** — si quieres que el widget de red de la barra funcione:
+
+  ```bash
+  sudo apt install network-manager
+  sudo systemctl enable --now NetworkManager
+  ```
+
+  > **Nota:** Asegúrese de que `/etc/network/interfaces` no tenga configuración manual de la interfaz WiFi (como `allow-hotplug` o `iface ... inet dhcp`), ya que esto puede bloquear NetworkManager. El archivo debería contener solo:
+  > ```
+  > source /etc/network/interfaces.d/*
+  > auto lo
+  > iface lo inet loopback
+  > ```
+
+  Añadir `nm-applet` al autostart de Sway (en `config.d/06-autostart`):
+
+  ```
+  exec nm-applet
+  ```
+
+- **wdisplays** — gestor gráfico de monitores (`sudo apt install wdisplays`).
+- **swayfx** — el repo de referencia usa blur/redondeo (`config.d/swayfx`), pero requiere el fork `swayfx`; con sway stock se omite.
+
+---
+
+## 14. Referencia
+
+- Sway: `man 5 sway` (criterios/condiciones) y `man 5 sway-input` (touchpad, xkb)
+- Noctalia: <https://docs.noctalia.dev/>
+- IPC de Noctalia: `noctalia msg --help` y <https://docs.noctalia.dev/noctalia/ipc/>
+- Sway + Noctalia: <https://docs.noctalia.dev/noctalia/compositor-settings/sway-scroll/>
+- Idle / lock / suspend de Noctalia: <https://docs.noctalia.dev/noctalia/services/idle/>

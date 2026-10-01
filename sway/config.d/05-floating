@@ -17,5 +17,6 @@ for_window [window_type="menu"] floating enable
 for_window [title="Picture in picture"] floating enable, sticky enable
 
 # Límites de tamaño de ventanas flotantes
+# (-1 x -1 = sin límite: 1200x600 cortaba las flotantes en el HDMI 1920x1080)
 floating_minimum_size 400 x 300
-floating_maximum_size 1200 x 600
+floating_maximum_size -1 x -1

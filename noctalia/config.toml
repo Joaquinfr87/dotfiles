@@ -33,6 +33,8 @@ builtin = "Gruvbox"
 pure_black_dark = false
 
 # --- Barra -----------------------------------------------------------------
+# Ojo: la GUI escribe overrides en ~/.local/state/noctalia/settings.toml y
+# pisan estos valores. Mantenerlos iguales para que este archivo no mienta.
 [bar.main]
 position = "top"
 thickness = 34
@@ -43,8 +45,9 @@ margin_edge = 8
 padding = 14
 widget_spacing = 6
 shadow = true
-auto_hide = false
-reserve_space = true
+auto_hide = false           # pointer auto-hide apagado
+smart_auto_hide = true      # se oculta con ventanas, se muestra en workspace vacía
+reserve_space = false       # sin zona exclusiva: la barra se superpone a las ventanas
 capsule = false
 
 start  = ["launcher", "workspaces"]
@@ -81,6 +84,15 @@ enabled = true
 timeout = 660
 action = "screen_off"
 enabled = true
+
+# --- Acciones de sesión (suspend / reboot / poweroff) --------------------------
+# Por defecto Noctalia ejecuta `sudo -n ...`, que falla cuando no hay NOPASSWD.
+# systemctl va por logind/polkit; para la sesión activa está permitido sin clave
+# (verificado con pkcheck para login1.power-off/reboot/suspend).
+[shell.session.power]
+suspend = "systemctl suspend"
+reboot = "systemctl reboot"
+shutdown = "systemctl poweroff"
 
 # --- Audio -------------------------------------------------------------------
 [audio]

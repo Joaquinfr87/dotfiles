@@ -3,6 +3,7 @@
 # ==============================================================================
 # --- Sistema y utilidades ---
 bindsym $mod+Return exec $term
+bindsym $mod+Shift+b exec $web-browser
 bindsym $mod+Shift+q kill
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+e exec $ipc session logout
@@ -12,6 +13,7 @@ bindsym $mod+d exec $ipc panel-toggle launcher
 bindsym $mod+i exec $ipc panel-toggle control-center
 bindsym $mod+comma exec $ipc settings-toggle
 bindsym $mod+t exec $ipc session lock
+bindsym Control+Alt+Delete exec $ipc panel-toggle session
 
 # --- Hardware: audio y brillo (noctalia) ---
 bindsym --locked XF86AudioRaiseVolume exec $ipc volume-up

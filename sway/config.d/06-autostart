@@ -1,19 +1,23 @@
 # ==============================================================================
 # 06 - Autoarranque (autostart)
 # ==============================================================================
+# --- Entorno de sesión (va primero: lo heredan Noctalia, kanshi y los portales) ---
+# Nota: /etc/sway/config.d/50-systemd-user.conf repite esto al final del include;
+# acá se adelanta para que los servicios D-Bus arrancados al inicio ya lo tengan.
+exec systemctl --user import-environment WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
+exec command -v dbus-update-activation-environment >/dev/null 2>&1 && dbus-update-activation-environment --systemd WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP=sway
+
+# Kanshi — gestión automática de pantallas
+exec kanshi
+
 # Noctalia shell (barra, launcher, notificaciones, fondo, lock, OSD...)
 exec noctalia
 
-# Sway Automatic Tiling
-exec_always autotiling
-
-# Gestión de energía de la sesión Wayland
-exec --no-startup-id dbus-update-activation-environment --systemd XDG_CURRENT_DESKTOP=sway
-exec --no-startup-id /usr/lib/xdg-desktop-portal-wlr &
-exec --no-startup-id /usr/lib/xdg-desktop-portal -r
-
-# NetworkManager (applet de red en la bandeja)
-exec nm-applet
+# Portales XDG: en Debian 13 viven en /usr/libexec y systemd los levanta por D-Bus
+# (activación verificada en el journal de la sesión), por eso no hace falta ejecutarlos.
+# Si querés forzarlos a mano:
+#   exec /usr/libexec/xdg-desktop-portal-wlr &
+#   exec /usr/libexec/xdg-desktop-portal -r
 
 # Tema oscuro GTK
 set $gnome-schema org.gnome.desktop.interface

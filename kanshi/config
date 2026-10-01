@@ -1,0 +1,33 @@
+# ==============================================================================
+# Kanshi — Configuración dinámica de pantallas
+# ==============================================================================
+# Activa automáticamente el perfil correcto al conectar/desconectar pantalla.
+# Docs: man 5 kanshi
+#
+# Flujo:
+#   1. Solo laptop → perfil "laptop" (1366x768)
+#   2. Laptop + HDMI → perfil "presentacion" (externa 1920x1080 a la derecha)
+#   3. Solo HDMI → perfil "externo" (1920x1080)
+#
+# Si conectas una pantalla diferente, kanshi usa el perfil que mejor coincida.
+# Si ninguna coincide, sway usa su config por defecto.
+
+# --- Solo laptop (sin nada conectado) ---
+profile laptop {
+    output eDP-1 enable position 0,0 mode 1366x768@60Hz
+}
+
+# --- Presentación: laptop + pantalla externa ---
+# La externa se coloca a la derecha de la laptop.
+# Resolución fija en 1920x1080 para compatibilidad con proyectores/monitores.
+profile presentacion {
+    output eDP-1  enable position 0,0 mode 1366x768@60Hz
+    output HDMI-A-1 enable position 1366,0 mode 1920x1080@60Hz
+    exec swaymsg workspace 1, move workspace to HDMI-A-1
+}
+
+# --- Solo pantalla externa (laptop apagada) ---
+profile externo {
+    output eDP-1 disable
+    output HDMI-A-1 enable position 0,0 mode 1920x1080@60Hz
+}

@@ -461,6 +461,98 @@ noctalia msg status
 - **wdisplays** — gestor gráfico de monitores (`sudo apt install wdisplays`).
 - **swayfx** — el repo de referencia usa blur/redondeo (`config.d/swayfx`), pero requiere el fork `swayfx`; con sway stock se omite.
 
+### Noctalia Greeter (login manager)
+
+Greeter de sesión basado en greetd. Requiere el repo APT de Noctalia (ver [7. NOCTALIA](#7-noctalia)).
+
+```bash
+sudo apt update
+sudo apt install greetd
+sudo apt install noctalia-greeter
+```
+
+Si no tienes el repo aún:
+
+```bash
+wget https://pkg.noctalia.dev/deb/nickh-archive-keyring.deb
+sudo dpkg -i nickh-archive-keyring.deb
+sudo wget -O /etc/apt/sources.list.d/noctalia-trixie.sources https://pkg.noctalia.dev/deb/noctalia-trixie.sources
+sudo apt update
+sudo apt install noctalia-greeter
+```
+
+Configurar el comando del greeter en greetd:
+
+```bash
+sudo nvim /etc/greetd/config.toml
+```
+
+Verificar la línea `command`, debería apuntar a noctalia-greeter:
+
+```bash
+cat /etc/greetd/config.toml | grep "command"
+```
+
+Habilitar greetd como display manager:
+
+```bash
+sudo systemctl enable --now greetd
+```
+
+Configurar el greeter (wallpaper, tema, etc.):
+
+```bash
+sudo mkdir -p /var/lib/noctalia-greeter/
+cd /var/lib/noctalia-greeter
+sudo nvim greeter.toml
+```
+
+Copiar el wallpaper del greeter:
+
+```bash
+sudo cp ~/Pictures/wallpaper4.png /var/lib/noctalia-greeter/wallpaper.png
+```
+
+Reiniciar para probar:
+
+```bash
+sudo reboot
+```
+
+### GRUB — arranque automático sin menú
+
+Editar la configuración:
+
+```bash
+sudo nvim /etc/default/grub
+```
+
+Ajustar estas líneas:
+
+```
+GRUB_TIMEOUT=0
+GRUB_TIMEOUT_STYLE=hidden
+GRUB_CMDLINE_LINUX_DEFAULT="quiet"
+```
+
+- `GRUB_TIMEOUT=0` — arranca la entrada por defecto de inmediato.
+- `GRUB_TIMEOUT_STYLE=hidden` — oculta el menú (usa `menu` si prefieres verlo).
+- `GRUB_CMDLINE_LINUX_DEFAULT="quiet"` — arranque silencioso.
+
+> **Nota:** con timeout 0, si tienes dual-boot y quieres elegir otro SO, mantén pulsada `Shift` (BIOS) o `Esc` (UEFI) al arrancar para que aparezca el menú.
+
+Aplicar los cambios:
+
+```bash
+sudo update-grub
+```
+
+Reiniciar para probar:
+
+```bash
+sudo reboot
+```
+
 ---
 
 ## 14. Referencia

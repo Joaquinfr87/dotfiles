@@ -279,11 +279,13 @@ Instalar **kanshi** (cambio automático de pantallas, lo arranca `config.d/06-au
 ```bash
 sudo apt install kanshi
 ```
+
 Copiar los archivos de configuracion
 
 ```bash
 cp -r ~/repos/dotfiles/{kanshi,sway} ~/.config 
 ```
+
 > Perfiles en `~/.config/kanshi/config`: **laptop** (eDP-1 1366x768), **presentacion**
 > (laptop + HDMI-A-1 1920x1080 a la derecha, moviendo el workspace 1 al HDMI) y
 > **externo** (solo HDMI, portátil apagada). Sway no necesita `output` extra:
@@ -446,6 +448,7 @@ noctalia msg status
   ```
 
   > **Nota:** Asegúrese de que `/etc/network/interfaces` no tenga configuración manual de la interfaz WiFi (como `allow-hotplug` o `iface ... inet dhcp`), ya que esto puede bloquear NetworkManager. El archivo debería contener solo:
+>
   > ```
   > source /etc/network/interfaces.d/*
   > auto lo

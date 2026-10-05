@@ -321,7 +321,9 @@ sudo apt install xdg-desktop-portal xdg-desktop-portal-wlr xdg-desktop-portal-gt
 - `xdg-desktop-portal-gtk` — selector de archivos / backend GTK de los portales
 - `xwayland` — apps X11; **sin él no funcionan las reglas
   `for_window [window_type=...]`** de `config.d/05-floating` (solo matchean
-  ventanas Xwayland)
+  ventanas Xwayland). La config ya trae `xwayland enable` en `01-outputs`
+  (carga a demanda, `force` la iniciaría siempre) y `DISPLAY` ya se exporta
+  en `06-autostart`, así que solo falta instalar el paquete:
 - `kanshi` — perfiles de pantallas (lo arranca `06-autostart`)
 - `wl-clipboard` — portapapeles CLI de Wayland (`wl-copy`/`wl-paste`) para la terminal y scripts (Noctalia no lo instala ni lo sustituye)
 - `pavucontrol` — ajustes finos de audio (opcional)

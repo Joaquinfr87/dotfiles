@@ -4,8 +4,9 @@
 # --- Entorno de sesión (va primero: lo heredan Noctalia, kanshi y los portales) ---
 # Nota: /etc/sway/config.d/50-systemd-user.conf repite esto al final del include;
 # acá se adelanta para que los servicios D-Bus arrancados al inicio ya lo tengan.
-exec systemctl --user import-environment WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
-exec command -v dbus-update-activation-environment >/dev/null 2>&1 && dbus-update-activation-environment --systemd WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP=sway
+# DISPLAY solo existe si Xwayland está instalado; si falta, se ignora sin error
+exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
+exec command -v dbus-update-activation-environment >/dev/null 2>&1 && dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP=sway
 
 # Kanshi — gestión automática de pantallas
 exec kanshi

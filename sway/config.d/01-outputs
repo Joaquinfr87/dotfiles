@@ -12,3 +12,9 @@ output $laptop res $res_laptop@60Hz pos 0,0
 # Kanshi gestiona automáticamente las pantallas externas.
 # Si necesitás forzar algo manualmente, usá:
 #   swaymsg output HDMI-A-1 enable pos 1366,0 mode 1920x1080@60Hz
+
+# --- XWayland (apps X11) -----------------------------------------------------
+# enable = a demanda: Xwayland arranca cuando la primera app X11 se conecta.
+# Requiere el paquete "xwayland"; sin él este bloque no tiene efecto.
+# Con Xwayland activo cobran vida las reglas [window_type=...] de 05-floating.
+xwayland enable

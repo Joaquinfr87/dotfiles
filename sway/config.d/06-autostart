@@ -28,5 +28,5 @@ exec_always {
 }
 
 # Aplicaciones iniciales por workspace (ajusta a tu gusto)
-# exec swaymsg "workspace 1; exec firefox"
-# exec swaymsg "workspace 2; exec kitty"
+exec swaymsg "workspace 1; exec zen"
+exec swaymsg "workspace 2; exec kitty -e fastfetch"

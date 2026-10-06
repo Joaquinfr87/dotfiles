@@ -128,3 +128,18 @@ export PATH=/home/joaquin/.opencode/bin:$PATH
 export ANDROID_HOME=$HOME/android-sdk
 export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/36.0.0:$PATH
+
+
+# Added by Antigravity CLI installer
+export PATH="/home/joaquin/.local/bin:$PATH"
+
+# Abrir vault de notas con Neovim
+notes() {
+  cd ~/repos/notas || return
+  if [[ "$1" == "-n" ]]; then
+    shift
+    nvim +"Obsidian new $*"
+  else
+    nvim "$@"
+  fi
+}

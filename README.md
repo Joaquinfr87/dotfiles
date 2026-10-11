@@ -250,6 +250,36 @@ cp -r ~/repos/dotfiles/nvim ~/.config/
 
 ---
 
+## 5.3 TMUX
+
+Multiplexor de terminal para **sesiones persistentes** (detach/attach) y ventanas.
+La config vive en `tmux/`; el arranque rápido está en **[`tmux/README.md`](tmux/README.md)**
+y la **guía completa para aprender tmux** en **[`tmux/GUIA.md`](tmux/GUIA.md)**.
+
+```bash
+sudo apt install tmux
+
+mkdir -p ~/.config/tmux
+cp ~/repos/dotfiles/tmux/tmux.conf ~/.config/tmux/tmux.conf
+ln -sf ~/repos/dotfiles/tmux/scripts/tmux-sessionizer ~/.local/bin/tmux-sessionizer
+
+# Persistencia de sesiones tras reinicios (resurrect + continuum)
+mkdir -p ~/.config/tmux/plugins
+git clone --depth 1 https://github.com/tmux-plugins/tmux-resurrect \
+  ~/.config/tmux/plugins/tmux-resurrect
+git clone --depth 1 https://github.com/tmux-plugins/tmux-continuum \
+  ~/.config/tmux/plugins/tmux-continuum
+```
+
+> Prefijo **`C-Space`** (con `C-b` como secundario). En sway, `$mod+Shift+Return`
+> abre el sessionizer (fzf): lista las **sesiones de tmux** por defecto
+> (`ctrl-t` proyectos, `ctrl-a` todo `$HOME`). Las sesiones
+> **persisten tras reinicios**: guardado automático cada 10 min
+> (`C-Space C-s` manual, `C-Space C-r` restaura). Atajos, kitty,
+> copy-mode y demás en `tmux/README.md`.
+
+---
+
 ## 6. SWAY
 
 ```bash
@@ -392,6 +422,7 @@ cp -r ~/repos/dotfiles/Pictures/* ~/Pictures/
 | Atajo | Acción |
 | --- | --- |
 | `$mod+Return` | terminal (kitty) |
+| `$mod+Shift+Return` | sessionizer de tmux (fzf, ver §5.3) |
 | `$mod+Shift+b` | navegador (Zen, `$web-browser`) |
 | `$mod+d` | launcher Noctalia |
 | `$mod+i` | control center |

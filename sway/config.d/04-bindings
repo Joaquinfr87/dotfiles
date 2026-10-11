@@ -3,6 +3,7 @@
 # ==============================================================================
 # --- Sistema y utilidades ---
 bindsym $mod+Return exec $term
+bindsym $mod+Shift+Return exec $term -e $sessionizer
 bindsym $mod+Shift+b exec $web-browser
 bindsym $mod+Shift+q kill
 bindsym $mod+Shift+c reload

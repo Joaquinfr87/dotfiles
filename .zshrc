@@ -133,6 +133,14 @@ export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:
 # Added by Antigravity CLI installer
 export PATH="/home/joaquin/.local/bin:$PATH"
 
+# --- tmux (ver tmux/README.md) ---
+alias ta='tmux attach -t'      # ta <sesión>: attach
+# ta sin argumentos = última sesión; tmux attach por sí solo ya lo hace
+alias tn='tmux new -As'        # tn <sesión>: crear o adjuntar
+alias tls='tmux ls'            # listar sesiones
+alias tk='tmux kill-session -t'  # tk <sesión>: matar sesión
+ts() { tmux-sessionizer; }     # ts: selector fzf de sesiones por proyecto
+
 # Abrir vault de notas con Neovim
 notes() {
   cd ~/repos/notas || return

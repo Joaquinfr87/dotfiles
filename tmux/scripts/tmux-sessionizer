@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# tmux-sessionizer — elige una sesión o carpeta con fzf y entra a ella
+# ==============================================================================
+# Menú fzf con tres modos:
+#   ctrl-s: **sesiones de tmux existentes** (por defecto)
+#   ctrl-t: proyectos (primer nivel de las raíces de búsqueda)
+#   ctrl-a: cualquier carpeta de $HOME (hasta `any_depth` niveles)
+#
+# Elegir una sesión **cambia a ella**; elegir una carpeta crea (o
+# reutiliza) la sesión con el nombre de la carpeta.
+#
+# Raíces de proyectos:
+#   1. Primer nivel de `search_dirs` (abajo).
+#   2. Primer nivel de cada ruta de ~/.config/tmux/sessionizer.dirs
+#      (una por línea; valen `~`, comentarios `#` y líneas en blanco).
+#      Sirve para añadir carpetas sin tocar los dotfiles.
+#
+# Funciona igual desde fuera de tmux (sway/kitty) que desde dentro
+# (prefix + f).
+set -euo pipefail
+
+search_dirs=("$HOME/repos" "$HOME/Downloads")
+config_file="${TMUX_SESSIONIZER_DIRS:-$HOME/.config/tmux/sessionizer.dirs}"
+any_depth=5
+
+# --- Raíces de búsqueda: defaults + config, sin repetir ---------------
+declare -A seen=()
+roots=()
+add_root() {
+  local d=$1
+  [[ -d $d && -z ${seen[$d]+x} ]] || return 0
+  seen[$d]=1
+  roots+=("$d")
+}
+
+for d in "${search_dirs[@]}"; do
+  add_root "$d"
+done
+
+if [[ -f $config_file ]]; then
+  while IFS= read -r d || [[ -n $d ]]; do
+    d=${d%$'\r'}
+    [[ -z $d || $d == \#* ]] && continue
+    [[ $d == \~* ]] && d=$HOME${d#\~}
+    add_root "$d"
+  done < "$config_file"
+fi
+
+# --- Listados para fzf ---------------------------------------------------
+# Los `_cmd` son cadenas (ejecutadas por sh) para los reload de fzf.
+tab=$'\t'
+sessions_cmd="tmux list-sessions -F '#{session_name}${tab}#{session_path}' 2>/dev/null || true"
+
+printf -v home_q '%q' "$HOME"
+if command -v fd >/dev/null 2>&1; then
+  # fd ignora ocultos y .gitignore: rápido y limpio.
+  anywhere_cmd="fd --type d --max-depth $any_depth . $home_q"
+else
+  anywhere_cmd="find $home_q -mindepth 1 -maxdepth $any_depth -name '.*' -prune -o -name node_modules -prune -o -type d -print 2>/dev/null"
+fi
+roots_q=()
+for d in "${roots[@]}"; do
+  printf -v q '%q' "$d"
+  roots_q+=("$q")
+done
+if (( ${#roots_q[@]} )); then
+  projects_cmd="find ${roots_q[*]} -mindepth 1 -maxdepth 1 -type d 2>/dev/null"
+else
+  projects_cmd=":"   # sin raíces: no-op
+fi
+
+# --- Elegir con fzf -------------------------------------------------------
+# Las líneas de sesión son "nombre<TAB>ruta"; las de carpeta, rutas.
+selected=$(
+  eval "$sessions_cmd" \
+  | fzf --height=60% --reverse --prompt="sesión > " \
+      --header="ctrl-s: sesiones · ctrl-t: proyectos · ctrl-a: todo \$HOME" \
+      --bind "ctrl-s:change-prompt(sesión > )+reload($sessions_cmd)" \
+      --bind "ctrl-t:change-prompt(proyecto > )+reload($projects_cmd)" \
+      --bind "ctrl-a:change-prompt(carpeta > )+reload($anywhere_cmd)" \
+  || true
+)
+
+[[ -z "$selected" ]] && exit 0
+
+if [[ "$selected" == *"$tab"* ]]; then
+  # Sesión existente: solo saltamos a ella.
+  name=${selected%%"$tab"*}
+  session_exists=1
+else
+  # Carpeta: nombre de sesión válido (tmux no admite '.' ni ':').
+  name=$(basename "$selected" | tr '.:' '__')
+  if tmux has-session -t "$name" 2>/dev/null; then
+    session_exists=1
+  else
+    tmux new-session -d -s "$name" -c "$selected"
+    session_exists=0
+  fi
+fi
+
+# Dentro de tmux cambiamos de cliente; fuera, nos adjuntamos.
+if [[ -n "${TMUX:-}" ]]; then
+  tmux switch-client -t "$name"
+else
+  tmux attach -t "$name"
+fi
+
+# `session_exists` queda por si quieres ampliar el script
+# (p. ej. abrir ventanas extra solo la primera vez).
+: "$session_exists"

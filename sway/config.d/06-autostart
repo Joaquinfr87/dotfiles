@@ -29,4 +29,7 @@ exec_always {
 
 # Aplicaciones iniciales por workspace (ajusta a tu gusto)
 exec swaymsg "workspace 1; exec zen"
-exec swaymsg "workspace 2; exec kitty -e fastfetch"
+# exec swaymsg "workspace 2; exec kitty -e fastfetch"
+
+# tmux — servidor en segundo plano (sin ventana)
+exec tmux new-session -d -s main 2>/dev/null || true

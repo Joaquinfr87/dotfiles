@@ -44,9 +44,12 @@ Instala herramientas adicionales como Node.js, Docker, Lazydocker, Agentes AI (O
 ./install.sh --extras
 ```
 
-### Opción D: Menú Interactivo Simple
+### Opción D: Asistente Guiado 100% CLI
 
-Si ejecutas el script sin banderas, se abrirá el menú interactivo con las 5 opciones principales:
+Si ejecutas el script sin banderas, se iniciará el asistente guiado interactivo por pasos:
+1. **Paso 1:** Selecciona tu entorno (**Escritorio completo** o **Servidor SSH**).
+2. **Paso 2:** Selecciona tu prompt (**Starship** u **Oh My Zsh + p10k**).
+3. **Paso 3:** Selector interactivo de herramientas extras con casillas `[X]` / `[ ]` para marcar o tachar lo que desees instalar (**Node.js, pnpm, Docker, OpenCode, Freebuff, Codex, AGY**).
 
 ```bash
 ./install.sh

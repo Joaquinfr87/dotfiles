@@ -63,7 +63,8 @@ get_items() {
   if [[ "$prof" == "desktop" ]]; then
     items+=(
       "sway:$HOME/.config/sway"
-      "noctalia:$HOME/.config/noctalia"
+      "noctalia/config.toml:$HOME/.config/noctalia/config.toml"
+      "noctalia/settings.toml:$HOME/.local/state/noctalia/settings.toml"
       "kanshi:$HOME/.config/kanshi"
       "kitty:$HOME/.config/kitty"
       "Pictures:$HOME/Pictures"
@@ -115,7 +116,11 @@ cmd_deploy() {
       rm -rf "$sys_target"
       cp -r "$src" "$sys_target"
     else
-      cp -f "$src" "$sys_target"
+      if [[ "$repo_rel" == "noctalia/settings.toml" && -n "$HOME" ]]; then
+        sed "s|/home/[^/]*|$HOME|g" "$src" > "$sys_target"
+      else
+        cp -f "$src" "$sys_target"
+      fi
       # Si es binario o script, dar permisos de ejecución
       if [[ "$sys_target" == *"/bin/"* ]]; then
         chmod +x "$sys_target"

@@ -151,3 +151,7 @@ notes() {
     nvim "$@"
   fi
 }
+
+# --- Shift+Enter: no mostrar secuencias CSI-u crudas en el shell ---
+bindkey '\e[13;2u' accept-line
+bindkey '\e[27;2;13~' accept-line

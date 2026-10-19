@@ -30,29 +30,23 @@ Instala paquetes del sistema, Sway, Noctalia v5, audio PipeWire, fuentes Iosevka
 
 ### Opción B: Servidor Remoto / SSH (Headless)
 
-Instala únicamente herramientas de línea de comandos, Neovim (LazyVim), Zsh, Tmux con persistencia, configuración de Git y CLIs modernas (zoxide, eza, bat):
+Instala únicamente herramientas de línea de comandos, Neovim (LazyVim), Zsh nativo, Starship, Tmux con persistencia, configuración de Git y CLIs modernas:
 
 ```bash
 ./install.sh --server
 ```
 
-### Opción C: Stack de Desarrollo & Agentes AI
+### Opción C: Submenú de Herramientas Extras
 
-Instala Node.js LTS, Docker Engine, Docker Compose, Lazydocker, OpenCode CLI, Freebuff, AGY y Codex:
-
-```bash
-./install.sh --dev-tools
-```
-
-### Opción D: Instalación Total (Escritorio + Dev Stack)
+Instala herramientas adicionales como Node.js, Docker, Lazydocker, Agentes AI (OpenCode, Freebuff) o Oh My Zsh:
 
 ```bash
-./install.sh --all
+./install.sh --extras
 ```
 
-### Opción E: Menú Interactivo
+### Opción D: Menú Interactivo Simple
 
-Si ejecutas el script sin banderas, se abrirá el menú interactivo para que elijas entre todas las opciones:
+Si ejecutas el script sin banderas, se abrirá el menú interactivo con las 5 opciones principales:
 
 ```bash
 ./install.sh

@@ -36,9 +36,23 @@ Instala únicamente herramientas de línea de comandos, Neovim (LazyVim), Zsh, T
 ./install.sh --server
 ```
 
-### Opción C: Modo Interactivo
+### Opción C: Stack de Desarrollo & Agentes AI
 
-Si ejecutas el script sin banderas, se abrirá el menú interactivo para que elijas:
+Instala Node.js LTS, Docker Engine, Docker Compose, Lazydocker, OpenCode CLI, Freebuff, AGY y Codex:
+
+```bash
+./install.sh --dev-tools
+```
+
+### Opción D: Instalación Total (Escritorio + Dev Stack)
+
+```bash
+./install.sh --all
+```
+
+### Opción E: Menú Interactivo
+
+Si ejecutas el script sin banderas, se abrirá el menú interactivo para que elijas entre todas las opciones:
 
 ```bash
 ./install.sh

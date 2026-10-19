@@ -82,13 +82,28 @@ pkg_install() {
   os="$(detect_os)"
   case "$os" in
     debian|ubuntu|pop|linuxmint)
-      run_sudo apt install -y "$@"
+      if ! run_sudo apt install -y "$@"; then
+        log_warn "No se pudieron instalar todos los paquetes en bloque. Intentando instalar paquetes disponibles individualmente..."
+        for p in "$@"; do
+          run_sudo apt install -y "$p" 2>/dev/null || log_warn "Paquete no disponible en este repositorio: $p"
+        done
+      fi
       ;;
     arch|cachyos|manjaro)
-      run_sudo pacman -S --noconfirm --needed "$@"
+      if ! run_sudo pacman -S --noconfirm --needed "$@"; then
+        log_warn "No se pudieron instalar todos los paquetes con pacman en bloque. Intentando individualmente..."
+        for p in "$@"; do
+          run_sudo pacman -S --noconfirm --needed "$p" 2>/dev/null || log_warn "Paquete no disponible en pacman: $p"
+        done
+      fi
       ;;
     fedora)
-      run_sudo dnf install -y "$@"
+      if ! run_sudo dnf install -y "$@"; then
+        log_warn "No se pudieron instalar todos los paquetes con dnf en bloque. Intentando individualmente..."
+        for p in "$@"; do
+          run_sudo dnf install -y "$p" 2>/dev/null || log_warn "Paquete no disponible en dnf: $p"
+        done
+      fi
       ;;
     *)
       log_warn "No se pudo instalar paquetes automáticamente en '$os': $*"

@@ -47,6 +47,14 @@ install_node() {
     nvm alias default 'lts/*'
   fi
   set -u
+
+  # Enlazar node, npm y npx a ~/.local/bin para disponibilidad global inmediata en cualquier shell
+  if has_cmd node; then
+    mkdir -p "$HOME/.local/bin"
+    ln -sf "$(command -v node)" "$HOME/.local/bin/node" 2>/dev/null || true
+    ln -sf "$(command -v npm)" "$HOME/.local/bin/npm" 2>/dev/null || true
+    ln -sf "$(command -v npx)" "$HOME/.local/bin/npx" 2>/dev/null || true
+  fi
   log_ok "Node.js $(node --version 2>/dev/null || echo '') instalado."
 }
 
@@ -66,9 +74,12 @@ install_pnpm() {
       log_info "Instalando pnpm vía script oficial..."
       curl -fsSL https://get.pnpm.io/install.sh | sh - || true
     fi
-    log_ok "pnpm instalado."
-  else
-    log_ok "pnpm ya está disponible: $(pnpm --version)"
+  fi
+
+  if has_cmd pnpm; then
+    mkdir -p "$HOME/.local/bin"
+    ln -sf "$(command -v pnpm)" "$HOME/.local/bin/pnpm" 2>/dev/null || true
+    log_ok "pnpm disponible: $(pnpm --version)"
   fi
 }
 
@@ -141,12 +152,15 @@ install_freebuff() {
     if has_cmd npm; then
       log_info "Instalando freebuff vía npm global..."
       npm install -g freebuff || true
-      log_ok "Freebuff instalado."
     else
       log_warn "Se requiere Node/npm para instalar Freebuff. Instala Node primero."
     fi
-  else
-    log_ok "Freebuff ya está instalado: $(freebuff --version 2>/dev/null || echo 'instalado')"
+  fi
+
+  if has_cmd freebuff; then
+    mkdir -p "$HOME/.local/bin"
+    ln -sf "$(command -v freebuff)" "$HOME/.local/bin/freebuff" 2>/dev/null || true
+    log_ok "Freebuff disponible: $(freebuff --version 2>/dev/null || echo 'instalado')"
   fi
 }
 

@@ -22,7 +22,7 @@ ZSH_BIN="$(command -v zsh || echo "")"
 if [[ -n "$ZSH_BIN" && "${SHELL:-}" != "$ZSH_BIN" ]]; then
   log_info "Cambiando shell por defecto a zsh..."
   if has_cmd chsh; then
-    chsh -s "$ZSH_BIN" "$USER" || log_warn "No se pudo cambiar la shell con chsh. Puedes ejecutar manualmente: chsh -s \$(which zsh)"
+    chsh -s "$ZSH_BIN" "$USER" 2>/dev/null || run_sudo chsh -s "$ZSH_BIN" "$USER" 2>/dev/null || log_warn "No se pudo cambiar la shell con chsh automáticamente. Puedes ejecutar: chsh -s \$(which zsh)"
   fi
 fi
 

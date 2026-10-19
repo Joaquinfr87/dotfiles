@@ -23,10 +23,29 @@ if [[ "$OS" =~ ^(debian|ubuntu)$ ]]; then
     rm -f "$KEYRING_DEB"
 
     run_sudo wget -O /etc/apt/sources.list.d/noctalia-trixie.sources https://pkg.noctalia.dev/deb/noctalia-trixie.sources || true
+
+    # Configurar APT Pinning para que trixie-backports de Noctalia tenga prioridad normal (500)
+    # y resuelva dependencias como libwlroots y libdrm2 sin conflictos
+    run_sudo mkdir -p /etc/apt/preferences.d
+    run_sudo bash -c 'cat << "EOF" > /etc/apt/preferences.d/noctalia.pref
+Package: *
+Pin: origin "pkg.noctalia.dev"
+Pin-Priority: 500
+EOF'
+
     run_sudo apt update -y
     pkg_install noctalia || log_warn "No se pudo instalar Noctalia vía APT. Verifica https://docs.noctalia.dev"
     log_ok "Noctalia v5 instalado."
   else
+    # Asegurar que el archivo de preferencias de Noctalia exista si el repo ya fue configurado
+    if [[ ! -f /etc/apt/preferences.d/noctalia.pref && -f /etc/apt/sources.list.d/noctalia-trixie.sources ]]; then
+      run_sudo mkdir -p /etc/apt/preferences.d
+      run_sudo bash -c 'cat << "EOF" > /etc/apt/preferences.d/noctalia.pref
+Package: *
+Pin: origin "pkg.noctalia.dev"
+Pin-Priority: 500
+EOF'
+    fi
     log_ok "Noctalia ya está instalado: $(noctalia --version 2>/dev/null || echo 'v5')"
   fi
 

@@ -67,6 +67,10 @@ if ! has_cmd nvim; then
   if curl -fsSL https://raw.githubusercontent.com/MordechaiHadad/bob/master/scripts/install.sh | bash; then
     log_ok "Bob instalado. Descargando Neovim stable..."
     "$HOME/.local/share/bob/nvim-bin/nvim" --version >/dev/null 2>&1 || bob use stable || true
+    if [[ -x "$HOME/.local/share/bob/nvim-bin/nvim" ]]; then
+      mkdir -p "$HOME/.local/bin"
+      ln -sf "$HOME/.local/share/bob/nvim-bin/nvim" "$HOME/.local/bin/nvim"
+    fi
   fi
 
   # Si aún no está en PATH o bob falló, descargar release precompilado
@@ -121,7 +125,7 @@ fi
 if ! has_cmd delta && ! has_cmd git-delta; then
   log_info "Instalando git-delta..."
   OS="$(detect_os)"
-  if [[ "$OS" =~ ^(debian|ubuntu)$ ]]; then
+  if [[ "$OS" =~ ^(debian|ubuntu|pop|linuxmint)$ ]]; then
     pkg_install git-delta || true
   elif [[ "$OS" =~ ^(arch|cachyos|manjaro)$ ]]; then
     pkg_install git-delta || true
@@ -138,7 +142,10 @@ if ! has_cmd delta && ! has_cmd git-delta; then
       curl -fsSL -o /tmp/delta.tar.gz "$delta_url"
       tar -xzf /tmp/delta.tar.gz -C /tmp
       mkdir -p "$HOME/.local/bin"
-      mv /tmp/delta-*/delta "$HOME/.local/bin/delta" 2>/dev/null || true
+      if has_cmd sudo; then
+        run_sudo install /tmp/delta-*/delta /usr/local/bin/delta 2>/dev/null || true
+      fi
+      cp /tmp/delta-*/delta "$HOME/.local/bin/delta" 2>/dev/null || true
       chmod +x "$HOME/.local/bin/delta" 2>/dev/null || true
       rm -rf /tmp/delta.tar.gz /tmp/delta-*
       log_ok "delta instalado en ~/.local/bin/delta"
@@ -150,7 +157,16 @@ if has_cmd git-delta && ! has_cmd delta; then
   ln -sf "$(command -v git-delta)" "$HOME/.local/bin/delta"
 fi
 
-if has_cmd delta; then
+# Fallback stub para que Git nunca falle si no hay conexión o no se pudo descargar
+if ! has_cmd delta; then
+  mkdir -p "$HOME/.local/bin"
+  cat << 'EOF' > "$HOME/.local/bin/delta"
+#!/bin/sh
+exec less -RFX "$@"
+EOF
+  chmod +x "$HOME/.local/bin/delta"
+  log_warn "Se configuró fallback para delta (less)."
+else
   log_ok "delta ya está disponible: $(delta --version 2>/dev/null | head -n 1)"
 fi
 

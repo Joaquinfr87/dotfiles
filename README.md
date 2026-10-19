@@ -37,7 +37,6 @@ Clona el repositorio por **HTTPS** (no requiere claves SSH ni configuración pre
 mkdir -p ~/repos && cd ~/repos
 git clone https://github.com/Joaquinfr87/dotfiles.git
 cd dotfiles
-git checkout feat/pro-setup
 ```
 
 ---
@@ -61,7 +60,7 @@ El instalador te guiará interactivamente a través de 3 sencillos pasos en tu t
   4) Menú de herramientas extras (instalar solo Node, Docker, AI...)
   5) Salir
 ```
-* **Escritorio Completo:** Instala Sway, Noctalia v5, Noctalia Greeter (login con `greetd`), audio PipeWire, fuentes Iosevka Nerd Font, Kitty y Zen Browser.
+* **Escritorio Completo:** Instala Sway, Noctalia v5, Noctalia Greeter (login con `greetd`), audio PipeWire, gestor Bluetooth `bluetuith`, fuentes Iosevka Nerd Font, Kitty y Zen Browser. Configura perfiles automáticos de resolución para Laptop (768p) y Monitores Externos/Desktop (1080p).
 * **Servidor SSH:** Instala únicamente herramientas CLI, Neovim (LazyVim), Tmux con persistencia y Git (cero paquetes gráficos).
 
 #### 2. Selección de Shell y Prompt
@@ -150,27 +149,37 @@ dotfiles/
 │   └── ignore                    # .gitignore global (.DS_Store, *.local, etc.)
 ├── install/                      # Scripts de instalación modulares e idempotentes
 │   ├── 00-helpers.sh             # Funciones de log, colores y detección de distro
-│   ├── 01-base-packages.sh       # Paquetes esenciales (git, curl, fzf, ripgrep, build-essential)
+│   ├── 01-base-packages.sh       # Paquetes esenciales (git, curl, fzf, ripgrep, direnv, build-essential)
 │   ├── 02-cli-tools.sh           # Neovim (bob/tarball), zoxide, eza, bat, lazygit, plugins tmux
 │   ├── 03-shell.sh               # Zsh nativo, Starship y plugins (soporta opción --omz)
-│   ├── 04-desktop-packages.sh    # Sway, Wayland, PipeWire, Kanshi, portales
+│   ├── 04-desktop-packages.sh    # Sway, Wayland, PipeWire, Kanshi, bluetuith, portales
 │   ├── 05-noctalia.sh            # Noctalia v5 y Noctalia Greeter (greetd display manager)
 │   ├── 06-fonts-wallpapers.sh    # Iosevka Nerd Font y Zen Browser
 │   ├── 07-copy-configs.sh        # Copiado con backup según el perfil (server/desktop)
 │   └── 08-dev-ai-tools.sh        # Node.js, pnpm, Docker, OpenCode, Freebuff, AGY, Codex
-├── kanshi/                       # Perfiles multi-monitor (laptop, presentación, externo)
+├── kanshi/                       # Perfiles multirresolución automáticos (laptop 768p, desktop 1080p, dual)
+│   └── config
 ├── kitty/                        # Terminal Kitty (tema Gruvbox Dark y teclado CSI-u)
-├── noctalia/                     # Noctalia v5 config.toml (barra, launcher, notificaciones, lock)
+│   ├── current-theme.conf
+│   └── kitty.conf
+├── noctalia/                     # Configuración de Noctalia v5
+│   ├── config.toml               # Estética, colores, atajos y lanzador
+│   └── settings.toml             # Configuración de barra, escala y plugins de estado
 ├── noctalia-greeter/             # Configuración de greetd login manager
+│   └── greeter.toml
 ├── nvim/                         # Neovim (LazyVim, LSP, Blink, Obsidian, Gruvbox)
 ├── Pictures/                     # Fondos de pantalla Gruvbox
 ├── starship/                     # Configuración de Starship prompt (Gruvbox Material Dark)
 │   └── starship.toml
 ├── sway/                         # Sway tiling window manager (modular en config.d/)
+│   ├── config                    # Archivo principal que incluye config.d/
+│   └── config.d/                 # 01-outputs, 02-inputs, 03-windows, 04-bindings, 05-autostart
 ├── tmux/                         # Tmux (persistencia con resurrect/continuum y sessionizer)
+│   └── tmux.conf
+├── agents.md                     # Guía de integración de agentes AI (OpenCode y Freebuff)
 ├── .gitignore                    # Exclusiones de Git (binarios .deb, backups, .freebuff)
 ├── .zprofile                     # Entorno de login (ejecuta sway solo en tty1 y si existe)
-├── .zshrc                        # Shell interactivo ultrarrápido (Zsh nativo + Starship)
+├── .zshrc                        # Shell interactivo ultrarrápido (Zsh nativo + Starship + direnv)
 └── install.sh                    # Orquestador principal de instalación 100% CLI
 ```
 
@@ -195,6 +204,29 @@ dotfiles/
 | `$mod+1…0` | Cambiar de workspace |
 | `$mod+Shift+1…0` | Mover ventana a workspace |
 | `$mod+Shift+c` | Recargar configuración de Sway |
+
+---
+
+## 🖥️ Gestión Dinámica de Pantallas (Kanshi)
+
+El daemon **Kanshi** detecta automáticamente la conexión y desconexión de monitores, aplicando la resolución, posición y asignación de workspaces adecuada al instante:
+
+| Perfil | Dispositivo / Salida | Resolución | Comportamiento |
+| --- | --- | --- | --- |
+| `laptop` | Pantalla integrada (`eDP-1`) | 1366x768 @ 60Hz | Modo portátil por defecto (escala 1.0) |
+| `desktop_hdmi` | PC de escritorio con HDMI (`HDMI-A-1`) | 1920x1080 @ 60Hz | Full HD nativo |
+| `desktop_dp` / `desktop_dp2` | PC de escritorio con DisplayPort (`DP-1`/`DP-2`) | 1920x1080 @ 60Hz | Full HD nativo |
+| `presentacion` | Laptop + Monitor externo HDMI | Dual (768p + 1080p) | HDMI a la derecha, workspace 1 en el monitor externo |
+| `laptop_dp` | Laptop + Monitor externo DP (Dock/USB-C) | Dual (768p + 1080p) | DP a la derecha, workspace 1 en el monitor externo |
+| `laptop_clamshell` | Laptop con tapa cerrada conectada a HDMI | 1920x1080 @ 60Hz | Apaga `eDP-1` y mantiene activo solo el monitor externo |
+| `desktop_dual` | PC de escritorio con doble monitor (DP + HDMI) | Dual 1080p | DP principal (workspace 1), HDMI secundario |
+
+---
+
+## 🎧 Bluetooth & Utilidades de Terminal
+
+* **Bluetooth TUI (`bluetuith`)**: Ejecuta `bluetuith` en cualquier terminal Kitty para buscar, emparejar y conectar auriculares o periféricos Bluetooth con una interfaz interactiva y ligera.
+* **Entornos automáticos (`direnv`)**: Integrado de forma nativa en `.zshrc`. Detecta archivos `.envrc` y carga variables o entornos virtuales de Python/Node automáticamente al entrar a tus directorios de trabajo.
 
 ---
 

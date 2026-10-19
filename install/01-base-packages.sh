@@ -22,6 +22,7 @@ case "$OS" in
       wget \
       unzip \
       tar \
+      xz-utils \
       build-essential \
       zsh \
       tmux \

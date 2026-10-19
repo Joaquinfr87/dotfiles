@@ -26,16 +26,15 @@ else
 fi
 
 # 2. Zen Browser (Navegador por defecto)
-if ! has_cmd zen; then
+if ! has_cmd zen && [[ ! -x "$HOME/.local/bin/zen" ]]; then
   log_info "Descargando e instalando Zen Browser (siguiendo guía de notas)..."
   ZEN_TAR="/tmp/zen.linux-x86_64.tar.xz"
   curl -fsSL -o "$ZEN_TAR" "https://github.com/zen-browser/desktop/releases/latest/download/zen.linux-x86_64.tar.xz"
   mkdir -p "$HOME/.local/share/zen" "$HOME/.local/bin" \
            "$HOME/.local/share/icons/hicolor/128x128/apps" \
            "$HOME/.local/share/applications"
-  tar -xf "$ZEN_TAR" -C "/tmp"
-  cp -r /tmp/zen/* "$HOME/.local/share/zen/" 2>/dev/null || mv /tmp/zen/* "$HOME/.local/share/zen/"
-  rm -rf /tmp/zen "$ZEN_TAR"
+  tar -xf "$ZEN_TAR" -C "$HOME/.local/share/zen" --strip-components=1
+  rm -f "$ZEN_TAR"
 
   ln -sf "$HOME/.local/share/zen/zen" "$HOME/.local/bin/zen"
 

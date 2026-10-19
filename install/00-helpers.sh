@@ -4,6 +4,9 @@
 # ==============================================================================
 set -euo pipefail
 
+# Asegurar que ~/.local/bin esté en el PATH durante la ejecución
+export PATH="$HOME/.local/bin:$PATH"
+
 # Colores ANSI
 BOLD='\033[1m'
 GREEN='\033[38;5;142m'

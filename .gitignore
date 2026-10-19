@@ -1,0 +1,26 @@
+# Binaries & packages
+*.deb
+*.tar.gz
+*.tar.xz
+*.zip
+
+# Local configuration overrides (machine-specific)
+*.local
+*.local.*
+.zshrc.local
+.gitconfig.local
+
+# Backups and temporary files
+*.bak
+*.swp
+*~
+.dotfiles_backup/
+
+# AI agent local metadata & caches
+.freebuff/
+.claude/
+.opencode/logs/
+
+# OS artifacts
+.DS_Store
+Thumbs.db

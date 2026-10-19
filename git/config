@@ -1,0 +1,61 @@
+[user]
+	# Configura tu usuario aquí o en ~/.gitconfig.local
+	# name = Tu Nombre
+	# email = tu@email.com
+
+[include]
+	# Permite sobrescribir configuraciones por máquina o credenciales privadas
+	path = ~/.gitconfig.local
+
+[init]
+	defaultBranch = main
+
+[pull]
+	rebase = true
+
+[push]
+	autoSetupRemote = true
+
+[core]
+	excludesfile = ~/.config/git/ignore
+	editor = nvim
+	autocrlf = input
+
+[alias]
+	st = status -sb
+	co = checkout
+	br = branch
+	ci = commit
+	cm = commit -m
+	ca = commit -am
+	amend = commit --amend --no-edit
+	undo = reset --soft HEAD~1
+	unstage = reset HEAD --
+	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+	last = log -1 HEAD --stat
+	diffw = diff --word-diff
+	aliases = config --get-regexp ^alias\\.
+
+[diff]
+	colorMoved = default
+
+[merge]
+	conflictstyle = diff3
+
+# Si 'delta' está instalado, Git lo usará automáticamente como pager
+[pager]
+	diff = delta
+	log = delta
+	reflog = delta
+	show = delta
+
+[interactive]
+	diffFilter = delta --color-only
+
+[delta]
+	features = decorations
+	navigate = true
+	light = false
+	line-numbers = true
+	side-by-side = false
+	syntax-theme = Gruvbox

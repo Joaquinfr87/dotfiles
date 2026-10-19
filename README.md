@@ -1,598 +1,152 @@
-# Guía de instalación SWAY + NOCTALIA — DEBIAN 13 (Trixie)
+# Dotfiles — Sway + Noctalia v5 & Servidores SSH
 
-Entorno de escritorio Wayland basado en:
+Configuración modular, estética y profesional de entorno de trabajo para **Linux (Debian 13 Trixie, Ubuntu y servidores remotos)** con paleta **Gruvbox Material Dark**.
 
-- [Sway](https://swaywm.org) — compositor / tiling WM
-- [Noctalia](https://noctalia.dev) — shell (barra, launcher, notificaciones, lock screen, OSD, fondo, clipboard)
-- Repo de referencia: [piratheon/sway-noctalia-dots](https://github.com/piratheon/sway-noctalia-dots)
-- Paleta: **Gruvbox Material Dark**
+Diseñado con dos perfiles de instalación independientes:
+1. **Perfil Desktop:** Entorno gráfico completo basado en Wayland ([Sway](https://swaywm.org) + [Noctalia v5](https://noctalia.dev) + [Kitty](https://sw.kovidgoyal.net/kitty/) + [Zen Browser](https://zen-browser.app/)).
+2. **Perfil Server / SSH:** Entorno de terminal ultraligero y de alta productividad ([Zsh](https://www.zsh.org/) + [Tmux](https://github.com/tmux/tmux) + [Neovim](https://neovim.io/) + Git profesional + CLIs modernas) para servidores sin entorno gráfico.
 
-> **Noctalia v5 reemplaza**: waybar, mako, wofi, swaybg, swaylock, swayidle, wlogout, grimshot, brightnessctl y los bindings de wpctl. Todo se controla con `noctalia msg`.
-
----
-
-## 1. SUDO
-
-```bash
-su -
-# ingresar contraseña de root
-```
-
-```bash
-apt install sudo
-sudo usermod -aG sudo {nombre_usuario}
-exit # sale de root
-exit # sale al tty
-```
-
-### Instalacion de Zen y Firefox
-
-```bash
-sudo apt install firefox-esr
-```
-
-```bash
-wget https://github.com/zen-browser/desktop/releases/latest/download/zen.linux-x86_64.tar.xz
-
-tar -xf zen.linux-x86_64.tar.xz
-
-# Crear las estructuras de directorios locales si no existen
-mkdir -p ~/.local/share/zen
-mkdir -p ~/.local/bin
-mkdir -p ~/.local/share/icons/hicolor/128x128/apps
-mkdir -p ~/.local/share/applications
-
-cd zen/
-# Mover todo el contenido actual al directorio base de la aplicación
-mv * ~/.local/share/zen/
-```
-
-```bash
-# Enlazar el binario a tu PATH local
-ln -s ~/.local/share/zen/zen ~/.local/bin/zen
-
-# Enlazar el ícono de 128px al directorio de íconos del sistema
-ln -s ~/.local/share/zen/browser/chrome/icons/default/default128.png ~/.local/share/icons/hicolor/128x128/apps/zen.png
-
-# Opcional: Refrescar la caché de íconos para que tu entorno gráfico lo
-# detecte de inmediato
-gtk-update-icon-cache ~/.local/share/icons/hicolor
-```
-
-creado el acceso directo en `~/.local/share/applications/zen.desktop`
-
-```txt
-[Desktop Entry]
-Name=Zen Browser
-Comment=Navegador web rápido y privado
-Exec=zen %u
-Icon=zen
-Type=Application
-Categories=Network;WebBrowser;
-Terminal=false
-StartupNotify=true
-MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/vnd.mozilla.xul+xml;application/rss+xml;application/rdf+xml;image/gif;image/jpeg;image/png;x-scheme-handler/http;x-scheme-handler/https;
-```
+> **Sin dependencias de herramientas externas como GNU Stow:** Las sincronizaciones se realizan mediante copias limpias (`cp`) gestionadas por el script [`bin/dot-sync`](bin/dot-sync) con **backups automáticos previos** en `~/.dotfiles_backup/`.
 
 ---
 
-## 2. BASE
+## ⚡ Instalación Rápida (Quickstart)
+
+Clona el repositorio en tu carpeta de repositorios:
 
 ```bash
-sudo apt update && sudo apt upgrade -y
-sudo apt install git curl unzip wl-clipboard zsh \
-  lazygit build-essential fzf ripgrep fd-find \
-  clang libclang-dev htop tree fastfetch
-```
-
----
-
-## 3. GIT
-
-```bash
-git config --global user.name "Tu nombre"
-git config --global user.email "tu email.com"
-ssh-keygen -t rsa -b 4096 -C "tu email"   # passphrase vacía
-eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/id_rsa
-cat ~/.ssh/id_rsa.pub | wl-copy            # agregar a GitHub → Settings → SSH keys
-```
-
-Clonar los dotfiles:
-
-```bash
-mkdir -p ~/repos
-cd ~/repos
+mkdir -p ~/repos && cd ~/repos
 git clone git@github.com:Joaquinfr87/dotfiles.git
-cd ~
+cd dotfiles
+```
+
+### Opción A: Entorno de Escritorio Completo (Laptop / PC)
+
+Instala paquetes del sistema, Sway, Noctalia v5, audio PipeWire, fuentes Iosevka, Kitty, Zen Browser y despliega las configuraciones:
+
+```bash
+./install.sh --desktop
+```
+
+### Opción B: Servidor Remoto / SSH (Headless)
+
+Instala únicamente herramientas de línea de comandos, Neovim (LazyVim), Zsh, Tmux con persistencia, configuración de Git y CLIs modernas (zoxide, eza, bat):
+
+```bash
+./install.sh --server
+```
+
+### Opción C: Modo Interactivo
+
+Si ejecutas el script sin banderas, se abrirá el menú interactivo para que elijas:
+
+```bash
+./install.sh
 ```
 
 ---
 
-## 4. Fuentes
+## 🔄 Gestión y Sincronización con `dot-sync`
 
-Instalar **Iosevka Nerd Font** (la usa la variable `$font` de sway):
+El comando [`bin/dot-sync`](bin/dot-sync) gestiona el ciclo de vida de tus configuraciones sin necesidad de GNU Stow:
 
-```bash
-mkdir -p ~/.local/share/fonts/Iosevka
-unzip ~/Downloads/{Iosevka-Term-Nerd-Font}.zip -d ~/.local/share/fonts/Iosevka/
-fc-cache -fv
-```
+| Comando | Acción |
+| --- | --- |
+| `dot-sync status` (o `dots status`) | Muestra el estado de sincronización entre el repo y tu sistema. |
+| `dot-sync diff` (o `dots diff`) | Muestra las diferencias exactas de código entre el repo y tu sistema. |
+| `dot-sync deploy` (o `dots deploy`) | **Repo ➔ Sistema:** Copia las configuraciones al sistema creando un **backup previo**. |
+| `dot-sync save` (o `dots save`) | **Sistema ➔ Repo:** Copia las modificaciones que hiciste en tu sistema de vuelta al repo. |
 
-Instalar la fuente de emojis (fallback de `$font`):
+### Flujo de trabajo habitual:
+1. Modificas un archivo en tu editor (por ejemplo `~/.config/sway/config.d/04-bindings`).
+2. Compruebas los cambios con: `dot-sync diff`
+3. Guardas los cambios en el repositorio con: `dot-sync save`
+4. Haces commit en Git: `git add . && git commit -m "feat: nuevo atajo" && git push`
 
-```bash
-sudo apt install fonts-noto-color-emoji
+---
+
+## 📁 Estructura del Repositorio
+
+```text
+dotfiles/
+├── bin/                          # Comandos auxiliares en tu $PATH
+│   ├── dot-sync                  # Sincronizador bidireccional (con backup)
+│   └── tmux-sessionizer          # Selector fzf de sesiones y proyectos para Tmux
+├── git/                          # Configuración global de Git
+│   ├── config                    # .gitconfig con aliases, delta y rebase
+│   └── ignore                    # .gitignore global (.DS_Store, *.local, etc.)
+├── install/                      # Scripts de instalación modulares e idempotentes
+│   ├── 00-helpers.sh             # Funciones de log, colores y detección de distro
+│   ├── 01-base-packages.sh       # Paquetes esenciales (git, curl, fzf, ripgrep, build-essential)
+│   ├── 02-cli-tools.sh           # Neovim (bob/tarball), zoxide, eza, bat, lazygit, plugins tmux
+│   ├── 03-shell.sh               # Zsh, Oh My Zsh, Powerlevel10k y plugins
+│   ├── 04-desktop-packages.sh    # Sway, Wayland, PipeWire, Kanshi, portales
+│   ├── 05-noctalia.sh            # Repositorio oficial y paquetes de Noctalia v5
+│   ├── 06-fonts-wallpapers.sh    # Iosevka Nerd Font y Zen Browser
+│   └── 07-copy-configs.sh        # Copiado con backup según el perfil (server/desktop)
+├── kanshi/                       # Perfiles multi-monitor (laptop, presentación, externo)
+├── kitty/                        # Terminal Kitty (tema Gruvbox Dark)
+├── noctalia/                     # Noctalia v5 config.toml (barra, notificaciones, lockscreen)
+├── noctalia-greeter/             # Configuración de greetd login manager
+├── nvim/                         # Neovim (LazyVim, LSP, Blink, Obsidian, Gruvbox)
+├── Pictures/                     # Fondos de pantalla
+├── sway/                         # Sway tiling window manager (modular en config.d/)
+├── tmux/                         # Tmux (persistencia con resurrect/continuum y sessionizer)
+├── .gitignore                    # Exclusiones de Git (binarios .deb, backups, .freebuff)
+├── .zprofile                     # Entorno de login (ejecuta sway solo en tty1 y si existe)
+├── .zshrc                        # Shell interactivo rápido y portable
+└── install.sh                    # Orquestador principal de instalación
 ```
 
 ---
 
-## 5. KITTY
+## 🛠️ Componentes y Tecnologías
 
-```bash
-curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
-mkdir -p ~/.local/{bin,share}
-ln -s ~/.local/kitty.app/bin/kitty ~/.local/bin/kitty
-ln -s ~/.local/kitty.app/bin/kitten ~/.local/bin/kitten
-cp -as ~/.local/kitty.app/share/* ~/.local/share/
-rm -rf ~/.config/kitty
-cp -r ~/repos/dotfiles/kitty ~/.config/
-kitten themes   # opcional
-```
+### Núcleo Terminal (Ambos perfiles: Desktop y Server)
+* **Shell:** Zsh con Oh My Zsh, Powerlevel10k, zsh-autosuggestions y zsh-syntax-highlighting.
+* **Editor:** Neovim (LazyVim) con soporte LSP, formateo con conform, completion con blink.cmp y notas en Obsidian.
+* **Multiplexor:** Tmux con prefijo `C-Space`, persistencia de sesiones tras reinicio (`tmux-resurrect` + `tmux-continuum`), y navegación de proyectos con `tmux-sessionizer` (`prefix + f`).
+* **Git:** `.gitconfig` profesional con aliases de alta frecuencia, rebase en pull, y soporte para visor de diffs `delta`.
+* **Herramientas CLI:** `fzf`, `ripgrep`, `fd`, `zoxide`, `eza`, `bat`, `btop`, `lazygit`.
 
----
-
-## 5.1 ZSH
-
-cambiar la shell
-
-```bash
-chsh -s $(which zsh)
-```
-
-> **Importante:** Cierra sesión y vuelve a entrar para que el cambio de shell surta efecto.
-instalar [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh/)
-
-```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-```
-
-instalar plugins de zsh
-
-```bash
-sudo apt install zsh-autosuggestions zsh-syntax-highlighting
-```
-
-instalar [p10k](https://github.com/romkatv/powerlevel10k)
-
-```bash
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
-```
-
-copiar la config
-
-```bash
-rm -f ~/.zshrc ~/.p10k.zsh
-cp ~/repos/dotfiles/{.zprofile,.zshrc} ~/
-```
-
-configurar p10k
-
-```bash
-p10k configure
-```
-
-seleccionar fuente en kitty
-
-```bash
-kitten choose-fonts
-```
+### Entorno Gráfico (Solo perfil Desktop)
+* **Compositor:** Sway (Wayland) con configuración modular en `sway/config.d/`.
+* **Shell UI:** Noctalia v5 (sustituye Waybar, Mako, Wofi, Swaylock, Swayidle y OSD de volumen/brillo en una sola herramienta eficiente vía IPC).
+* **Terminal GUI:** Kitty con soporte de teclado extendido CSI-u (Shift+Enter nativo).
+* **Gestión de Pantallas:** Kanshi con perfiles para `laptop`, `presentacion` y `externo`.
+* **Navegador:** Zen Browser.
 
 ---
 
-## 5.2 NVIM
-
-Descargar e instalar [Rust](https://rust-lang.org/tools/install/)
-
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-```
-
-Instalar por medio del script [Bob](https://github.com/mordechaihadad/bob)
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/MordechaiHadad/bob/master/scripts/install.sh | bash
-```
-
-Instalar nvim
-
-```bash
-bob use stable
-```
-
-> *Nota*: para actualizar nvim `bob update stable`
-
-anadir un enlace de nvim al share
-
-```bash
-sudo cp -as ~/.local/share/bob/{nvim-version}/share/* ~/.local/share/
-```
-
-anadir un enlace al root
-
-```bash
-sudo ln -s ~/.local/share/bob/nvim-bin/nvim /usr/bin/
-```
-
-instalar tree-sitter-cli
-> Se puede instalar por apt install pero la version es antigua para nvim-tree-sitter
-
-```bash
-cargo install tree-sitter-cli
-```
-
-Limpiar configuración previa de Neovim
-
-```bash
-rm -rf ~/.config/nvim
-rm -rf ~/.local/share/nvim
-rm -rf ~/.local/state/nvim
-rm -rf ~/.cache/nvim
-```
-
-Enlazar configuración de Neovim
-
-```bash
-cp -r ~/repos/dotfiles/nvim ~/.config/
-```
-
-> **Nota:** La primera vez que ejecutes `nvim`, LazyVim instalará automáticamente todos los plugins. Esto puede tardar unos minutos.
-
----
-
-## 5.3 TMUX
-
-Multiplexor de terminal para **sesiones persistentes** (detach/attach) y ventanas.
-La config vive en `tmux/`; el arranque rápido está en **[`tmux/README.md`](tmux/README.md)**
-y la **guía completa para aprender tmux** en **[`tmux/GUIA.md`](tmux/GUIA.md)**.
-
-```bash
-sudo apt install tmux
-
-mkdir -p ~/.config/tmux
-cp ~/repos/dotfiles/tmux/tmux.conf ~/.config/tmux/tmux.conf
-ln -sf ~/repos/dotfiles/tmux/scripts/tmux-sessionizer ~/.local/bin/tmux-sessionizer
-
-# Persistencia de sesiones tras reinicios (resurrect + continuum)
-mkdir -p ~/.config/tmux/plugins
-git clone --depth 1 https://github.com/tmux-plugins/tmux-resurrect \
-  ~/.config/tmux/plugins/tmux-resurrect
-git clone --depth 1 https://github.com/tmux-plugins/tmux-continuum \
-  ~/.config/tmux/plugins/tmux-continuum
-```
-
-> Prefijo **`C-Space`** (con `C-b` como secundario). En sway, `$mod+Shift+Return`
-> abre el sessionizer (fzf): lista las **sesiones de tmux** por defecto
-> (`ctrl-t` proyectos, `ctrl-a` todo `$HOME`). Las sesiones
-> **persisten tras reinicios**: guardado automático cada 10 min
-> (`C-Space C-s` manual, `C-Space C-r` restaura). Atajos, kitty,
-> copy-mode y demás en `tmux/README.md`.
-
----
-
-## 6. SWAY
-
-```bash
-sudo apt install sway
-```
-
-Iniciar la pila de audio PipeWire:
-
-```bash
-sudo apt install pipewire wireplumber pipewire-pulse
-systemctl --user enable --now pipewire wireplumber pipewire-pulse
-```
-
-Red: editar `/etc/network/interfaces` (o instalar `network-manager`, ver [Opcionales](#13-opcionales)):
-
-```bash
-source /etc/network/interfaces.d/*
-auto lo
-iface lo inet loopback
-allow-hotplug enp4s0
-iface enp4s0 inet dhcp
-iface enp4s0 inet6 auto
-```
-
-Instalar **kanshi** (cambio automático de pantallas, lo arranca `config.d/06-autostart`):
-
-```bash
-sudo apt install kanshi
-```
-
-Copiar los archivos de configuracion
-
-```bash
-cp -r ~/repos/dotfiles/{kanshi,sway} ~/.config 
-```
-
-> Perfiles en `~/.config/kanshi/config`: **laptop** (eDP-1 1366x768), **presentacion**
-> (laptop + HDMI-A-1 1920x1080 a la derecha, moviendo el workspace 1 al HDMI) y
-> **externo** (solo HDMI, portátil apagada). Sway no necesita `output` extra:
-> `config.d/01-outputs` solo fija la base de la laptop y delega el resto en kanshi.
-
----
-
-## 7. NOCTALIA
-
-Añadir el repositorio APT oficial (Debian Trixie):
-
-```bash
-wget https://pkg.noctalia.dev/deb/nickh-archive-keyring.deb
-sudo dpkg -i nickh-archive-keyring.deb
-sudo wget -O /etc/apt/sources.list.d/noctalia-trixie.sources https://pkg.noctalia.dev/deb/noctalia-trixie.sources
-sudo apt update
-sudo apt install noctalia
-```
-
-> Noctalia necesita en runtime: daemon PipeWire, un proveedor de Secret Service (`gnome-keyring`) y `upower`/`ddcutil` como opcionales para batería/brillo.
-
-> **Acciones de sesión:** las barritas de suspender/apagar/reiniciar de Noctalia usan
-> `[shell.session.power]` de `config.toml` (`systemctl suspend|reboot|poweroff`, por
-> polkit/`logind`, permitido sin contraseña para la sesión activa). El default de
-> Noctalia (`sudo -n ...`) falla si no hay regla NOPASSWD en sudoers.
-
----
-
-## 8. Dependencias de la config
-
-```bash
-sudo apt install xdg-desktop-portal xdg-desktop-portal-wlr xdg-desktop-portal-gtk \
-  xwayland kanshi wl-clipboard pavucontrol gnome-keyring
-```
-
-- `xdg-desktop-portal` + `xdg-desktop-portal-wlr` — compartir pantalla (screencast) y
-  el backend de portales; en Debian 13 viven en `/usr/libexec` y systemd los activa
-  por D-Bus (no hace falta ejecutarlos desde `06-autostart`)
-- `xdg-desktop-portal-gtk` — selector de archivos / backend GTK de los portales
-- `xwayland` — apps X11; **sin él no funcionan las reglas
-  `for_window [window_type=...]`** de `config.d/05-floating` (solo matchean
-  ventanas Xwayland). La config ya trae `xwayland enable` en `01-outputs`
-  (carga a demanda, `force` la iniciaría siempre) y `DISPLAY` ya se exporta
-  en `06-autostart`, así que solo falta instalar el paquete:
-- `kanshi` — perfiles de pantallas (lo arranca `06-autostart`)
-- `wl-clipboard` — portapapeles CLI de Wayland (`wl-copy`/`wl-paste`) para la terminal y scripts (Noctalia no lo instala ni lo sustituye)
-- `pavucontrol` — ajustes finos de audio (opcional)
-- `gnome-keyring` — Secret Service (clipboard encriptado y calendario de Noctalia)
-- ~~`autotiling`~~ — **ya no se usa**: se quitó de `06-autostart`. Si lo querés volver
-  a activar: `sudo apt install autotiling` y agregar `exec_always autotiling`
-
----
-
-## 9. Configuración (dotfiles)
-
-```bash
-rm -rf ~/.config/sway ~/.config/noctalia ~/.config/kanshi
-cp -r ~/repos/dotfiles/{sway,noctalia,kanshi} ~/.config/
-```
-
-Copiar wallpapers:
-
-```bash
-mkdir -p ~/Pictures
-cp -r ~/repos/dotfiles/Pictures/* ~/Pictures/
-```
-
-> Los cambios de la GUI de Noctalia (Settings) se guardan en `~/.local/state/noctalia/settings.toml`, que **gana** sobre tu `config.toml` si hay valores duplicados. No se edita a mano.
->
-> Los valores de la barra (`reserve_space = false`, `smart_auto_hide = true`) están
-> alineados en ambos archivos, así que `config.toml` es el único lugar donde
-> editarlos: la barra se oculta cuando la workspace tiene ventanas y se superpone
-> a las ventanas (no reserva zona exclusiva).
-
----
-
-## 10. Estructura de archivos
-
-```
-~/.config/sway/
-├── config                        # entrada delgada (solo includes)
-├── config.d/
-│   ├── 00-variables              # $mod, $term, $font, $web-browser, paleta Gruvbox
-│   ├── 01-outputs                # base de eDP-1 1366x768 (el externo lo gestiona kanshi)
-│   ├── 02-input                  # touchpad, teclado (layout us), cursor
-│   ├── 03-theme                  # client colors, gaps, borders
-│   ├── 04-bindings               # atajos sway + IPC noctalia
-│   ├── 05-floating               # reglas de ventanas flotantes
-│   └── 06-autostart              # entorno D-Bus, kanshi, noctalia, portals, gsettings
-├── user/                         # fragmentos extra (vacío, .gitkeep)
-└── walls/                        # fondos de pantalla
-~/.config/noctalia/
-└── config.toml                   # configuración del shell (TOML, v5)
-~/.config/kanshi/
-└── config                        # perfiles de pantallas (laptop / presentación / externo)
-```
-
-> ⚠️ El repo `piratheon/sway-noctalia-dots` trae un `settings.json` de **Noctalia v4 (JSON)**. No se copia: en v5 la config es **TOML** en `~/.config/noctalia/`.
-
----
-
-## 11. Atajos de teclado
+## ⌨️ Atajos de Teclado Clave (Sway)
 
 | Atajo | Acción |
 | --- | --- |
-| `$mod+Return` | terminal (kitty) |
-| `$mod+Shift+Return` | sessionizer de tmux (fzf, ver §5.3) |
-| `$mod+Shift+b` | navegador (Zen, `$web-browser`) |
-| `$mod+d` | launcher Noctalia |
-| `$mod+i` | control center |
-| `$mod+comma` | settings Noctalia |
-| `$mod+t` | lock screen |
-| `Ctrl+Alt+Delete` | panel de sesión (apagar / reiniciar / suspender) |
-| `Print` / `$mod+Print` | screenshot región / pantalla completa |
-| `$mod+Shift+c` | recargar config |
-| `$mod+Shift+e` | cerrar sesión |
-| `$mod+Shift+q` | matar ventana |
-| `$mod+1…0` / `$mod+Shift+1…0` | workspaces / mover a workspace |
-| `$mod+$left/…/$right` | mover foco |
-| `$mod+Shift+$left/…` | mover ventana |
-| `$mod+b` / `$mod+v` / `$mod+s` / `$mod+w` / `$mod+e` | splith / splitv / stacking / tabbed / toggle split |
-| `$mod+f` | fullscreen |
-| `$mod+space` / `$mod+Shift+space` | focus mode_toggle / floating toggle |
-| `$mod+r` | modo resize |
-| `$mod+minus` / `$mod+Shift+minus` | scratchpad show / move |
-| `XF86AudioPlay/Next/Prev` | control de medios |
-| `XF86Audio*/XF86MonBrightness*` | volumen / brillo (noctalia) |
-
-> **Pantallas:** no hay atajo manual: **kanshi** cambia solo al conectar/desconectar
-> el HDMI según los perfiles de `~/.config/kanshi/config`. Para forzar algo puntual:
-> `swaymsg output HDMI-A-1 enable pos 1366,0 mode 1920x1080@60Hz`.
+| `$mod+Return` | Abrir terminal (**Kitty**) |
+| `$mod+Shift+Return` | Abrir **tmux-sessionizer** (selector de proyectos con fzf) |
+| `$mod+Shift+b` | Abrir navegador (**Zen Browser**) |
+| `$mod+d` | Abrir launcher de aplicaciones (Noctalia) |
+| `$mod+i` | Abrir Centro de Control (Noctalia) |
+| `$mod+comma` | Ajustes de Noctalia |
+| `$mod+t` | Bloquear pantalla (Lock screen) |
+| `Ctrl+Alt+Delete` | Menú de sesión (Apagar / Reiniciar / Suspender) |
+| `Print` / `$mod+Print` | Captura de pantalla de región / pantalla completa |
+| `$mod+Shift+q` | Cerrar ventana activa |
+| `$mod+f` | Pantalla completa (Fullscreen) |
+| `$mod+Shift+space` | Alternar ventana flotante / tiling |
+| `$mod+1…0` | Cambiar de workspace |
+| `$mod+Shift+1…0` | Mover ventana a workspace |
+| `$mod+Shift+c` | Recargar configuración de Sway |
 
 ---
 
-## 12. Verificación y primeros pasos
+## 🔒 Variables y Personalizaciones Locales
 
-```bash
-# Validar configs sin reiniciar
-sway --validate -c ~/.config/sway/config
-noctalia config validate
-
-# Estado de la shell (barra visible, panel abierto, bloqueo)
-noctalia msg status
-```
-
-1. Recarga sway con `$mod+Shift+c` (o reinicia la sesión para que Noctalia lea `config.toml`).
-   Para aplicar cambios de `config.toml` **sin** reiniciar: `noctalia msg config-reload`.
-2. Configura la barra/widgets en Settings (`$mod+comma`).
-3. Ajusta la localización y el clima en Settings → Location.
-4. Si el cursor brilla demasiado: `seat * hide_cursor 2000` en `config.d/02-input`.
-
----
-
-## 13. Opcionales
-
-- **NetworkManager** — si quieres que el widget de red de la barra funcione:
-
-  ```bash
-  sudo apt install network-manager
-  sudo systemctl enable --now NetworkManager
+Para mantener credenciales, tokens o rutas de trabajo privadas sin subirlas al repositorio público:
+* **Shell:** Crea el archivo `~/.zshrc.local` (este archivo es leído automáticamente por `.zshrc` y está ignorado en Git).
+* **Git:** Crea el archivo `~/.gitconfig.local` para configurar tu `user.name` y `user.email` privados por máquina:
+  ```ini
+  [user]
+      name = Tu Nombre
+      email = tu@correo.com
   ```
-
-  > **Nota:** Asegúrese de que `/etc/network/interfaces` no tenga configuración manual de la interfaz WiFi (como `allow-hotplug` o `iface ... inet dhcp`), ya que esto puede bloquear NetworkManager. El archivo debería contener solo:
->
-  > ```
-  > source /etc/network/interfaces.d/*
-  > auto lo
-  > iface lo inet loopback
-  > ```
-
-  Añadir `nm-applet` al autostart de Sway (en `config.d/06-autostart`):
-
-  ```
-  exec nm-applet
-  ```
-
-- **wdisplays** — gestor gráfico de monitores (`sudo apt install wdisplays`).
-- **swayfx** — el repo de referencia usa blur/redondeo (`config.d/swayfx`), pero requiere el fork `swayfx`; con sway stock se omite.
-
-### Noctalia Greeter (login manager)
-
-Greeter de sesión basado en greetd. Requiere el repo APT de Noctalia (ver [7. NOCTALIA](#7-noctalia)).
-
-```bash
-sudo apt update
-sudo apt install greetd
-sudo apt install noctalia-greeter
-```
-
-Si no tienes el repo aún:
-
-```bash
-wget https://pkg.noctalia.dev/deb/nickh-archive-keyring.deb
-sudo dpkg -i nickh-archive-keyring.deb
-sudo wget -O /etc/apt/sources.list.d/noctalia-trixie.sources https://pkg.noctalia.dev/deb/noctalia-trixie.sources
-sudo apt update
-sudo apt install noctalia-greeter
-```
-
-Configurar el comando del greeter en greetd:
-
-```bash
-sudo nvim /etc/greetd/config.toml
-```
-
-Verificar la línea `command`, debería apuntar a noctalia-greeter:
-
-```bash
-cat /etc/greetd/config.toml | grep "command"
-```
-
-Habilitar greetd como display manager:
-
-```bash
-sudo systemctl enable --now greetd
-```
-
-Configurar el greeter (wallpaper, tema, etc.):
-
-```bash
-sudo mkdir -p /var/lib/noctalia-greeter/
-cd /var/lib/noctalia-greeter
-sudo nvim greeter.toml
-```
-
-Copiar el wallpaper del greeter:
-
-```bash
-sudo cp ~/Pictures/wallpaper4.png /var/lib/noctalia-greeter/wallpaper.png
-```
-
-Reiniciar para probar:
-
-```bash
-sudo reboot
-```
-
-### GRUB — arranque automático sin menú
-
-Editar la configuración:
-
-```bash
-sudo nvim /etc/default/grub
-```
-
-Ajustar estas líneas:
-
-```
-GRUB_TIMEOUT=0
-GRUB_TIMEOUT_STYLE=hidden
-GRUB_CMDLINE_LINUX_DEFAULT="quiet"
-```
-
-- `GRUB_TIMEOUT=0` — arranca la entrada por defecto de inmediato.
-- `GRUB_TIMEOUT_STYLE=hidden` — oculta el menú (usa `menu` si prefieres verlo).
-- `GRUB_CMDLINE_LINUX_DEFAULT="quiet"` — arranque silencioso.
-
-> **Nota:** con timeout 0, si tienes dual-boot y quieres elegir otro SO, mantén pulsada `Shift` (BIOS) o `Esc` (UEFI) al arrancar para que aparezca el menú.
-
-Aplicar los cambios:
-
-```bash
-sudo update-grub
-```
-
-Reiniciar para probar:
-
-```bash
-sudo reboot
-```
-
----
-
-## 14. Referencia
-
-- Sway: `man 5 sway` (criterios/condiciones) y `man 5 sway-input` (touchpad, xkb)
-- Noctalia: <https://docs.noctalia.dev/>
-- IPC de Noctalia: `noctalia msg --help` y <https://docs.noctalia.dev/noctalia/ipc/>
-- Sway + Noctalia: <https://docs.noctalia.dev/noctalia/compositor-settings/sway-scroll/>
-- Idle / lock / suspend de Noctalia: <https://docs.noctalia.dev/noctalia/services/idle/>

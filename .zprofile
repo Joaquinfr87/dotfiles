@@ -1,30 +1,21 @@
-# ~/.profile: executed by the command interpreter for login shells.
-# This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
-# exists.
-# see /usr/share/doc/bash/examples/startup-files for examples.
-# the files are located in the bash-doc package.
+# ~/.zprofile: ejecutado por intérpretes de comandos para login shells.
 
-# the default umask is set in /etc/profile; for setting the umask
-# for ssh logins, install and configure the libpam-umask package.
-#umask 022
-
-# if running bash
-if [ -n "$BASH_VERSION" ]; then
-    # include .bashrc if it exists
-    if [ -f "$HOME/.bashrc" ]; then
-	. "$HOME/.bashrc"
-    fi
-fi
-
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/bin" ] ; then
+# Añadir binarios de usuario al PATH si existen
+if [ -d "$HOME/bin" ]; then
     PATH="$HOME/bin:$PATH"
 fi
 
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/.local/bin" ] ; then
+if [ -d "$HOME/.local/bin" ]; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
-# If running from tty1 start sway
-[ "$(tty)" = "/dev/tty1" ] && exec sway
+if [ -d "$HOME/repos/dotfiles/bin" ]; then
+    PATH="$HOME/repos/dotfiles/bin:$PATH"
+fi
+
+export PATH
+
+# Si estamos en tty1 y Sway está instalado, iniciar la sesión gráfica (Wayland)
+if [ "$(tty)" = "/dev/tty1" ] && command -v sway >/dev/null 2>&1; then
+    exec sway
+fi

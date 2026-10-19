@@ -1,77 +1,139 @@
 # Dotfiles — Sway + Noctalia v5 & Servidores SSH
 
-Configuración modular, estética y profesional de entorno de trabajo para **Linux (Debian 13 Trixie, Ubuntu y servidores remotos)** con paleta **Gruvbox Material Dark**.
+Configuración modular, estética y profesional de entorno de trabajo para **Linux (Debian 13 Trixie, Ubuntu y servidores remotos por SSH)** con paleta **Gruvbox Material Dark**.
 
-Diseñado con dos perfiles de instalación independientes:
-1. **Perfil Desktop:** Entorno gráfico completo basado en Wayland ([Sway](https://swaywm.org) + [Noctalia v5](https://noctalia.dev) + [Kitty](https://sw.kovidgoyal.net/kitty/) + [Zen Browser](https://zen-browser.app/)).
-2. **Perfil Server / SSH:** Entorno de terminal ultraligero y de alta productividad ([Zsh](https://www.zsh.org/) + [Tmux](https://github.com/tmux/tmux) + [Neovim](https://neovim.io/) + Git profesional + CLIs modernas) para servidores sin entorno gráfico.
+El proyecto cuenta con un **asistente de instalación 100% CLI guiado por pasos**, donde puedes personalizar tu entorno (Escritorio o Servidor), elegir tu prompt favorito (**Starship** o **Oh My Zsh + p10k**) y marcar/tachar con casillas `[X]` / `[ ]` las herramientas extras que deseas instalar (**Node.js, pnpm, Docker, OpenCode, Freebuff, Codex, AGY**).
 
-> **Sin dependencias de herramientas externas como GNU Stow:** Las sincronizaciones se realizan mediante copias limpias (`cp`) gestionadas por el script [`bin/dot-sync`](bin/dot-sync) con **backups automáticos previos** en `~/.dotfiles_backup/`.
+> **Sin dependencias externas como GNU Stow:** Las sincronizaciones se realizan mediante copias limpias (`cp`) gestionadas por el comando [`bin/dot-sync`](bin/dot-sync) con **backups automáticos previos** en `~/.dotfiles_backup/`.
 
 ---
 
-## ⚡ Instalación Rápida (Quickstart)
+## 🚀 Guía de Instalación Paso a Paso
 
-Clona el repositorio en tu carpeta de repositorios:
+### Paso 0: Requisitos Previos en una Máquina Limpia
+
+#### Caso A: En Debian Mínimo (Netinst)
+Si acabas de instalar Debian desde la imagen mínima, `sudo` no viene configurado. Ejecuta este comando como `root` una sola vez:
+
+```bash
+su -c "apt update && apt install -y sudo git curl && usermod -aG sudo $USER"
+```
+*(Cierra y vuelve a abrir tu terminal para que tome efecto el grupo `sudo`).*
+
+#### Caso B: En Servidores SSH / Ubuntu / Máquinas con `sudo` listo
+Solo asegúrate de tener `git` y `curl`:
+
+```bash
+sudo apt update && sudo apt install -y git curl
+```
+
+---
+
+### Paso 1: Clonar el Repositorio
+
+Clona el repositorio por **HTTPS** (no requiere claves SSH ni configuración previa):
 
 ```bash
 mkdir -p ~/repos && cd ~/repos
-git clone git@github.com:Joaquinfr87/dotfiles.git
+git clone https://github.com/Joaquinfr87/dotfiles.git
 cd dotfiles
+git checkout feat/pro-setup
 ```
 
-### Opción A: Entorno de Escritorio Completo (Laptop / PC)
+---
 
-Instala paquetes del sistema, Sway, Noctalia v5, audio PipeWire, fuentes Iosevka, Kitty, Zen Browser y despliega las configuraciones:
+### Paso 2: Iniciar el Asistente Guiado CLI
 
-```bash
-./install.sh --desktop
-```
-
-### Opción B: Servidor Remoto / SSH (Headless)
-
-Instala únicamente herramientas de línea de comandos, Neovim (LazyVim), Zsh nativo, Starship, Tmux con persistencia, configuración de Git y CLIs modernas:
-
-```bash
-./install.sh --server
-```
-
-### Opción C: Submenú de Herramientas Extras
-
-Instala herramientas adicionales como Node.js, Docker, Lazydocker, Agentes AI (OpenCode, Freebuff) o Oh My Zsh:
-
-```bash
-./install.sh --extras
-```
-
-### Opción D: Asistente Guiado 100% CLI
-
-Si ejecutas el script sin banderas, se iniciará el asistente guiado interactivo por pasos:
-1. **Paso 1:** Selecciona tu entorno (**Escritorio completo** o **Servidor SSH**).
-2. **Paso 2:** Selecciona tu prompt (**Starship** u **Oh My Zsh + p10k**).
-3. **Paso 3:** Selector interactivo de herramientas extras con casillas `[X]` / `[ ]` para marcar o tachar lo que desees instalar (**Node.js, pnpm, Docker, OpenCode, Freebuff, Codex, AGY**).
+Ejecuta el orquestador principal:
 
 ```bash
 ./install.sh
 ```
 
+El instalador te guiará interactivamente a través de 3 sencillos pasos en tu terminal:
+
+#### 1. Selección de Entorno
+```text
+>> PASO 1: Selección de Entorno
+  1) Entorno de escritorio completo (Sway + Noctalia + Greeter + Terminal)
+  2) Entorno de servidor (Solo terminal para SSH, sin interfaz gráfica)
+  3) Sincronizar configuraciones (con backup automático)
+  4) Menú de herramientas extras (instalar solo Node, Docker, AI...)
+  5) Salir
+```
+* **Escritorio Completo:** Instala Sway, Noctalia v5, Noctalia Greeter (login con `greetd`), audio PipeWire, fuentes Iosevka Nerd Font, Kitty y Zen Browser.
+* **Servidor SSH:** Instala únicamente herramientas CLI, Neovim (LazyVim), Tmux con persistencia y Git (cero paquetes gráficos).
+
+#### 2. Selección de Shell y Prompt
+```text
+>> PASO 2: Selección de Shell y Prompt
+  1) Starship (Recomendado — Rust, ultrarrápido < 20ms, tema Gruvbox)
+  2) Oh My Zsh + Powerlevel10k (Entorno clásico con plugins OMZ)
+```
+
+#### 3. Selector de Herramientas Extras (Casillas interactivas)
+```text
+>> PASO 3: Herramientas Extras & Agentes AI
+Marca o desmarca las herramientas escribiendo su número [1-7]:
+
+  [1] [X] Node.js LTS (JavaScript runtime vía NVM)
+  [2] [X] pnpm (Gestor de paquetes ultrarrápido)
+  [3] [X] Docker Engine + Docker Compose + Lazydocker
+  [4] [X] OpenCode CLI (Agente AI para terminal)
+  [5] [X] Freebuff CLI (Agente AI para proyectos)
+  [6] [X] Codex CLI (Agente AI interactivo)
+  [7] [X] Antigravity CLI (agy)
+
+  [A] Marcar todos   [N] Desmarcar todos
+  [C] Continuar con la instalación (o pulsa Enter)
+  [S] Saltar herramientas extras
+```
+* Escribe el número correspondiente para alternar cualquier herramienta entre `[X]` y `[ ]`.
+* Pulsa **`C`** (o simplemente **`Enter`**) para comenzar la instalación desatendida.
+
 ---
 
-## 🔄 Gestión y Sincronización con `dot-sync`
+### Paso 3: Configurar Clave SSH para GitHub (Opcional)
 
-El comando [`bin/dot-sync`](bin/dot-sync) gestiona el ciclo de vida de tus configuraciones sin necesidad de GNU Stow:
+Una vez terminada la instalación, si deseas configurar tu clave SSH para hacer `git push` a tus repositorios sin contraseñas:
 
-| Comando | Acción |
+```bash
+# 1. Generar clave moderna Ed25519
+ssh-keygen -t ed25519 -C "tu@email.com"
+
+# 2. Iniciar el agente y añadir la clave
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+
+# 3. Copiar la clave pública:
+# En Desktop (Wayland):
+cat ~/.ssh/id_ed25519.pub | wl-copy
+
+# En Servidor SSH (mostrar en pantalla para copiarla):
+cat ~/.ssh/id_ed25519.pub
+
+# 4. Cambiar el remoto de este repositorio a SSH:
+git remote set-url origin git@github.com:Joaquinfr87/dotfiles.git
+```
+*(Pega la clave en: GitHub ➔ Settings ➔ SSH and GPG keys).*
+
+---
+
+## 🔄 Gestión Diaria con `dot-sync` (Sin GNU Stow)
+
+El comando [`bin/dot-sync`](bin/dot-sync) (disponible también con el alias `dots`) te permite mantener sincronizado tu sistema y el repositorio de forma bidireccional y segura:
+
+| Comando | Función |
 | --- | --- |
-| `dot-sync status` (o `dots status`) | Muestra el estado de sincronización entre el repo y tu sistema. |
-| `dot-sync diff` (o `dots diff`) | Muestra las diferencias exactas de código entre el repo y tu sistema. |
-| `dot-sync deploy` (o `dots deploy`) | **Repo ➔ Sistema:** Copia las configuraciones al sistema creando un **backup previo**. |
-| `dot-sync save` (o `dots save`) | **Sistema ➔ Repo:** Copia las modificaciones que hiciste en tu sistema de vuelta al repo. |
+| `dot-sync status` (o `dots status`) | Muestra qué archivos están sincronizados, modificados o faltantes. |
+| `dot-sync diff` (o `dots diff`) | Muestra las diferencias exactas de código entre tu sistema y el repo. |
+| `dot-sync deploy` (o `dots deploy`) | **Repo ➔ Sistema:** Despliega configs creando un **backup previo** en `~/.dotfiles_backup/`. |
+| `dot-sync save` (o `dots save`) | **Sistema ➔ Repo:** Copia los cambios que hiciste en `~/.config` de vuelta al repositorio. |
 
-### Flujo de trabajo habitual:
-1. Modificas un archivo en tu editor (por ejemplo `~/.config/sway/config.d/04-bindings`).
-2. Compruebas los cambios con: `dot-sync diff`
-3. Guardas los cambios en el repositorio con: `dot-sync save`
+### Flujo habitual de trabajo:
+1. Haces un cambio en tu editor (por ejemplo en `~/.config/sway/config.d/04-bindings`).
+2. Compruebas qué cambió: `dot-sync diff`
+3. Traes los cambios al repositorio: `dot-sync save`
 4. Haces commit en Git: `git add . && git commit -m "feat: nuevo atajo" && git push`
 
 ---
@@ -81,7 +143,7 @@ El comando [`bin/dot-sync`](bin/dot-sync) gestiona el ciclo de vida de tus confi
 ```text
 dotfiles/
 ├── bin/                          # Comandos auxiliares en tu $PATH
-│   ├── dot-sync                  # Sincronizador bidireccional (con backup)
+│   ├── dot-sync                  # Sincronizador bidireccional con backups automáticos
 │   └── tmux-sessionizer          # Selector fzf de sesiones y proyectos para Tmux
 ├── git/                          # Configuración global de Git
 │   ├── config                    # .gitconfig con aliases, delta y rebase
@@ -90,51 +152,31 @@ dotfiles/
 │   ├── 00-helpers.sh             # Funciones de log, colores y detección de distro
 │   ├── 01-base-packages.sh       # Paquetes esenciales (git, curl, fzf, ripgrep, build-essential)
 │   ├── 02-cli-tools.sh           # Neovim (bob/tarball), zoxide, eza, bat, lazygit, plugins tmux
-│   ├── 03-shell.sh               # Zsh nativo, Starship y plugins (con opción --omz)
+│   ├── 03-shell.sh               # Zsh nativo, Starship y plugins (soporta opción --omz)
 │   ├── 04-desktop-packages.sh    # Sway, Wayland, PipeWire, Kanshi, portales
-│   ├── 05-noctalia.sh            # Repositorio oficial de Noctalia v5 y Noctalia Greeter (greetd)
+│   ├── 05-noctalia.sh            # Noctalia v5 y Noctalia Greeter (greetd display manager)
 │   ├── 06-fonts-wallpapers.sh    # Iosevka Nerd Font y Zen Browser
 │   ├── 07-copy-configs.sh        # Copiado con backup según el perfil (server/desktop)
-│   └── 08-dev-ai-tools.sh        # Node.js, Docker Compose, Lazydocker, OpenCode, Freebuff, AGY, Codex
+│   └── 08-dev-ai-tools.sh        # Node.js, pnpm, Docker, OpenCode, Freebuff, AGY, Codex
 ├── kanshi/                       # Perfiles multi-monitor (laptop, presentación, externo)
-├── kitty/                        # Terminal Kitty (tema Gruvbox Dark)
-├── noctalia/                     # Noctalia v5 config.toml (barra, notificaciones, lockscreen)
+├── kitty/                        # Terminal Kitty (tema Gruvbox Dark y teclado CSI-u)
+├── noctalia/                     # Noctalia v5 config.toml (barra, launcher, notificaciones, lock)
 ├── noctalia-greeter/             # Configuración de greetd login manager
 ├── nvim/                         # Neovim (LazyVim, LSP, Blink, Obsidian, Gruvbox)
-├── Pictures/                     # Fondos de pantalla
-├── starship/                     # Configuración de Starship (tema Gruvbox Material)
+├── Pictures/                     # Fondos de pantalla Gruvbox
+├── starship/                     # Configuración de Starship prompt (Gruvbox Material Dark)
 │   └── starship.toml
 ├── sway/                         # Sway tiling window manager (modular en config.d/)
 ├── tmux/                         # Tmux (persistencia con resurrect/continuum y sessionizer)
 ├── .gitignore                    # Exclusiones de Git (binarios .deb, backups, .freebuff)
 ├── .zprofile                     # Entorno de login (ejecuta sway solo en tty1 y si existe)
 ├── .zshrc                        # Shell interactivo ultrarrápido (Zsh nativo + Starship)
-└── install.sh                    # Orquestador principal de instalación
+└── install.sh                    # Orquestador principal de instalación 100% CLI
 ```
 
 ---
 
-## 🛠️ Componentes y Tecnologías
-
-### Núcleo Terminal (Ambos perfiles: Desktop y Server)
-* **Shell:** Zsh nativo ultrarrápido (< 20 ms de inicio, sin Oh My Zsh) con autocompletado en caché, `zsh-autosuggestions`, `zsh-syntax-highlighting` y aliases de Git.
-* **Prompt:** [Starship](https://starship.rs/) escrito en Rust con paleta Gruvbox Material Dark (`~/.config/starship.toml`).
-  > *Nota:* Si prefieres usar Oh My Zsh y Powerlevel10k, puedes instalarlos con `./install.sh --omz` o activar `export USE_OH_MY_ZSH=true` en `~/.zshrc.local`.
-* **Editor:** Neovim (LazyVim) con soporte LSP, formateo con conform, completion con blink.cmp y notas en Obsidian.
-* **Multiplexor:** Tmux con prefijo `C-Space`, persistencia de sesiones tras reinicio (`tmux-resurrect` + `tmux-continuum`), y navegación de proyectos con `tmux-sessionizer` (`prefix + f`).
-* **Git:** `.gitconfig` profesional con aliases de alta frecuencia, rebase en pull, y soporte para visor de diffs `delta`.
-* **Herramientas CLI:** `fzf`, `ripgrep`, `fd`, `zoxide`, `eza`, `bat`, `btop`, `lazygit`.
-
-### Entorno Gráfico (Solo perfil Desktop)
-* **Compositor:** Sway (Wayland) con configuración modular en `sway/config.d/`.
-* **Shell UI:** Noctalia v5 (sustituye Waybar, Mako, Wofi, Swaylock, Swayidle y OSD de volumen/brillo en una sola herramienta eficiente vía IPC).
-* **Terminal GUI:** Kitty con soporte de teclado extendido CSI-u (Shift+Enter nativo).
-* **Gestión de Pantallas:** Kanshi con perfiles para `laptop`, `presentacion` y `externo`.
-* **Navegador:** Zen Browser.
-
----
-
-## ⌨️ Atajos de Teclado Clave (Sway)
+## ⌨️ Atajos de Teclado Clave (Sway + Wayland)
 
 | Atajo | Acción |
 | --- | --- |
@@ -146,7 +188,7 @@ dotfiles/
 | `$mod+comma` | Ajustes de Noctalia |
 | `$mod+t` | Bloquear pantalla (Lock screen) |
 | `Ctrl+Alt+Delete` | Menú de sesión (Apagar / Reiniciar / Suspender) |
-| `Print` / `$mod+Print` | Captura de pantalla de región / pantalla completa |
+| `Print` / `$mod+Print` | Captura de pantalla región / pantalla completa |
 | `$mod+Shift+q` | Cerrar ventana activa |
 | `$mod+f` | Pantalla completa (Fullscreen) |
 | `$mod+Shift+space` | Alternar ventana flotante / tiling |
@@ -158,9 +200,9 @@ dotfiles/
 
 ## 🔒 Variables y Personalizaciones Locales
 
-Para mantener credenciales, tokens o rutas de trabajo privadas sin subirlas al repositorio público:
+Para mantener tokens, claves API o rutas privadas sin subirlas al repositorio público:
 * **Shell:** Crea el archivo `~/.zshrc.local` (este archivo es leído automáticamente por `.zshrc` y está ignorado en Git).
-* **Git:** Crea el archivo `~/.gitconfig.local` para configurar tu `user.name` y `user.email` privados por máquina:
+* **Git:** Crea el archivo `~/.gitconfig.local` para configurar tu nombre y email por máquina:
   ```ini
   [user]
       name = Tu Nombre

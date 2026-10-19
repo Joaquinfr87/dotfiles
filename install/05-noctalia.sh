@@ -31,8 +31,11 @@ if [[ "$OS" =~ ^(debian|ubuntu)$ ]]; then
   fi
 
   # 2. Instalación y configuración obligatoria de Noctalia Greeter con greetd
-  log_info "Instalando greetd y noctalia-greeter..."
-  pkg_install greetd noctalia-greeter || true
+  log_info "Instalando greetd..."
+  pkg_install greetd || true
+
+  log_info "Instalando noctalia-greeter..."
+  run_sudo apt install -y -t trixie-backports noctalia-greeter 2>/dev/null || pkg_install noctalia-greeter || true
 
   # Configurar /etc/greetd/config.toml
   log_info "Configurando /etc/greetd/config.toml para noctalia-greeter..."
@@ -64,11 +67,15 @@ EOF'
   fi
   run_sudo chmod -R 755 /var/lib/noctalia-greeter 2>/dev/null || true
 
-  # Habilitar servicio greetd
+  # Habilitar servicio greetd si la unidad está instalada
   if has_cmd systemctl; then
-    log_info "Habilitando servicio greetd en systemd..."
-    run_sudo systemctl enable greetd || true
-    log_ok "Noctalia Greeter configurado y habilitado en systemd."
+    if systemctl list-unit-files 2>/dev/null | grep -q "^greetd\.service"; then
+      log_info "Habilitando servicio greetd en systemd..."
+      run_sudo systemctl enable greetd || true
+      log_ok "Noctalia Greeter configurado y habilitado en systemd."
+    else
+      log_warn "greetd.service no se encuentra registrado en systemd."
+    fi
   fi
 else
   log_warn "Noctalia en $OS: consulta la documentación oficial en https://docs.noctalia.dev para compilar o instalar vía cargo."

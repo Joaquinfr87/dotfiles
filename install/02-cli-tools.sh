@@ -117,4 +117,41 @@ if [[ ! -d "$HOME/.config/tmux/plugins/tmux-continuum" ]]; then
   log_ok "Clonado tmux-continuum"
 fi
 
+# 7. Git-delta (resaltador de sintaxis para git diff, log y blame)
+if ! has_cmd delta && ! has_cmd git-delta; then
+  log_info "Instalando git-delta..."
+  OS="$(detect_os)"
+  if [[ "$OS" =~ ^(debian|ubuntu)$ ]]; then
+    pkg_install git-delta || true
+  elif [[ "$OS" =~ ^(arch|cachyos|manjaro)$ ]]; then
+    pkg_install git-delta || true
+  elif [[ "$OS" == "fedora" ]]; then
+    pkg_install git-delta || true
+  fi
+
+  # Fallback a release binario oficial desde GitHub si no se instaló por paquete
+  if ! has_cmd delta && ! has_cmd git-delta; then
+    log_info "Descargando binario de delta desde GitHub..."
+    local delta_url
+    delta_url=$(curl -s "https://api.github.com/repos/dandavison/delta/releases/latest" | grep -Po '"browser_download_url": "\K[^"]*x86_64-unknown-linux-musl\.tar\.gz' | head -n 1 || echo "")
+    if [[ -n "$delta_url" ]]; then
+      curl -fsSL -o /tmp/delta.tar.gz "$delta_url"
+      tar -xzf /tmp/delta.tar.gz -C /tmp
+      mkdir -p "$HOME/.local/bin"
+      mv /tmp/delta-*/delta "$HOME/.local/bin/delta" 2>/dev/null || true
+      chmod +x "$HOME/.local/bin/delta" 2>/dev/null || true
+      rm -rf /tmp/delta.tar.gz /tmp/delta-*
+      log_ok "delta instalado en ~/.local/bin/delta"
+    fi
+  fi
+fi
+
+if has_cmd git-delta && ! has_cmd delta; then
+  ln -sf "$(command -v git-delta)" "$HOME/.local/bin/delta"
+fi
+
+if has_cmd delta; then
+  log_ok "delta ya está disponible: $(delta --version 2>/dev/null | head -n 1)"
+fi
+
 log_ok "Herramientas CLI preparadas."

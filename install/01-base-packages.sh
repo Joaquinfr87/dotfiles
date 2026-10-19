@@ -33,7 +33,8 @@ case "$OS" in
       htop \
       fastfetch \
       ca-certificates \
-      direnv
+      direnv \
+      git-delta
     ;;
   arch|cachyos|manjaro)
     log_info "Instalando paquetes base para Arch Linux..."
@@ -53,7 +54,8 @@ case "$OS" in
       tree \
       htop \
       fastfetch \
-      ca-certificates
+      ca-certificates \
+      git-delta
     ;;
   fedora)
     log_info "Instalando paquetes base para Fedora..."
@@ -72,10 +74,11 @@ case "$OS" in
       tree \
       htop \
       fastfetch \
-      ca-certificates
+      ca-certificates \
+      git-delta
     ;;
   *)
-    log_warn "Distribución no reconocida ($OS). Asegúrate de tener instalados: git, curl, zsh, tmux, fzf, ripgrep."
+    log_warn "Distribución no reconocida ($OS). Asegúrate de tener instalados: git, curl, zsh, tmux, fzf, ripgrep, git-delta."
     ;;
 esac
 
@@ -84,6 +87,13 @@ if has_cmd fdfind && ! has_cmd fd; then
   mkdir -p "$HOME/.local/bin"
   ln -sf "$(command -v fdfind)" "$HOME/.local/bin/fd"
   log_ok "Enlazado 'fdfind' como 'fd' en ~/.local/bin/fd"
+fi
+
+# Asegurar que delta esté disponible como comando si se instaló como git-delta
+if has_cmd git-delta && ! has_cmd delta; then
+  mkdir -p "$HOME/.local/bin"
+  ln -sf "$(command -v git-delta)" "$HOME/.local/bin/delta"
+  log_ok "Enlazado 'git-delta' como 'delta' en ~/.local/bin/delta"
 fi
 
 log_ok "Paquetes base instalados correctamente."

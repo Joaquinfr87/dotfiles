@@ -16,28 +16,38 @@ log_step "Instalando Herramientas de Desarrollo & Agentes AI Seleccionados"
 mkdir -p "$HOME/.local/bin"
 export PATH="$HOME/.local/bin:$HOME/.opencode/bin:$PATH"
 
+# Cargar NVM si ya existe en el sistema
+export NVM_DIR="$HOME/.nvm"
+if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+  set +u
+  # shellcheck disable=SC1091
+  \. "$NVM_DIR/nvm.sh"
+  set -u
+fi
+
 # ------------------------------------------------------------------------------
 # 1. Node.js LTS
 # ------------------------------------------------------------------------------
 install_node() {
   log_info "Configurando Node.js LTS..."
+  export NVM_DIR="$HOME/.nvm"
+  if [[ ! -d "$NVM_DIR" ]]; then
+    log_info "Instalando NVM (Node Version Manager)..."
+    curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+  fi
+
+  # Cargar NVM protegiendo temporalmente contra variables no definidas en nvm.sh
+  set +u
+  # shellcheck disable=SC1091
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
   if ! has_cmd node; then
-    export NVM_DIR="$HOME/.nvm"
-    if [[ ! -d "$NVM_DIR" ]]; then
-      log_info "Instalando NVM (Node Version Manager)..."
-      curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-    fi
-    # Cargar NVM en la sesión actual
-    # shellcheck disable=SC1091
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     log_info "Descargando última versión LTS de Node..."
     nvm install --lts
     nvm use --lts
     nvm alias default 'lts/*'
-    log_ok "Node.js $(node --version 2>/dev/null || echo '') instalado."
-  else
-    log_ok "Node.js ya está instalado: $(node --version)"
   fi
+  set -u
+  log_ok "Node.js $(node --version 2>/dev/null || echo '') instalado."
 }
 
 # ------------------------------------------------------------------------------
@@ -45,6 +55,9 @@ install_node() {
 # ------------------------------------------------------------------------------
 install_pnpm() {
   log_info "Configurando pnpm..."
+  set +u
+  [[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"
+  set -u
   if ! has_cmd pnpm; then
     if has_cmd npm; then
       log_info "Instalando pnpm vía npm..."
@@ -121,6 +134,9 @@ install_opencode() {
 # ------------------------------------------------------------------------------
 install_freebuff() {
   log_info "Configurando Freebuff CLI..."
+  set +u
+  [[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"
+  set -u
   if ! has_cmd freebuff; then
     if has_cmd npm; then
       log_info "Instalando freebuff vía npm global..."

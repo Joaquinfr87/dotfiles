@@ -12,22 +12,49 @@
 # Si conectas una pantalla diferente, kanshi usa el perfil que mejor coincida.
 # Si ninguna coincide, sway usa su config por defecto.
 
-# --- Solo laptop (sin nada conectado) ---
+# --- 1. Solo laptop (1366x768) ---
 profile laptop {
     output eDP-1 enable position 0,0 mode 1366x768@60Hz
 }
 
-# --- Presentación: laptop + pantalla externa ---
-# La externa se coloca a la derecha de la laptop.
-# Resolución fija en 1920x1080 para compatibilidad con proyectores/monitores.
+# --- 2. Laptop + Pantalla externa HDMI (Presentación / Dual) ---
+# La externa se coloca a la derecha de la laptop (1366,0).
 profile presentacion {
-    output eDP-1  enable position 0,0 mode 1366x768@60Hz
+    output eDP-1 enable position 0,0 mode 1366x768@60Hz
     output HDMI-A-1 enable position 1366,0 mode 1920x1080@60Hz
     exec swaymsg workspace 1, move workspace to HDMI-A-1
 }
 
-# --- Solo pantalla externa (laptop apagada) ---
-profile externo {
+# --- 3. Laptop + Pantalla externa DisplayPort (Dock USB-C / Thunderbolt) ---
+profile laptop_dp {
+    output eDP-1 enable position 0,0 mode 1366x768@60Hz
+    output DP-1 enable position 1366,0 mode 1920x1080@60Hz
+    exec swaymsg workspace 1, move workspace to DP-1
+}
+
+# --- 4. Laptop con tapa cerrada + pantalla HDMI (Clamshell) ---
+profile laptop_clamshell {
     output eDP-1 disable
     output HDMI-A-1 enable position 0,0 mode 1920x1080@60Hz
+}
+
+# --- 5. PC de escritorio: Monitor único HDMI (1920x1080) ---
+profile desktop_hdmi {
+    output HDMI-A-1 enable position 0,0 mode 1920x1080@60Hz
+}
+
+# --- 6. PC de escritorio: Monitor único DisplayPort (1920x1080) ---
+profile desktop_dp {
+    output DP-1 enable position 0,0 mode 1920x1080@60Hz
+}
+
+profile desktop_dp2 {
+    output DP-2 enable position 0,0 mode 1920x1080@60Hz
+}
+
+# --- 7. PC de escritorio: Doble monitor (DP principal + HDMI secundario) ---
+profile desktop_dual {
+    output DP-1 enable position 0,0 mode 1920x1080@60Hz
+    output HDMI-A-1 enable position 1920,0 mode 1920x1080@60Hz
+    exec swaymsg workspace 1, move workspace to DP-1
 }

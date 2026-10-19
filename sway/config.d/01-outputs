@@ -5,9 +5,16 @@
 set $laptop eDP-1
 set $externo HDMI-A-1
 set $res_laptop 1366x768
+set $res_desktop 1920x1080
 
-# Config base de la laptop (kanshi se encarga del externo)
-output $laptop res $res_laptop@60Hz pos 0,0
+# Config base de la laptop (1366x768)
+output $laptop resolution $res_laptop@60Hz position 0,0
+
+# Config base de monitor de escritorio / externo (1920x1080)
+# (Kanshi gestiona dinámicamente posiciones y perfiles)
+output $externo resolution $res_desktop@60Hz
+output DP-1 resolution $res_desktop@60Hz
+output DP-2 resolution $res_desktop@60Hz
 
 # Kanshi gestiona automáticamente las pantallas externas.
 # Si necesitás forzar algo manualmente, usá:

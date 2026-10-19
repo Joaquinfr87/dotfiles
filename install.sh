@@ -117,6 +117,10 @@ case "$ACTION" in
     show_banner
     run_dev_tools
     ;;
+  --omz)
+    show_banner
+    "$INSTALL_DIR/03-shell.sh" --omz
+    ;;
   --sync)
     show_banner
     run_sync_only
@@ -130,6 +134,7 @@ case "$ACTION" in
     echo "  --server,  -s     Instala solo entorno terminal para SSH (Zsh, Tmux, Neovim, Git, etc.)"
     echo "  --all,     -a     Instala Escritorio completo + Herramientas Dev & AI (Node, Docker, etc.)"
     echo "  --dev-tools       Instala solo las herramientas de desarrollo y agentes AI"
+    echo "  --omz             Instala Oh My Zsh y Powerlevel10k como entorno alternativo"
     echo "  --sync            Copia configuraciones con backup sin reinstalar paquetes"
     echo "  --help,    -h     Muestra esta ayuda"
     echo ""
@@ -143,10 +148,11 @@ case "$ACTION" in
     echo "  2) Entorno Servidor / Terminal SSH (Zsh + Tmux + Neovim + Git + CLIs)"
     echo "  3) Stack de Desarrollo & AI (Node.js, Docker Compose, OpenCode, Freebuff, etc.)"
     echo "  4) Instalación Total (Escritorio + Dev & AI Tools)"
-    echo "  5) Solo sincronizar / copiar configuraciones (sin instalar paquetes)"
-    echo "  6) Salir"
+    echo "  5) Instalar Oh My Zsh + Powerlevel10k (Alternativa opcional)"
+    echo "  6) Solo sincronizar / copiar configuraciones (sin instalar paquetes)"
+    echo "  7) Salir"
     echo ""
-    read -r -p "Elige una opción [1-6]: " OPTION
+    read -r -p "Elige una opción [1-7]: " OPTION
     case "$OPTION" in
       1)
         run_desktop_install false
@@ -165,9 +171,12 @@ case "$ACTION" in
         run_desktop_install true
         ;;
       5)
-        run_sync_only
+        "$INSTALL_DIR/03-shell.sh" --omz
         ;;
       6)
+        run_sync_only
+        ;;
+      7)
         echo "Instalación cancelada."; exit 0
         ;;
       *)

@@ -57,6 +57,7 @@ get_items() {
     "bin/tmux-sessionizer:$HOME/.local/bin/tmux-sessionizer"
     "bin/dot-sync:$HOME/.local/bin/dot-sync"
     "nvim:$HOME/.config/nvim"
+    "starship/starship.toml:$HOME/.config/starship.toml"
   )
 
   if [[ "$prof" == "desktop" ]]; then

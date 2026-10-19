@@ -93,22 +93,25 @@ dotfiles/
 │   ├── 00-helpers.sh             # Funciones de log, colores y detección de distro
 │   ├── 01-base-packages.sh       # Paquetes esenciales (git, curl, fzf, ripgrep, build-essential)
 │   ├── 02-cli-tools.sh           # Neovim (bob/tarball), zoxide, eza, bat, lazygit, plugins tmux
-│   ├── 03-shell.sh               # Zsh, Oh My Zsh, Powerlevel10k y plugins
+│   ├── 03-shell.sh               # Zsh nativo, Starship y plugins (con opción --omz)
 │   ├── 04-desktop-packages.sh    # Sway, Wayland, PipeWire, Kanshi, portales
-│   ├── 05-noctalia.sh            # Repositorio oficial y paquetes de Noctalia v5
+│   ├── 05-noctalia.sh            # Repositorio oficial de Noctalia v5 y Noctalia Greeter (greetd)
 │   ├── 06-fonts-wallpapers.sh    # Iosevka Nerd Font y Zen Browser
-│   └── 07-copy-configs.sh        # Copiado con backup según el perfil (server/desktop)
+│   ├── 07-copy-configs.sh        # Copiado con backup según el perfil (server/desktop)
+│   └── 08-dev-ai-tools.sh        # Node.js, Docker Compose, Lazydocker, OpenCode, Freebuff, AGY, Codex
 ├── kanshi/                       # Perfiles multi-monitor (laptop, presentación, externo)
 ├── kitty/                        # Terminal Kitty (tema Gruvbox Dark)
 ├── noctalia/                     # Noctalia v5 config.toml (barra, notificaciones, lockscreen)
 ├── noctalia-greeter/             # Configuración de greetd login manager
 ├── nvim/                         # Neovim (LazyVim, LSP, Blink, Obsidian, Gruvbox)
 ├── Pictures/                     # Fondos de pantalla
+├── starship/                     # Configuración de Starship (tema Gruvbox Material)
+│   └── starship.toml
 ├── sway/                         # Sway tiling window manager (modular en config.d/)
 ├── tmux/                         # Tmux (persistencia con resurrect/continuum y sessionizer)
 ├── .gitignore                    # Exclusiones de Git (binarios .deb, backups, .freebuff)
 ├── .zprofile                     # Entorno de login (ejecuta sway solo en tty1 y si existe)
-├── .zshrc                        # Shell interactivo rápido y portable
+├── .zshrc                        # Shell interactivo ultrarrápido (Zsh nativo + Starship)
 └── install.sh                    # Orquestador principal de instalación
 ```
 
@@ -117,7 +120,9 @@ dotfiles/
 ## 🛠️ Componentes y Tecnologías
 
 ### Núcleo Terminal (Ambos perfiles: Desktop y Server)
-* **Shell:** Zsh con Oh My Zsh, Powerlevel10k, zsh-autosuggestions y zsh-syntax-highlighting.
+* **Shell:** Zsh nativo ultrarrápido (< 20 ms de inicio, sin Oh My Zsh) con autocompletado en caché, `zsh-autosuggestions`, `zsh-syntax-highlighting` y aliases de Git.
+* **Prompt:** [Starship](https://starship.rs/) escrito en Rust con paleta Gruvbox Material Dark (`~/.config/starship.toml`).
+  > *Nota:* Si prefieres usar Oh My Zsh y Powerlevel10k, puedes instalarlos con `./install.sh --omz` o activar `export USE_OH_MY_ZSH=true` en `~/.zshrc.local`.
 * **Editor:** Neovim (LazyVim) con soporte LSP, formateo con conform, completion con blink.cmp y notas en Obsidian.
 * **Multiplexor:** Tmux con prefijo `C-Space`, persistencia de sesiones tras reinicio (`tmux-resurrect` + `tmux-continuum`), y navegación de proyectos con `tmux-sessionizer` (`prefix + f`).
 * **Git:** `.gitconfig` profesional con aliases de alta frecuencia, rebase en pull, y soporte para visor de diffs `delta`.

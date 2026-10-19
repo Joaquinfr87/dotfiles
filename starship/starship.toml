@@ -1,0 +1,130 @@
+# ==============================================================================
+# Starship Configuration — Gruvbox Material Dark
+# ==============================================================================
+# Referencia: https://starship.rs/config/
+# ==============================================================================
+
+# Formato principal del prompt
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_state\
+$git_status\
+$package\
+$nodejs\
+$python\
+$rust\
+$golang\
+$docker_context\
+$fill\
+$cmd_duration\
+$time\
+$line_break\
+$character"""
+
+# Timeout en milisegundos para comandos externos (git, etc.)
+command_timeout = 500
+
+# Línea continua para separar el lado izquierdo y derecho
+[fill]
+symbol = " "
+
+# --- Carácter de prompt principal ---
+[character]
+success_symbol = "[❯](bold #b8bb26)" # Gruvbox verde
+error_symbol = "[❯](bold #fb4934)"   # Gruvbox rojo
+vimcmd_symbol = "[❮](bold #fabd2f)"  # Gruvbox amarillo (modo normal vi)
+
+# --- Directorio ---
+[directory]
+truncation_length = 4
+truncate_to_repo = true
+style = "bold #fabd2f"
+read_only = " 󰌾"
+read_only_style = "#fb4934"
+format = "[$path]($style)[$read_only]($read_only_style) "
+
+# --- Git ---
+[git_branch]
+symbol = " "
+style = "bold #d3869b" # Gruvbox magenta
+format = "[$symbol$branch(:$remote_branch)]($style) "
+
+[git_status]
+style = "bold #fe8019" # Gruvbox naranja
+conflicted = "=[$count](bold #fb4934) "
+ahead = "⇡[$count](bold #b8bb26) "
+behind = "⇣[$count](bold #fb4934) "
+diverged = "⇕[⇡$ahead_count ⇣$behind_count](bold #fabd2f) "
+untracked = "?[$count](bold #83a598) "
+stashed = "*[$count](bold #928374) "
+modified = "![$count](bold #fe8019) "
+staged = "+[$count](bold #b8bb26) "
+renamed = "»[$count](bold #8ec07c) "
+deleted = "✘[$count](bold #fb4934) "
+format = "([\\[$all_status$ahead_behind\\]]($style) )"
+
+[git_state]
+format = '([($state( $progress_current/$progress_total))]($style) )'
+style = "bold #fabd2f"
+
+# --- Runtimes y Lenguajes (solo si estás en un proyecto de ese tipo) ---
+[nodejs]
+symbol = " "
+style = "bold #b8bb26"
+format = "[$symbol($version)]($style) "
+detect_files = ["package.json", ".node-version"]
+detect_folders = ["node_modules"]
+
+[python]
+symbol = " "
+style = "bold #fabd2f"
+format = "[${symbol}${pyenv_prefix}(${version})(\\($virtualenv\\))]($style) "
+
+[rust]
+symbol = " "
+style = "bold #fe8019"
+format = "[$symbol($version)]($style) "
+
+[golang]
+symbol = " "
+style = "bold #83a598"
+format = "[$symbol($version)]($style) "
+
+[docker_context]
+symbol = " "
+style = "bold #83a598"
+format = "[$symbol$context]($style) "
+
+[package]
+symbol = "󰏗 "
+style = "#928374"
+format = "[$symbol$version]($style) "
+
+# --- Tiempo de ejecución (solo si tarda > 2 segundos) ---
+[cmd_duration]
+min_time = 2_000
+style = "bold #fabd2f"
+format = "took [$duration]($style) "
+
+# --- Hora en el extremo derecho ---
+[time]
+disabled = false
+time_format = "%R"
+style = "#928374"
+format = "[$time]($style)"
+
+# --- Usuario y Host (solo activo en sesiones SSH) ---
+[username]
+style_user = "bold #83a598"
+style_root = "bold #fb4934"
+format = "[$user]($style)@"
+show_always = false
+
+[hostname]
+ssh_only = true
+style = "bold #8ec07c"
+format = "[$hostname]($style) in "
+trim_at = ".company"

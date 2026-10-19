@@ -149,6 +149,14 @@ elif command -v batcat >/dev/null 2>&1; then
   alias cat='batcat --paging=never'
 fi
 
+# direnv (carga automática de variables de entorno por carpeta)
+if command -v direnv >/dev/null 2>&1; then
+  eval "$(direnv hook zsh)"
+fi
+
+# bluetuith (gestor Bluetooth en terminal)
+alias blue='bluetuith'
+
 # --- ALIAS DE GIT MÁS USADOS (compatibles con OMZ) -----------------------------
 alias g='git'
 alias gst='git status'

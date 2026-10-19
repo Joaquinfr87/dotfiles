@@ -29,7 +29,8 @@ case "$OS" in
       xdg-desktop-portal \
       xdg-desktop-portal-wlr \
       xdg-desktop-portal-gtk \
-      fonts-noto-color-emoji
+      fonts-noto-color-emoji \
+      bluez
     ;;
   arch|cachyos|manjaro)
     log_info "Instalando paquetes gráficos en Arch Linux..."
@@ -91,6 +92,22 @@ if ! has_cmd kitty; then
   log_ok "Kitty instalado en ~/.local/bin/kitty"
 else
   log_ok "Kitty ya está instalado."
+fi
+
+# Instalar bluetuith (gestor Bluetooth TUI)
+if ! has_cmd bluetuith; then
+  log_info "Instalando bluetuith (Bluetooth TUI)..."
+  mkdir -p "$HOME/.local/bin"
+  BLUETUITH_URL=$(curl -s https://api.github.com/repos/bluetuith-org/bluetuith/releases/latest | grep -o "https://[^\"]*Linux_x86_64\.tar\.gz" | head -n 1 || echo "")
+  if [[ -n "$BLUETUITH_URL" ]]; then
+    curl -fsSL -o /tmp/bluetuith.tar.gz "$BLUETUITH_URL"
+    tar -xzf /tmp/bluetuith.tar.gz -C "$HOME/.local/bin" bluetuith 2>/dev/null || tar -xzf /tmp/bluetuith.tar.gz -C "$HOME/.local/bin"
+    rm -f /tmp/bluetuith.tar.gz
+    chmod +x "$HOME/.local/bin/bluetuith" 2>/dev/null || true
+    log_ok "bluetuith instalado en ~/.local/bin/bluetuith"
+  fi
+else
+  log_ok "bluetuith ya está instalado."
 fi
 
 log_ok "Entorno base de Sway y Wayland completado."

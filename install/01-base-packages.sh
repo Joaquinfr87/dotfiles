@@ -31,7 +31,8 @@ case "$OS" in
       tree \
       htop \
       fastfetch \
-      ca-certificates
+      ca-certificates \
+      direnv
     ;;
   arch|cachyos|manjaro)
     log_info "Instalando paquetes base para Arch Linux..."

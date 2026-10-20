@@ -31,18 +31,12 @@ case "$OS" in
       xdg-desktop-portal-gtk \
       fonts-noto-color-emoji \
       bluez \
-      xz-utils \
-      kitty
+      xz-utils
 
     # Desinstalar foot (recomendado por defecto por Sway en Debian) para asegurar Kitty como terminal única
     if has_cmd foot || dpkg -s foot >/dev/null 2>&1; then
       log_info "Desinstalando foot para asegurar que Kitty sea la terminal predeterminada..."
       run_sudo apt-get purge -y foot foot-themes 2>/dev/null || true
-    fi
-
-    # Configurar Kitty como alternativa predeterminada de terminal en el sistema
-    if has_cmd update-alternatives && [[ -x /usr/bin/kitty ]]; then
-      run_sudo update-alternatives --set x-terminal-emulator /usr/bin/kitty 2>/dev/null || true
     fi
     ;;
   arch|cachyos|manjaro)
@@ -61,8 +55,7 @@ case "$OS" in
       xdg-desktop-portal \
       xdg-desktop-portal-wlr \
       xdg-desktop-portal-gtk \
-      noto-fonts-emoji \
-      kitty
+      noto-fonts-emoji
     ;;
   fedora)
     log_info "Instalando paquetes gráficos en Fedora..."
@@ -79,8 +72,7 @@ case "$OS" in
       xdg-desktop-portal \
       xdg-desktop-portal-wlr \
       xdg-desktop-portal-gtk \
-      google-noto-color-emoji-fonts \
-      kitty
+      google-noto-color-emoji-fonts
     ;;
   *)
     log_warn "Distribución $OS: asegúrate de instalar sway, kanshi, wl-clipboard y pipewire manualmente."
@@ -94,10 +86,10 @@ if has_cmd systemctl; then
   log_ok "Servicios PipeWire activos."
 fi
 
-# Instalar Kitty si no está presente
-if ! has_cmd kitty; then
-  log_info "Instalando Kitty terminal..."
-  curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin || true
+# Instalar Kitty mediante el instalador oficial de Kovid Goyal
+if [[ ! -x "$HOME/.local/kitty.app/bin/kitty" ]] && ! has_cmd kitty; then
+  log_info "Instalando Kitty terminal desde el script oficial (https://sw.kovidgoyal.net/kitty/installer.sh)..."
+  curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
   mkdir -p "$HOME/.local/bin" "$HOME/.local/share"
   ln -sf "$HOME/.local/kitty.app/bin/kitty" "$HOME/.local/bin/kitty"
   ln -sf "$HOME/.local/kitty.app/bin/kitten" "$HOME/.local/bin/kitten"
@@ -106,9 +98,26 @@ if ! has_cmd kitty; then
   if [[ -d "$HOME/.local/kitty.app/share" ]]; then
     cp -as "$HOME/.local/kitty.app/share/"* "$HOME/.local/share/" 2>/dev/null || true
   fi
-  log_ok "Kitty instalado en ~/.local/bin/kitty"
+  log_ok "Kitty instalado en ~/.local/bin/kitty y enlazado a /usr/local/bin/kitty"
 else
-  log_ok "Kitty ya está instalado."
+  # Asegurar enlaces simbólicos tanto en ~/.local/bin como en /usr/local/bin
+  mkdir -p "$HOME/.local/bin"
+  if [[ -x "$HOME/.local/kitty.app/bin/kitty" ]]; then
+    ln -sf "$HOME/.local/kitty.app/bin/kitty" "$HOME/.local/bin/kitty"
+    ln -sf "$HOME/.local/kitty.app/bin/kitten" "$HOME/.local/bin/kitten"
+    run_sudo ln -sf "$HOME/.local/kitty.app/bin/kitty" /usr/local/bin/kitty 2>/dev/null || true
+    run_sudo ln -sf "$HOME/.local/kitty.app/bin/kitten" /usr/local/bin/kitten 2>/dev/null || true
+  fi
+  log_ok "Kitty ya está instalado: $(kitty --version 2>/dev/null || echo 'OK')"
+fi
+
+# Integración con el sistema (iconos, .desktop y x-terminal-emulator)
+if [[ -f "$HOME/.local/share/applications/kitty.desktop" ]]; then
+  run_sudo cp -f "$HOME/.local/share/applications/kitty.desktop" /usr/share/applications/ 2>/dev/null || true
+fi
+if has_cmd update-alternatives && [[ -x /usr/local/bin/kitty ]]; then
+  run_sudo update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator /usr/local/bin/kitty 50 2>/dev/null || true
+  run_sudo update-alternatives --set x-terminal-emulator /usr/local/bin/kitty 2>/dev/null || true
 fi
 
 # Instalar bluetuith (gestor Bluetooth TUI)

@@ -162,11 +162,15 @@ rm -rf "$HOME/.local/share/zen" \
        "$HOME/.local/share/icons/hicolor/128x128/apps/zen.png"
 run_sudo rm -f /usr/local/bin/zen 2>/dev/null || true
 
-log_info "Eliminando Kitty app (si se instaló vía instalador manual)..."
+log_info "Eliminando Kitty app (instalador oficial)..."
 rm -rf "$HOME/.local/kitty.app" \
        "$HOME/.local/bin/kitty" \
-       "$HOME/.local/bin/kitten"
-run_sudo rm -f /usr/local/bin/kitty /usr/local/bin/kitten 2>/dev/null || true
+       "$HOME/.local/bin/kitten" \
+       "$HOME/.local/share/applications/kitty.desktop"
+run_sudo rm -f /usr/local/bin/kitty /usr/local/bin/kitten /usr/share/applications/kitty.desktop 2>/dev/null || true
+if has_cmd update-alternatives; then
+  run_sudo update-alternatives --remove x-terminal-emulator /usr/local/bin/kitty 2>/dev/null || true
+fi
 
 log_info "Eliminando Bluetuith, Lazygit y Git-Delta manuales..."
 rm -f "$HOME/.local/bin/bluetuith" "$HOME/.local/bin/lazygit" "$HOME/.local/bin/delta"

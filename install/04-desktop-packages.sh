@@ -31,7 +31,19 @@ case "$OS" in
       xdg-desktop-portal-gtk \
       fonts-noto-color-emoji \
       bluez \
-      xz-utils
+      xz-utils \
+      kitty
+
+    # Desinstalar foot (recomendado por defecto por Sway en Debian) para asegurar Kitty como terminal única
+    if has_cmd foot || dpkg -s foot >/dev/null 2>&1; then
+      log_info "Desinstalando foot para asegurar que Kitty sea la terminal predeterminada..."
+      run_sudo apt-get purge -y foot foot-themes 2>/dev/null || true
+    fi
+
+    # Configurar Kitty como alternativa predeterminada de terminal en el sistema
+    if has_cmd update-alternatives && [[ -x /usr/bin/kitty ]]; then
+      run_sudo update-alternatives --set x-terminal-emulator /usr/bin/kitty 2>/dev/null || true
+    fi
     ;;
   arch|cachyos|manjaro)
     log_info "Instalando paquetes gráficos en Arch Linux..."
@@ -49,7 +61,8 @@ case "$OS" in
       xdg-desktop-portal \
       xdg-desktop-portal-wlr \
       xdg-desktop-portal-gtk \
-      noto-fonts-emoji
+      noto-fonts-emoji \
+      kitty
     ;;
   fedora)
     log_info "Instalando paquetes gráficos en Fedora..."
@@ -66,7 +79,8 @@ case "$OS" in
       xdg-desktop-portal \
       xdg-desktop-portal-wlr \
       xdg-desktop-portal-gtk \
-      google-noto-color-emoji-fonts
+      google-noto-color-emoji-fonts \
+      kitty
     ;;
   *)
     log_warn "Distribución $OS: asegúrate de instalar sway, kanshi, wl-clipboard y pipewire manualmente."

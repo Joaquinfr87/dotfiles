@@ -244,3 +244,26 @@ Para mantener tokens, claves API o rutas privadas sin subirlas al repositorio p�
       name = Tu Nombre
       email = tu@correo.com
   ```
+
+---
+
+## 🧹 Restablecer el Sistema a 0 (Desinstalador)
+
+Si deseas probar la instalación nuevamente o limpiar el sistema sin necesidad de reinstalar el sistema operativo:
+
+```bash
+./uninstall.sh
+```
+O directamente desde el instalador:
+```bash
+./install.sh --reset
+```
+
+> [!TIP]
+> **¿Qué hace `uninstall.sh`?**
+> - Detiene y deshabilita `greetd`, `noctalia-greeter` y servicios de audio PipeWire.
+> - Purga paquetes instalados (`sway`, `noctalia`, `kitty`, etc.) y limpia repositorios APT de Noctalia.
+> - Elimina aplicaciones y binarios descargados (`zen-browser`, `starship`, fuentes Iosevka, etc.).
+> - Limpia configuraciones de `~/.config` y restaura automáticamente el backup previo de `~/.dotfiles_backup/`.
+> - Restablece la shell de login por defecto a `/bin/bash`.
+> - Permite usar `./uninstall.sh -y` para modo desatendido o `./uninstall.sh --keep-extras` para conservar Node.js y agentes de IA.

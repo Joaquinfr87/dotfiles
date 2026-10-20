@@ -53,11 +53,11 @@ get_items() {
     "git/config:$HOME/.config/git/config"
     "git/ignore:$HOME/.config/git/ignore"
     "tmux/tmux.conf:$HOME/.config/tmux/tmux.conf"
-    "tmux/scripts/tmux-sessionizer:$HOME/.local/bin/tmux-sessionizer"
     "bin/tmux-sessionizer:$HOME/.local/bin/tmux-sessionizer"
     "bin/dot-sync:$HOME/.local/bin/dot-sync"
     "nvim:$HOME/.config/nvim"
     "starship/starship.toml:$HOME/.config/starship.toml"
+    "environment.d/10-path.conf:$HOME/.config/environment.d/10-path.conf"
   )
 
   if [[ "$prof" == "desktop" ]]; then
@@ -65,6 +65,7 @@ get_items() {
       "sway:$HOME/.config/sway"
       "noctalia/config.toml:$HOME/.config/noctalia/config.toml"
       "noctalia/settings.toml:$HOME/.local/state/noctalia/settings.toml"
+      "noctalia/settings.toml:$HOME/.config/noctalia/settings.toml"
       "kanshi:$HOME/.config/kanshi"
       "kitty:$HOME/.config/kitty"
       "Pictures:$HOME/Pictures"
@@ -116,6 +117,7 @@ cmd_deploy() {
       rm -rf "$sys_target"
       cp -r "$src" "$sys_target"
     else
+      rm -f "$sys_target" 2>/dev/null || true
       if [[ "$repo_rel" == "noctalia/settings.toml" && -n "$HOME" ]]; then
         sed "s|/home/[^/]*|$HOME|g" "$src" > "$sys_target"
       else

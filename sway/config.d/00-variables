@@ -12,7 +12,7 @@ set $term kitty
 set $web-browser zen
 
 # Sessionizer de tmux (ver tmux/README.md)
-set $sessionizer ~/.local/bin/tmux-sessionizer
+set $sessionizer tmux-sessionizer
 
 # Fuente (títulos de ventanas y UI de sway)
 set $font pango:IosevkaTerm Nerd Font, Noto Color Emoji 10

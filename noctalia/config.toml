@@ -32,27 +32,29 @@ source = "builtin"
 builtin = "Gruvbox"
 pure_black_dark = false
 
-# --- Barra -----------------------------------------------------------------
-# Ojo: la GUI escribe overrides en ~/.local/state/noctalia/settings.toml y
-# pisan estos valores. Mantenerlos iguales para que este archivo no mienta.
-[bar.main]
-position = "top"
-thickness = 34
-background_opacity = 0.95
-radius = 12
-margin_ends = 8
-margin_edge = 8
-padding = 14
-widget_spacing = 6
-shadow = true
-auto_hide = false           # pointer auto-hide apagado
-smart_auto_hide = true      # se oculta con ventanas, se muestra en workspace vacía
-reserve_space = false       # sin zona exclusiva: la barra se superpone a las ventanas
-capsule = false
+# --- Barra (TopBar modificada con widgets personalizados) -------------------
+[bar]
+order = [ "topbar-right" ]
 
-start  = ["launcher", "workspaces"]
-center = ["clock"]
-end    = ["media", "tray", "notifications", "clipboard", "network", "volume", "brightness", "battery", "control-center", "session"]
+[bar.topbar-right]
+auto_hide = true
+concave_edge_corners = false
+font_family = "Iosevka NF"
+reserve_space = false
+start = [ "workspaces" ]
+end = [
+    "sysmon",
+    "temp",
+    "cpu",
+    "media",
+    "tray",
+    "notifications",
+    "clipboard",
+    "network",
+    "volume",
+    "brightness",
+    "battery"
+]
 
 # --- Dock (desactivado, nunca lo usaste) -----------------------------------
 [dock]

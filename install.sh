@@ -223,9 +223,10 @@ show_main_menu() {
     echo "  2) Entorno de servidor (Solo terminal para SSH, sin interfaz gráfica)"
     echo "  3) Sincronizar configuraciones (con backup automático)"
     echo "  4) Menú de herramientas extras (instalar solo Node, Docker, AI...)"
-    echo "  5) Salir"
+    echo "  5) Restablecer sistema a 0 (Desinstalar y limpiar entorno)"
+    echo "  6) Salir"
     echo ""
-    read -r -p "Elige una opción [1-5]: " MAIN_OPT
+    read -r -p "Elige una opción [1-6]: " MAIN_OPT
     case "$MAIN_OPT" in
       1)
         prompt_shell_choice
@@ -254,6 +255,10 @@ show_main_menu() {
         break
         ;;
       5)
+        "$DOTFILES_DIR/uninstall.sh"
+        break
+        ;;
+      6)
         echo "Operación cancelada."
         exit 0
         ;;
@@ -293,6 +298,10 @@ case "$ACTION" in
       "$INSTALL_DIR/08-dev-ai-tools.sh" "${SELECTED_TOOLS[@]}"
     fi
     ;;
+  --reset|--uninstall)
+    shift
+    exec "$DOTFILES_DIR/uninstall.sh" "$@"
+    ;;
   --help|-h)
     show_banner
     echo "Uso: ./install.sh [OPCIÓN]"
@@ -302,6 +311,7 @@ case "$ACTION" in
     echo "  --server,  -s   Instala el entorno de servidor para SSH (Zsh, Tmux, Neovim)"
     echo "  --sync          Copia configuraciones con backup sin reinstalar paquetes"
     echo "  --extras        Abre directamente el menú de selección de herramientas extras"
+    echo "  --reset         Restablece el sistema a 0 desinstalando paquetes y limpiando configs"
     echo "  --help,    -h   Muestra esta ayuda"
     echo ""
     echo "Si se ejecuta sin opciones, iniciará el asistente guiado 100% CLI."

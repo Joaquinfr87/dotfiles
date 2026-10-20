@@ -76,7 +76,7 @@ if ! has_cmd nvim; then
   # Si aún no está en PATH o bob falló, descargar release precompilado
   if ! has_cmd nvim; then
     log_info "Descargando release precompilado de Neovim desde GitHub..."
-    local temp_tar="/tmp/nvim-linux-x86_64.tar.gz"
+    temp_tar="/tmp/nvim-linux-x86_64.tar.gz"
     curl -fsSL -o "$temp_tar" https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
     mkdir -p "$HOME/.local"
     tar -C "$HOME/.local" -xzf "$temp_tar" --strip-components=1
@@ -136,7 +136,6 @@ if ! has_cmd delta && ! has_cmd git-delta; then
   # Fallback a release binario oficial desde GitHub si no se instaló por paquete
   if ! has_cmd delta && ! has_cmd git-delta; then
     log_info "Descargando binario de delta desde GitHub..."
-    local delta_url
     delta_url=$(curl -s "https://api.github.com/repos/dandavison/delta/releases/latest" | grep -Po '"browser_download_url": "\K[^"]*x86_64-unknown-linux-musl\.tar\.gz' | head -n 1 || echo "")
     if [[ -n "$delta_url" ]]; then
       curl -fsSL -o /tmp/delta.tar.gz "$delta_url"

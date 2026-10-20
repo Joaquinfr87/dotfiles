@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="Pictures/banner.png" alt="Dotfiles Banner" width="100%">
+</p>
+
 # Dotfiles — Sway + Noctalia v5 & Servidores SSH
 
 Configuración modular, estética y profesional de entorno de trabajo para **Linux (Debian 13 Trixie, Ubuntu y servidores remotos por SSH)** con paleta **Gruvbox Material Dark**.
@@ -168,7 +172,7 @@ dotfiles/
 ├── noctalia-greeter/             # Configuración de greetd login manager
 │   └── greeter.toml
 ├── nvim/                         # Neovim (LazyVim, LSP, Blink, Obsidian, Gruvbox)
-├── Pictures/                     # Fondos de pantalla Gruvbox
+├── Pictures/                     # Fondos de pantalla Gruvbox y banner
 ├── starship/                     # Configuración de Starship prompt (Gruvbox Material Dark)
 │   └── starship.toml
 ├── sway/                         # Sway tiling window manager (modular en config.d/)

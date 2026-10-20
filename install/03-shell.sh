@@ -17,12 +17,14 @@ source "$SCRIPT_DIR/00-helpers.sh"
 
 log_step "Configurando Shell Zsh y Prompt Starship (Nativo / Sin Oh My Zsh)"
 
-# 1. Cambiar shell por defecto a zsh si no lo es
+# 1. Cambiar shell por defecto a zsh si no lo es (usando usermod para evitar prompts de PAM)
 ZSH_BIN="$(command -v zsh || echo "")"
 if [[ -n "$ZSH_BIN" && "${SHELL:-}" != "$ZSH_BIN" ]]; then
-  log_info "Cambiando shell por defecto a zsh..."
-  if has_cmd chsh; then
-    chsh -s "$ZSH_BIN" "$USER" 2>/dev/null || run_sudo chsh -s "$ZSH_BIN" "$USER" 2>/dev/null || log_warn "No se pudo cambiar la shell con chsh automáticamente. Puedes ejecutar: chsh -s \$(which zsh)"
+  log_info "Configurando zsh como shell por defecto para $USER..."
+  if has_cmd usermod; then
+    run_sudo usermod -s "$ZSH_BIN" "$USER" 2>/dev/null || true
+  elif has_cmd chsh; then
+    run_sudo chsh -s "$ZSH_BIN" "$USER" 2>/dev/null || true
   fi
 fi
 
@@ -61,8 +63,9 @@ INSTALL_OMZ="${1:-false}"
 if [[ "$INSTALL_OMZ" == "--omz" || "$INSTALL_OMZ" == "true" ]]; then
   log_info "Instalando Oh My Zsh y Powerlevel10k como entorno alternativo..."
   if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
-    RUNZSH=no CHSH=no KEEP_ZSHRC=yes \
-      sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || true
+    # IMPORTANTE: Se pasa "" --unattended --keep-zshrc para evitar que Oh My Zsh
+    # intente ejecutar 'exec zsh -l' y bloquee el flujo del instalador principal.
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc || true
   fi
   ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
   if [[ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]]; then

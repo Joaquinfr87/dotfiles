@@ -22,7 +22,7 @@ if [[ "$OS" =~ ^(debian|ubuntu)$ ]]; then
     run_sudo dpkg -i "$KEYRING_DEB"
     rm -f "$KEYRING_DEB"
 
-    run_sudo wget -O /etc/apt/sources.list.d/noctalia-trixie.sources https://pkg.noctalia.dev/deb/noctalia-trixie.sources || true
+    curl -fsSL https://pkg.noctalia.dev/deb/noctalia-trixie.sources | run_sudo tee /etc/apt/sources.list.d/noctalia-trixie.sources >/dev/null || true
 
     # Configurar APT Pinning para que trixie-backports de Noctalia tenga prioridad normal (500)
     # y resuelva dependencias como libwlroots y libdrm2 sin conflictos
@@ -72,7 +72,7 @@ EOF'
   log_info "Configurando temas y fondos para Noctalia Greeter..."
   run_sudo mkdir -p /var/lib/noctalia-greeter
   if [[ -f "$DOTFILES_DIR/noctalia-greeter/greeter.toml" ]]; then
-    run_sudo cp "$DOTFILES_DIR/noctalia-greeter/greeter.toml" /var/lib/noctalia-greeter/greeter.toml
+    sed "s/default = .*/default = \"$USER\"/" "$DOTFILES_DIR/noctalia-greeter/greeter.toml" | run_sudo tee /var/lib/noctalia-greeter/greeter.toml >/dev/null
   fi
 
   # Copiar wallpaper para el greeter

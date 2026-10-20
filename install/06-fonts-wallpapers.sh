@@ -10,6 +10,11 @@ source "$SCRIPT_DIR/00-helpers.sh"
 
 log_step "Instalando fuentes tipográficas (Iosevka Nerd Font) y Zen Browser"
 
+# Asegurar dependencias de descompresión si no están presentes
+if ! has_cmd unzip || ! has_cmd xz; then
+  pkg_install unzip xz-utils || true
+fi
+
 # 1. Iosevka Nerd Font
 FONT_DIR="$HOME/.local/share/fonts/Iosevka"
 if [[ ! -d "$FONT_DIR" ]] || [[ -z "$(ls -A "$FONT_DIR" 2>/dev/null)" ]]; then
@@ -37,6 +42,7 @@ if ! has_cmd zen && [[ ! -x "$HOME/.local/bin/zen" ]]; then
   rm -f "$ZEN_TAR"
 
   ln -sf "$HOME/.local/share/zen/zen" "$HOME/.local/bin/zen"
+  run_sudo ln -sf "$HOME/.local/share/zen/zen" /usr/local/bin/zen 2>/dev/null || true
 
   # Enlace del icono de 128px al directorio de iconos del sistema
   if [[ -f "$HOME/.local/share/zen/browser/chrome/icons/default/default128.png" ]]; then

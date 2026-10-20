@@ -30,7 +30,8 @@ case "$OS" in
       xdg-desktop-portal-wlr \
       xdg-desktop-portal-gtk \
       fonts-noto-color-emoji \
-      bluez
+      bluez \
+      xz-utils
     ;;
   arch|cachyos|manjaro)
     log_info "Instalando paquetes gráficos en Arch Linux..."
@@ -86,6 +87,8 @@ if ! has_cmd kitty; then
   mkdir -p "$HOME/.local/bin" "$HOME/.local/share"
   ln -sf "$HOME/.local/kitty.app/bin/kitty" "$HOME/.local/bin/kitty"
   ln -sf "$HOME/.local/kitty.app/bin/kitten" "$HOME/.local/bin/kitten"
+  run_sudo ln -sf "$HOME/.local/kitty.app/bin/kitty" /usr/local/bin/kitty 2>/dev/null || true
+  run_sudo ln -sf "$HOME/.local/kitty.app/bin/kitten" /usr/local/bin/kitten 2>/dev/null || true
   if [[ -d "$HOME/.local/kitty.app/share" ]]; then
     cp -as "$HOME/.local/kitty.app/share/"* "$HOME/.local/share/" 2>/dev/null || true
   fi
@@ -104,6 +107,7 @@ if ! has_cmd bluetuith; then
     tar -xzf /tmp/bluetuith.tar.gz -C "$HOME/.local/bin" bluetuith 2>/dev/null || tar -xzf /tmp/bluetuith.tar.gz -C "$HOME/.local/bin"
     rm -f /tmp/bluetuith.tar.gz
     chmod +x "$HOME/.local/bin/bluetuith" 2>/dev/null || true
+    run_sudo ln -sf "$HOME/.local/bin/bluetuith" /usr/local/bin/bluetuith 2>/dev/null || true
     log_ok "bluetuith instalado en ~/.local/bin/bluetuith"
   fi
 else

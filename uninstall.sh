@@ -9,6 +9,10 @@
 #   4. Elimina binarios descargados (zen-browser, fonts, starship, omz, etc.)
 #   5. Limpia configuraciones desplegadas en ~/.config y restaura backups
 #   6. Restablece la shell de login por defecto a /bin/bash
+#
+# IMPORTANTE: Este script desinstala el entorno gráfico (Sway, greetd, etc.).
+# NO debe ejecutarse desde dentro de una sesión gráfica activa (Sway/Wayland/X11).
+# Salí primero a una consola de texto (p. ej. Ctrl+Alt+F3) y ejecuta desde allí.
 # ==============================================================================
 set -euo pipefail
 
@@ -40,7 +44,7 @@ for arg in "$@"; do
       echo "  -y, --yes, --force   Ejecuta la desinstalación sin pedir confirmación interactiva"
       echo "  --keep-extras        No elimina Node.js, NVM ni herramientas AI extras"
       echo "  --restore-backup     Restaura el backup previo desde ~/.dotfiles_backup si existe"
-      echo "  -h, --help           Muestra esta ayuda"
+      echo "  -h|--help            Muestra esta ayuda"
       exit 0
       ;;
     *)
@@ -51,15 +55,49 @@ done
 
 echo -e "${RED}"
 echo "  ██╗   ██╗███╗   ██╗██╗███╗   ██╗███████╗████████╗ █████╗ ██╗     ██╗     "
-echo "  ██║   ██║████╗  ██║██║████╗  ██║██╔════╝╚══██╔══╝██╔══██╗██║     ██║     "
+echo "  ██║   ██║████╗  ██║██║███╗  ██║██╔════╝╚══██╔══╝██╔══██╗██║     ██║     "
 echo "  ██║   ██║██╔██╗ ██║██║██╔██╗ ██║███████╗   ██║   ███████║██║     ██║     "
 echo "  ██║   ██║██║╚██╗██║██║██║╚██╗██║╚════██║   ██║   ██╔══██║██║     ██║     "
-echo "  ╚██████╔╝██║ ╚████║██║██║ ╚████║███████║   ██║   ██║  ██║███████╗███████╗"
-echo "   ╚═════╝ ╚═╝  ╚═══╝╚═╝╚═╝  ╚═══╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚══════╝╚══════╝"
+echo "  ╚██████╔╝██║ ╚███║██║██║ ╚████║███████║   ██║   ██║  ██║██║  ██║██╗    "
+echo "   ╚═════╝ ╚═╝  ╚═══╝╚═╝╚═╝  ╚═══╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝    "
 echo -e "${NC}"
 echo -e "${BOLD}${RED}ADVERTENCIA: Este script desinstalará los entornos gráficos, utilidades y${NC}"
 echo -e "${BOLD}${RED}configuraciones de dotfiles instaladas, dejando el sistema limpio.${NC}"
 echo -e "Repositorio a conservar: ${BLUE}$DOTFILES_DIR${NC}\n"
+
+# ------------------------------------------------------------------------------
+# 0. Verificación de entorno: NO desinstalar el entorno gráfico desde dentro
+#    de una sesión gráfica activa (evita pantalla negra y script interrumpido).
+# ------------------------------------------------------------------------------
+log_step "0. Verificando entorno de ejecución"
+
+IN_GRAPHIC_SESSION=false
+if [[ -n "${WAYLAND_DISPLAY:-}" || -n "${DISPLAY:-}" || -n "${XDG_CURRENT_DESKTOP:-}" || -n "${SWAYSOCK:-}" ]]; then
+  IN_GRAPHIC_SESSION=true
+fi
+
+if [[ "$IN_GRAPHIC_SESSION" == "true" && "$FORCE" != "true" ]]; then
+  log_err "Se detectó que estás dentro de una sesión gráfica activa (Sway/Wayland/X11)."
+  echo ""
+  echo -e "${YELLOW}Este script desinstala sway, greetd, kitty y el entorno gráfico.${NC}"
+  echo -e "${YELLOW}Ejecutarlo desde dentro de la sesión gráfica provoca pantalla negra y${NC}"
+  echo -e "${YELLOW}que el script se detenga a medias sin eliminar nada correctamente.${NC}"
+  echo ""
+  echo -e "${BOLD}Pasos correctos:${NC}"
+  echo "  1. Salí de la sesión gráfica (cierra sesión o reinicia)."
+  echo "  2. Cambiá a una consola de texto: Ctrl + Alt + F3 (o F2/F4)."
+  echo "  3. Iniciá sesión con tu usuario y contraseña en la consola de texto."
+  echo "  4. Ejecutá este script nuevamente desde allí:"
+  echo -e "     ${BOLD}cd $DOTFILES_DIR && ./uninstall.sh${NC}"
+  echo ""
+  echo "Si realmente querés ejecutarlo desde la sesión gráfica bajo tu propio riesgo,"
+  echo "usá la bandera --force (no recomendado)."
+  exit 1
+fi
+
+if [[ "$IN_GRAPHIC_SESSION" == "true" && "$FORCE" == "true" ]]; then
+  log_warn "Se detectó sesión gráfica activa pero se usa --force. Continuando bajo tu propio riesgo."
+fi
 
 if [[ "$FORCE" != "true" ]]; then
   read -r -p "¿Estás seguro de que deseas restablecer el sistema a 0? [s/N]: " CONFIRM
@@ -149,6 +187,20 @@ if [[ "$OS" =~ ^(debian|ubuntu|pop|linuxmint)$ ]]; then
   run_sudo apt-get clean 2>/dev/null || true
   log_ok "Paquetes del sistema purgados y dependencias huérfanas limpiadas."
 fi
+
+# ------------------------------------------------------------------------------
+# 4. Backup de archivos de shell antes de eliminarlos (por si algo sale mal)
+# ------------------------------------------------------------------------------
+log_step "4. Haciendo backup de archivos de shell críticos"
+
+BACKUP_SHELL_DIR="$HOME/.dotfiles_backup/shell_$(date +%Y%m%d_%H%M%S)"
+mkdir -p "$BACKUP_SHELL_DIR"
+for shell_file in "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.bashrc" "$HOME/.profile"; do
+  if [[ -f "$shell_file" ]]; then
+    cp -a "$shell_file" "$BACKUP_SHELL_DIR/" 2>/dev/null || true
+  fi
+done
+log_ok "Backup de archivos de shell guardado en: $BACKUP_SHELL_DIR"
 
 # ------------------------------------------------------------------------------
 # 5. Eliminar aplicaciones descargadas y binarios manuales
@@ -279,3 +331,5 @@ echo -e "${BOLD}${GREEN}>> ¡Sistema restablecido a 0 con éxito!${NC}"
 echo -e "${GREEN}====================================================================${NC}"
 echo -e "Tu equipo ha quedado limpio y listo para volver a probar el instalador:"
 echo -e "  Ejecuta: ${BOLD}./install.sh${NC}\n"
+echo -e "${YELLOW}Nota:${NC} Si usaste --force desde una sesión gráfica, reiniciá el equipo${NC}"
+echo -e "${YELLOW}para que los cambios de entorno gráfico surtan efecto.${NC}"

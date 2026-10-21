@@ -53,6 +53,56 @@ for arg in "$@"; do
   esac
 done
 
+# ------------------------------------------------------------------------------
+# Función: cerrar sesión gráfica automáticamente desde una TTY de texto
+# ------------------------------------------------------------------------------
+cerrar_sesion_grafica() {
+  local sesion_id=""
+  local tty_actual
+  tty_actual="$(tty 2>/dev/null || echo "desconocida")"
+
+  log_info "Cerrando sesión gráfica activa (estás en $tty_actual)..."
+
+  # 1. Intentar vía loginctl (forma limpia de terminar la sesión del usuario)
+  if has_cmd loginctl; then
+    sesion_id="$(loginctl list-sessions --no-legend 2>/dev/null \
+      | awk -v u="$USER" '$2==u && ($3=="wayland" || $3=="x11" || $3=="mir") {print $1; exit}' \
+      || true)"
+    if [[ -n "$sesion_id" ]]; then
+      log_info "Finalizando sesión gráfica $sesion_id mediante loginctl..."
+      loginctl terminate-session "$sesion_id" 2>/dev/null || true
+    fi
+  fi
+
+  # 2. Fallback: terminar procesos gráficos conocidos del usuario
+  if pgrep -u "$USER" sway >/dev/null 2>&1; then
+    log_info "Finalizando procesos sway del usuario $USER..."
+    pkill -TERM -u "$USER" sway 2>/dev/null || true
+  fi
+  if pgrep -u "$USER" greetd >/dev/null 2>&1; then
+    log_info "Finalizando procesos greetd del usuario $USER..."
+    pkill -TERM -u "$USER" greetd 2>/dev/null || true
+  fi
+
+  # Esperar a que terminen
+  sleep 4
+
+  # 3. Si aún persiste, matar por fuerza
+  if pgrep -u "$USER" sway >/dev/null 2>&1; then
+    log_warn "Sway aún está activo. Forzando cierre..."
+    pkill -KILL -u "$USER" sway 2>/dev/null || true
+    sleep 2
+  fi
+
+  if pgrep -u "$USER" sway >/dev/null 2>&1; then
+    log_err "No se pudo cerrar la sesión gráfica automáticamente."
+    echo -e "${YELLOW}Cerrá la sesión gráfica manualmente y volvé a ejecutar el script.${NC}"
+    exit 1
+  fi
+
+  log_ok "Sesión gráfica cerrada."
+}
+
 echo -e "${RED}"
 echo "  ██╗   ██╗███╗   ██╗██╗███╗   ██╗███████╗████████╗ █████╗ ██╗     ██╗     "
 echo "  ██║   ██║████╗  ██║██║███╗  ██║██╔════╝╚══██╔══╝██╔══██╗██║     ██║     "
@@ -66,28 +116,36 @@ echo -e "${BOLD}${RED}configuraciones de dotfiles instaladas, dejando el sistema
 echo -e "Repositorio a conservar: ${BLUE}$DOTFILES_DIR${NC}\n"
 
 # ------------------------------------------------------------------------------
-# 0. Verificación de entorno: NO desinstalar el entorno gráfico desde dentro
-#    de una sesión gráfica activa (evita pantalla negra y script interrumpido).
+# 0. Verificación de entorno y cierre de sesión gráfica si es necesario
 # ------------------------------------------------------------------------------
 log_step "0. Verificando entorno de ejecución"
 
-IN_GRAPHIC_SESSION=false
-if [[ -n "${WAYLAND_DISPLAY:-}" || -n "${DISPLAY:-}" || -n "${XDG_CURRENT_DESKTOP:-}" || -n "${SWAYSOCK:-}" ]]; then
-  IN_GRAPHIC_SESSION=true
+# ¿Estamos DENTRO de una sesión gráfica (variables de entorno de esta sesión)?
+IN_GRAPHIC_SESSION_ENV=false
+if [[ -n "${WAYLAND_DISPLAY:-}" || -n "${DISPLAY:-}" || -n "${SWAYSOCK:-}" ]]; then
+  IN_GRAPHIC_SESSION_ENV=true
 fi
 
-if [[ "$IN_GRAPHIC_SESSION" == "true" && "$FORCE" != "true" ]]; then
-  log_err "Se detectó que estás dentro de una sesión gráfica activa (Sway/Wayland/X11)."
+# ¿Hay una sesión gráfica activa de este usuario (aunque no sea nuestra TTY)?
+GRAPHIC_SESSION_ACTIVE=false
+if pgrep -u "$USER" sway >/dev/null 2>&1 || pgrep -u "$USER" greetd >/dev/null 2>&1; then
+  GRAPHIC_SESSION_ACTIVE=true
+fi
+
+CURRENT_TTY="$(tty 2>/dev/null || echo "desconocida")"
+
+# Caso A: estamos DENTRO de la sesión gráfica -> abortar (a menos que sea --force)
+if [[ "$IN_GRAPHIC_SESSION_ENV" == "true" && "$FORCE" != "true" ]]; then
+  log_err "Se detectó que estás dentro de una sesión gráfica activa ($CURRENT_TTY)."
   echo ""
   echo -e "${YELLOW}Este script desinstala sway, greetd, kitty y el entorno gráfico.${NC}"
   echo -e "${YELLOW}Ejecutarlo desde dentro de la sesión gráfica provoca pantalla negra y${NC}"
   echo -e "${YELLOW}que el script se detenga a medias sin eliminar nada correctamente.${NC}"
   echo ""
   echo -e "${BOLD}Pasos correctos:${NC}"
-  echo "  1. Salí de la sesión gráfica (cierra sesión o reinicia)."
-  echo "  2. Cambiá a una consola de texto: Ctrl + Alt + F3 (o F2/F4)."
-  echo "  3. Iniciá sesión con tu usuario y contraseña en la consola de texto."
-  echo "  4. Ejecutá este script nuevamente desde allí:"
+  echo "  1. Cambiá a una consola de texto: Ctrl + Alt + F3 (o F2/F4)."
+  echo "  2. Iniciá sesión con tu usuario y contraseña en la consola de texto."
+  echo "  3. Ejecutá este script nuevamente desde allí:"
   echo -e "     ${BOLD}cd $DOTFILES_DIR && ./uninstall.sh${NC}"
   echo ""
   echo "Si realmente querés ejecutarlo desde la sesión gráfica bajo tu propio riesgo,"
@@ -95,8 +153,29 @@ if [[ "$IN_GRAPHIC_SESSION" == "true" && "$FORCE" != "true" ]]; then
   exit 1
 fi
 
-if [[ "$IN_GRAPHIC_SESSION" == "true" && "$FORCE" == "true" ]]; then
-  log_warn "Se detectó sesión gráfica activa pero se usa --force. Continuando bajo tu propio riesgo."
+if [[ "$IN_GRAPHIC_SESSION_ENV" == "true" && "$FORCE" == "true" ]]; then
+  log_warn "Se detectó sesión gráfica activa en $CURRENT_TTY pero se usa --force. Continuando bajo tu propio riesgo."
+fi
+
+# Caso B: estamos en consola de texto (tty) pero hay sesión gráfica activa de este usuario
+# -> ofrecer cerrarla automáticamente antes de continuar
+if [[ "$IN_GRAPHIC_SESSION_ENV" == "false" && "$GRAPHIC_SESSION_ACTIVE" == "true" ]]; then
+  log_warn "Se detectó una sesión gráfica activa (Sway/Wayland/greetd) desde otra TTY."
+  echo -e "Tu TTY actual es: ${BOLD}$CURRENT_TTY${NC}"
+  echo ""
+
+  if [[ "$FORCE" != "true" ]]; then
+    read -r -p "¿Cerrar sesión gráfica automáticamente y continuar con la desinstalación? [s/N]: " CERRAR_GRAFICA
+    case "${CERRAR_GRAFICA,,}" in
+      s|si|y|yes) ;;
+      *)
+        echo "Operación cancelada."
+        exit 0
+        ;;
+    esac
+  fi
+
+  cerrar_sesion_grafica
 fi
 
 if [[ "$FORCE" != "true" ]]; then

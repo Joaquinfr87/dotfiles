@@ -132,8 +132,8 @@ install_docker() {
 install_opencode() {
   log_info "Configurando OpenCode CLI..."
   if ! has_cmd opencode; then
-    log_info "Instalando OpenCode desde el repositorio oficial..."
-    curl -fsSL https://raw.githubusercontent.com/opencode-ai/opencode/refs/heads/main/install | bash || true
+    log_info "Instalando OpenCode desde el instalador oficial..."
+    curl -fsSL https://opencode.ai/v2/install | bash || true
     log_ok "OpenCode instalado."
   else
     log_ok "OpenCode ya está instalado: $(opencode --version 2>/dev/null || echo 'instalado')"

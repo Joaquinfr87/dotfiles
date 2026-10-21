@@ -1,35 +1,17 @@
 # ==============================================================================
-# Starship Configuration — Gruvbox Material Dark
+# Starship Configuration — Gruvbox Dark (Minimalista - 1 Línea)
 # ==============================================================================
-# Referencia: https://starship.rs/config/
+# Documentación oficial: https://starship.rs/config/
 # ==============================================================================
 
-# Formato principal del prompt
-format = """
-$username\
-$hostname\
-$directory\
-$git_branch\
-$git_state\
-$git_status\
-$package\
-$nodejs\
-$python\
-$rust\
-$golang\
-$docker_context\
-$fill\
-$cmd_duration\
-$time\
-$line_break\
-$character"""
+# No agregar salto de línea extra antes del prompt (prompt compacto)
+add_newline = false
 
 # Timeout en milisegundos para comandos externos (git, etc.)
 command_timeout = 500
 
-# Línea continua para separar el lado izquierdo y derecho
-[fill]
-symbol = " "
+# Formato principal en una sola línea
+format = """$os$username$hostname$directory$git_branch$git_state$git_status$package$nodejs$python$rust$golang$docker_context$jobs$sudo$cmd_duration$status$character"""
 
 # --- Carácter de prompt principal ---
 [character]
@@ -37,86 +19,109 @@ success_symbol = "[❯](bold #b8bb26)" # Gruvbox verde
 error_symbol = "[❯](bold #fb4934)"   # Gruvbox rojo
 vimcmd_symbol = "[❮](bold #fabd2f)"  # Gruvbox amarillo (modo normal vi)
 
+# --- Sistema Operativo (Debian) ---
+[os]
+disabled = false
+style = "bold #fb4934" # Gruvbox rojo Debian
+format = "[$symbol]($style)"
+
+[os.symbols]
+Debian = " "
+
 # --- Directorio ---
 [directory]
-truncation_length = 4
+truncation_length = 3
 truncate_to_repo = true
-style = "bold #fabd2f"
+style = "bold #fabd2f" # Gruvbox amarillo
 read_only = " 󰌾"
 read_only_style = "#fb4934"
 format = "[$path]($style)[$read_only]($read_only_style) "
 
 # --- Git ---
 [git_branch]
-symbol = " "
+symbol = " "
 style = "bold #d3869b" # Gruvbox magenta
 format = "[$symbol$branch(:$remote_branch)]($style) "
 
 [git_status]
 style = "bold #fe8019" # Gruvbox naranja
-conflicted = "=[$count](bold #fb4934) "
-ahead = "⇡[$count](bold #b8bb26) "
-behind = "⇣[$count](bold #fb4934) "
-diverged = "⇕[⇡$ahead_count ⇣$behind_count](bold #fabd2f) "
-untracked = "?[$count](bold #83a598) "
-stashed = "*[$count](bold #928374) "
-modified = "![$count](bold #fe8019) "
-staged = "+[$count](bold #b8bb26) "
-renamed = "»[$count](bold #8ec07c) "
-deleted = "✘[$count](bold #fb4934) "
-format = "([\\[$all_status$ahead_behind\\]]($style) )"
+conflicted = "=[$count](bold #fb4934)"
+ahead = "⇡[$count](bold #b8bb26)"
+behind = "⇣[$count](bold #fb4934)"
+diverged = "⇕[⇡$ahead_count ⇣$behind_count](bold #fabd2f)"
+untracked = "?[$count](bold #83a598)"
+stashed = "*[$count](bold #928374)"
+modified = "![$count](bold #fe8019)"
+staged = "+[$count](bold #b8bb26)"
+renamed = "»[$count](bold #8ec07c)"
+deleted = "✘[$count](bold #fb4934)"
+format = '([\[$all_status$ahead_behind\]]($style) )'
 
 [git_state]
 format = '([($state( $progress_current/$progress_total))]($style) )'
 style = "bold #fabd2f"
 
-# --- Runtimes y Lenguajes (solo si estás en un proyecto de ese tipo) ---
+# --- Runtimes y Lenguajes ---
 [nodejs]
-symbol = " "
-style = "bold #b8bb26"
+symbol = " "
+style = "bold #b8bb26" # Gruvbox verde
 format = "[$symbol($version)]($style) "
 detect_files = ["package.json", ".node-version"]
 detect_folders = ["node_modules"]
 
 [python]
-symbol = " "
-style = "bold #fabd2f"
-format = "[${symbol}${pyenv_prefix}(${version})(\\($virtualenv\\))]($style) "
+symbol = " "
+style = "bold #fabd2f" # Gruvbox amarillo
+format = '[${symbol}${pyenv_prefix}(${version})(\($virtualenv\))]($style) '
 
 [rust]
-symbol = " "
-style = "bold #fe8019"
+symbol = "󱘗 "
+style = "bold #fe8019" # Gruvbox naranja
 format = "[$symbol($version)]($style) "
 
 [golang]
-symbol = " "
-style = "bold #83a598"
+symbol = " "
+style = "bold #83a598" # Gruvbox azul
 format = "[$symbol($version)]($style) "
 
 [docker_context]
-symbol = " "
-style = "bold #83a598"
+symbol = " "
+style = "bold #83a598" # Gruvbox azul
 format = "[$symbol$context]($style) "
 
 [package]
 symbol = "󰏗 "
-style = "#928374"
+style = "#928374" # Gruvbox gris
 format = "[$symbol$version]($style) "
 
-# --- Tiempo de ejecución (solo si tarda > 2 segundos) ---
+# --- Trabajos en segundo plano (jobs) ---
+[jobs]
+symbol = "✦ "
+style = "bold #fabd2f" # Gruvbox amarillo
+format = "[$symbol$number]($style) "
+number_threshold = 1
+
+# --- Sudo ---
+[sudo]
+disabled = false
+symbol = "󰌋 "
+style = "bold #fb4934" # Gruvbox rojo
+format = "[$symbol]($style) "
+
+# --- Tiempo de ejecución (si tarda > 2 segundos) ---
 [cmd_duration]
 min_time = 2_000
-style = "bold #fabd2f"
+style = "bold #fabd2f" # Gruvbox amarillo
 format = "took [$duration]($style) "
 
-# --- Hora en el extremo derecho ---
-[time]
+# --- Estado de salida / Errores (status) ---
+[status]
 disabled = false
-time_format = "%R"
-style = "#928374"
-format = "[$time]($style)"
+symbol = " "
+style = "bold #fb4934" # Gruvbox rojo
+format = "[$symbol$status]($style) "
 
-# --- Usuario y Host (solo activo en sesiones SSH) ---
+# --- Usuario y Host (solo activo en sesiones SSH o como root) ---
 [username]
 style_user = "bold #83a598"
 style_root = "bold #fb4934"

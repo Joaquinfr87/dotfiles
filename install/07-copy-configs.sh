@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# install/07-copy-configs.sh — Copia de configuraciones al sistema con backup
+# install/07-copy-configs.sh — Deploy dotfiles with automatic backups
 # ==============================================================================
 set -euo pipefail
 
@@ -11,9 +11,9 @@ source "$SCRIPT_DIR/00-helpers.sh"
 
 PROFILE="${1:-${DOTFILES_PROFILE:-desktop}}"
 
-log_step "Desplegando archivos de configuración para perfil: $PROFILE"
+log_step "Deploying configuration files for profile: $PROFILE"
 
-# Ejecutar el sincronizador propio de dotfiles
+# Use the repository's own dotfiles synchronizer
 "$DOTFILES_DIR/bin/dot-sync" deploy "$PROFILE"
 
-log_ok "Todas las configuraciones se han copiado correctamente con backup previo."
+log_ok "All configuration files copied successfully (previous versions were backed up)."

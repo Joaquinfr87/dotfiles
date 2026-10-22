@@ -1,9 +1,9 @@
 # ==============================================================================
-# SWAY + NOCTALIA — Config principal (Debian 13)
+# SWAY + NOCTALIA — Main configuration (Debian 13)
 # ==============================================================================
-# Basado en:
-#   - https://github.com/piratheon/sway-noctalia-dots (estructura modular)
-#   - config anterior en ~/repos/dotfiles/sway/config (Gruvbox + hardware)
+# Based on:
+#   - https://github.com/piratheon/sway-noctalia-dots (modular structure)
+#   - previous config in ~/repos/dotfiles/sway/config (Gruvbox + hardware)
 # Read `man 5 sway` for a complete reference.
 
 # user config directory (modular)

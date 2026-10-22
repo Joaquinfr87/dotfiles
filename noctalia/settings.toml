@@ -19,7 +19,7 @@ order = [ "topbar-right" ]
         "brightness",
         "battery"
     ]
-    font_family = "Iosevka NF"
+    font_family = "Iosevka"
     reserve_space = false
     start = [ "workspaces" ]
 
@@ -118,7 +118,7 @@ widget_order = [ "lockscreen-login-box@HDMI-A-1", "lockscreen-login-box@DP-1", "
         show_weather = true
 
 [shell]
-font_family = "Iosevka NF"
+font_family = "Iosevka"
 
     [shell.launcher]
     app_grid = true

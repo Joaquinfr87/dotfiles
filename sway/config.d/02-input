@@ -1,5 +1,5 @@
 # ==============================================================================
-# 02 - Input (teclado, touchpad, cursor)
+# 02 - Input (keyboard, touchpad, cursor)
 # ==============================================================================
 input type:keyboard {
     repeat_delay 250
@@ -12,5 +12,5 @@ input type:touchpad {
     tap enabled
 }
 
-# Ocultar el cursor tras 2 segundos de inactividad
+# Hide the cursor after 2 seconds of inactivity
 seat * hide_cursor 2000

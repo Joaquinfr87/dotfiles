@@ -39,19 +39,19 @@ return {
     },
   },
   keys = {
-    -- Seguir link bajo el cursor
+    -- Follow the link under the cursor
     { "<leader>oo", "<cmd>Obsidian follow_link<CR>", desc = "Obsidian: Follow link" },
 
-    -- Crear nota nueva
+    -- Create a new note
     { "<leader>on", "<cmd>Obsidian new<CR>", desc = "Obsidian: New note" },
 
-    -- Buscar notas (fuzzy find)
+    -- Search notes (fuzzy find)
     { "<leader>os", "<cmd>Obsidian quick_switch<CR>", desc = "Obsidian: Quick switch" },
 
-    -- Buscar contenido en notas
+    -- Search note content
     { "<leader>og", "<cmd>Obsidian search<CR>", desc = "Obsidian: Search" },
 
-    -- Daily note de hoy
+    -- Today's daily note
     { "<leader>od", "<cmd>Obsidian today<CR>", desc = "Obsidian: Today" },
 
     -- Template
@@ -63,7 +63,7 @@ return {
     -- Toggle checkbox
     { "<leader>ch", "<cmd>Obsidian toggle_checkbox<CR>", desc = "Obsidian: Toggle checkbox" },
 
-    -- Renombrar nota
+    -- Rename note
     { "<leader>or", "<cmd>Obsidian rename<CR>", desc = "Obsidian: Rename note" },
 
     -- Tags

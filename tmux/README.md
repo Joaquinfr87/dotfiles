@@ -1,62 +1,62 @@
-# Guía TMUX — Sesiones y ventanas
+# TMUX Guide — Sessions and windows
 
-Configuración de [tmux](https://github.com/tmux/tmux) para el stack
-**Debian 13 + kitty + sway + nvim**, enfocada en **sesiones** y en las
-utilidades que traen (persistencia, detach/attach, ventanas, copy-mode). Los
-**panes** (splits) se dejan con su comportamiento por defecto y no se usan.
+[tmux](https://github.com/tmux/tmux) configuration for the
+**Debian 13 + kitty + sway + nvim** stack, focused on **sessions** and on the
+utilities they bring (persistence, detach/attach, windows, copy-mode). **Panes**
+(splits) keep their default behavior and are not used.
 
-> Basada en la wiki oficial: <https://github.com/tmux/tmux/wiki/Getting-Started>
-> y `man tmux`. Paleta **Gruvbox Material Dark**, la misma de
+> Based on the official wiki: <https://github.com/tmux/tmux/wiki/Getting-Started>
+> and `man tmux`. **Gruvbox Material Dark** palette, the same one as
 > `sway/config.d/00-variables`.
 >
-> 📖 **¿Quieres aprender tmux a fondo?** La guía extensa (modelo mental,
-> anatomía línea por línea de `tmux.conf`, referencia de comandos y recetas)
-> está en **[`GUIA.md`](GUIA.md)**. Este README es el arranque rápido.
+> 📖 **Want to learn tmux in depth?** The extensive guide (mental model,
+> line-by-line anatomy of `tmux.conf`, command reference and recipes) is in
+> **[`GUIDE.md`](GUIDE.md)**. This README is the quick start.
 
 ---
 
-## 1. Qué es tmux (conceptos)
+## 1. What tmux is (concepts)
 
-tmux es un **multiplexor de terminal**: ejecuta varios programas dentro de un
-único terminal y permite **desconectarse** (detach) dejándolos corriendo, para
-**volver a conectarse** (attach) después — desde la misma terminal, otra, o por
+tmux is a **terminal multiplexer**: it runs several programs inside a single
+terminal and lets you **disconnect** (detach) leaving them running, so you can
+**connect again** (attach) later — from the same terminal, another one, or over
 SSH.
 
-Términos clave de la wiki:
+Key terms from the wiki:
 
-| Término | Qué es |
+| Term | What it is |
 |---|---|
-| **Servidor** | Proceso en segundo plano que corre todo. Se inicia solo y muere si no queda nada dentro. |
-| **Cliente** | Cada terminal conectada a una sesión (tu ventana de kitty). |
-| **Sesión** | Agrupa ventanas. Tiene nombre único. Es la unidad de persistencia. |
-| **Ventana** | Ocupa toda la terminal; agrupa uno o más panes. |
-| **Pane** | Terminal dentro de una ventana (los splits). |
-| **Prefijo** | Tecla que precede a los comandos de tmux. Aquí es **`C-Space`**. |
+| **Server** | Background process that runs everything. It starts on its own and dies when nothing is left inside. |
+| **Client** | Each terminal connected to a session (your kitty window). |
+| **Session** | Groups windows. It has a unique name. It is the unit of persistence. |
+| **Window** | Fills the whole terminal; it groups one or more panes. |
+| **Pane** | Terminal inside a window (the splits). |
+| **Prefix** | Key that precedes tmux commands. Here it is **`C-Space`**. |
 
-La jerarquía es: **sesión → ventanas → panes**. Como no usas panes, en la
-práctica cada ventana es una terminal.
+The hierarchy is: **session → windows → panes**. Since you don't use panes, in
+practice each window is one terminal.
 
-> **¿Por qué tmux y no las pestañas de kitty?** kitty ya sabe dividir ventanas y
-> pestañas, e incluso su FAQ desaconseja los multiplexores. La diferencia real
-> de tmux es la **persistencia**: `detach` deja los programas vivos, puedes
-> reconectar tras cerrar kitty, reiniciar sway o reconectar por SSH. Usamos tmux
-> por eso, no por los splits.
+> **Why tmux and not kitty tabs?** kitty already knows how to split windows and
+> tabs, and even its FAQ advises against multiplexers. tmux's real difference is
+> **persistence**: `detach` leaves the programs alive, you can reconnect after
+> closing kitty, restarting sway or reconnecting over SSH. We use tmux for that,
+> not for the splits.
 
 ---
 
-## 2. Instalación
+## 2. Installation
 
 ```bash
 sudo apt install tmux
-tmux -V   # necesita >= 3.2 para la config de este repo (Debian 13 trae 3.5a)
+tmux -V   # needs >= 3.2 for this repo's config (Debian 13 ships 3.5a)
 ```
 
-La config usa `extended-keys`, `display-popup`, `copy-command` y `prefix2`, todos
-disponibles desde tmux 3.2.
+The config uses `extended-keys`, `display-popup`, `copy-command` and `prefix2`, all
+available since tmux 3.2.
 
 ---
 
-## 3. Instalar esta configuración
+## 3. Installing this configuration
 
 ```bash
 mkdir -p ~/.config/tmux
@@ -65,7 +65,7 @@ cp ~/repos/dotfiles/tmux/tmux.conf ~/.config/tmux/tmux.conf
 mkdir -p ~/.local/bin
 ln -sf ~/repos/dotfiles/tmux/scripts/tmux-sessionizer ~/.local/bin/tmux-sessionizer
 
-# Persistencia de sesiones (ver §9)
+# Session persistence (see §9)
 mkdir -p ~/.config/tmux/plugins
 git clone --depth 1 https://github.com/tmux-plugins/tmux-resurrect \
   ~/.config/tmux/plugins/tmux-resurrect
@@ -73,13 +73,13 @@ git clone --depth 1 https://github.com/tmux-plugins/tmux-continuum \
   ~/.config/tmux/plugins/tmux-continuum
 ```
 
-tmux lee `~/.config/tmux/tmux.conf` automáticamente (soporte XDG desde tmux 3.1),
-así que no hace falta tocar `~/.tmux.conf`. El enlace del sessionizer en
-`~/.local/bin` es el mismo patrón que usas para `zen`. Los plugins de
-persistencia van fuera del repo (son de terceros); para actualizarlos,
-`git -C <carpeta> pull`.
+tmux reads `~/.config/tmux/tmux.conf` automatically (XDG support since tmux 3.1),
+so there is no need to touch `~/.tmux.conf`. The sessionizer symlink in
+`~/.local/bin` is the same pattern you use for `zen`. The persistence plugins
+live outside the repo (they are third-party); to update them,
+`git -C <folder> pull`.
 
-Verificar que no hay errores de sintaxis:
+Check that there are no syntax errors:
 
 ```bash
 tmux -L test -f ~/.config/tmux/tmux.conf new-session -d -s ok && tmux -L test kill-server
@@ -87,35 +87,35 @@ tmux -L test -f ~/.config/tmux/tmux.conf new-session -d -s ok && tmux -L test ki
 
 ---
 
-## 4. Integración con kitty
+## 4. kitty integration
 
-La config ya trae lo necesario; esto es para entender el porqué:
+The config already brings what is needed; this is to understand why:
 
-- **Color de 24 bits** — kitty se identifica como `TERM=xterm-kitty`. La línea
-  `set -as terminal-features ',xterm-kitty*:RGB:extkeys'` le dice a tmux que esa
-  terminal soporta **RGB** (color real), de modo que el tema de nvim se vea igual
-  que en kitty (sin colores apagados).
-- **Teclado extendido CSI-u** — tmux **no** implementa el protocolo de teclado de
-  kitty completo, pero sí reenvía secuencias `CSI-u`:
+- **24-bit color** — kitty identifies itself as `TERM=xterm-kitty`. The line
+  `set -as terminal-features ',xterm-kitty*:RGB:extkeys'` tells tmux that this
+  terminal supports **RGB** (true color), so the nvim theme looks the same as
+  in kitty (no washed-out colors).
+- **Extended CSI-u keyboard** — tmux does **not** implement kitty's full keyboard
+  protocol, but it does forward `CSI-u` sequences:
   ```
   set -g extended-keys always
   set -g extended-keys-format csi-u
   set -as terminal-features ',xterm-kitty*:RGB:extkeys'
   ```
-  Con esto funcionan teclas como `Shift+Enter` en nvim y en CLIs que lo usan.
-- **`escape-time 0`** — sin esto, `Esc` se siente lento en nvim dentro de tmux.
-- **`allow-passthrough on`** — deja pasar secuencias OSC (p. ej. `kitten icat`)
-  a través de tmux.
+  With this, keys like `Shift+Enter` work in nvim and in CLIs that use it.
+- **`escape-time 0`** — without this, `Esc` feels slow in nvim inside tmux.
+- **`allow-passthrough on`** — lets OSC sequences through (e.g. `kitten icat`)
+  across tmux.
 
-> **Scrollback:** el `scrollback_pager nvim` de `kitty/kitty.conf` aplica al
-> scrollback **de kitty** (fuera de tmux). Dentro de tmux el scrollback es el de
-> tmux y se navega con **copy-mode** (ver §7).
+> **Scrollback:** the `scrollback_pager nvim` from `kitty/kitty.conf` applies to
+> **kitty's** scrollback (outside tmux). Inside tmux the scrollback is tmux's and
+> you navigate it with **copy-mode** (see §7).
 
 ---
 
-## 5. Integración con sway
+## 5. sway integration
 
-Añadido a `sway/config.d/`:
+Added to `sway/config.d/`:
 
 ```
 # 00-variables
@@ -125,228 +125,228 @@ set $sessionizer ~/.local/bin/tmux-sessionizer
 bindsym $mod+Shift+Return exec $term -e $sessionizer
 ```
 
-- **`$mod+Shift+Return`** abre kitty y lanza el **sessionizer** (selector de
-  sesiones con fzf). `$mod+Return` sigue abriendo una terminal normal.
-- Las sesiones de tmux viven en el **servidor** de tmux, que es independiente de
-  sway: puedes **recargar o reiniciar sway** (`$mod+Shift+c` / relogin) y las
-  sesiones siguen vivas. Vuelves con `prefix + s` o `tmux attach`.
+- **`$mod+Shift+Return`** opens kitty and launches the **sessionizer** (session
+  picker with fzf). `$mod+Return` still opens a normal terminal.
+- tmux sessions live in the tmux **server**, which is independent of sway: you
+  can **reload or restart sway** (`$mod+Shift+c` / relogin) and the sessions stay
+  alive. You come back with `prefix + s` or `tmux attach`.
 
 ---
 
-## 6. Integración con nvim
+## 6. nvim integration
 
-No hace falta ningún plugin ni cambio en nvim: nvim corre dentro de una ventana
-de tmux como en cualquier terminal. Dos detalles ya resueltos:
+No plugin or change in nvim is needed: nvim runs inside a tmux window as in any
+terminal. Two details are already handled:
 
-- **`focus-events on`** — nvim recibe `FocusGained`/`FocusLost`, útil para
-  `autoread`, autoguardado al perder foco, etc.
-- **`escape-time 0`** + **CSI-u** — sin retardo en `Esc` y con `Shift+Enter`.
+- **`focus-events on`** — nvim receives `FocusGained`/`FocusLost`, useful for
+  `autoread`, autosave on losing focus, etc.
+- **`escape-time 0`** + **CSI-u** — no delay on `Esc` and `Shift+Enter` works.
 
-> Si algún día empiezas a usar panes y quieres moverte entre nvim y tmux con las
-> mismas teclas, ese es el caso de `vim-tmux-navigator`. Como no usas panes, no
-> se instala.
+> If you ever start using panes and want to move between nvim and tmux with the
+> same keys, that is the case for `vim-tmux-navigator`. Since you don't use panes,
+> it is not installed.
 
 ---
 
-## 7. Uso: sesiones (lo esencial)
+## 7. Usage: sessions (the essentials)
 
-### Desde el shell
+### From the shell
 
-| Comando | Qué hace |
+| Command | What it does |
 |---|---|
-| `tmux` / `tmux new` | Nueva sesión (la primera arranca el servidor) |
-| `tmux new -As trabajo` | Crea la sesión `trabajo` o se conecta si ya existe |
-| `tmux ls` | Lista sesiones |
-| `tmux attach` | Se conecta a la última sesión usada |
-| `tmux attach -t trabajo` | Se conecta a `trabajo` |
-| `tmux kill-session -t trabajo` | Mata la sesión `trabajo` |
-| `tmux kill-server` | Mata tmux entero |
+| `tmux` / `tmux new` | New session (the first one starts the server) |
+| `tmux new -As work` | Creates the `work` session or connects if it already exists |
+| `tmux ls` | Lists sessions |
+| `tmux attach` | Connects to the last used session |
+| `tmux attach -t work` | Connects to `work` |
+| `tmux kill-session -t work` | Kills the `work` session |
+| `tmux kill-server` | Kills all of tmux |
 
-### Con el prefijo (`C-Space`, o `C-b` como secundario)
+### With the prefix (`C-Space`, or `C-b` as secondary)
 
-| Atajo | Acción |
+| Shortcut | Action |
 |---|---|
-| `C-Space d` | **Detach**: cierra el cliente, la sesión sigue viva |
-| `C-Space s` | **Tree mode**: ver/​elegir sesiones (y ventanas) |
-| `C-Space w` | Tree mode con ventanas expandidas |
-| `C-Space $` | Renombrar sesión |
-| `C-Space X` | Matar la sesión actual (con confirmación) |
-| `C-Space (` / `)` | Sesión anterior / siguiente |
-| `C-Space C-p` / `C-n` | Igual, pero **repetible** sin re-pulsar el prefijo |
-| `C-Space D` | Detach de otros clientes conectados a la misma sesión |
+| `C-Space d` | **Detach**: closes the client, the session stays alive |
+| `C-Space s` | **Tree mode**: view/choose sessions (and windows) |
+| `C-Space w` | Tree mode with windows expanded |
+| `C-Space $` | Rename session |
+| `C-Space X` | Kill the current session (with confirmation) |
+| `C-Space (` / `)` | Previous / next session |
+| `C-Space C-p` / `C-n` | Same, but **repeatable** without pressing the prefix again |
+| `C-Space D` | Detach other clients connected to the same session |
 
-El flujo típico: abres una sesión por proyecto, trabajas, `C-Space d` y la
-dejas corriendo. Al volver, `tmux attach` (o el sessionizer) y sigues donde
-estabas.
+The typical flow: you open one session per project, work, `C-Space d` and leave
+it running. When you come back, `tmux attach` (or the sessionizer) and you carry
+on where you were.
 
-### Ventanas (dentro de una sesión)
+### Windows (inside a session)
 
-| Atajo | Acción |
+| Shortcut | Action |
 |---|---|
-| `C-Space c` | Nueva ventana |
-| `C-Space n` / `p` | Siguiente / anterior |
-| `C-Space 1` … `9` | Ir a la ventana N (numeradas desde 1) |
-| `C-Space l` | Última ventana |
-| `C-Space ,` | Renombrar ventana |
-| `C-Space &` | Cerrar ventana |
+| `C-Space c` | New window |
+| `C-Space n` / `p` | Next / previous |
+| `C-Space 1` … `9` | Go to window N (numbered from 1) |
+| `C-Space l` | Last window |
+| `C-Space ,` | Rename window |
+| `C-Space &` | Close window |
 
-### Copiar/pegar y scrollback
+### Copy/paste and scrollback
 
-La rueda del mouse entra en copy-mode automáticamente (`mouse on`). También
-`Alt+↑` / `Alt+↓` para paginar.
+The mouse wheel enters copy-mode automatically (`mouse on`). Also
+`Alt+↑` / `Alt+↓` to page.
 
-| Atajo | Acción |
+| Shortcut | Action |
 |---|---|
-| `C-Space [` | Entrar a copy-mode (teclas vi) |
-| `Alt+↑` / `Alt+↓` | Subir / bajar página (entra a copy-mode) |
-| `v` … `y` | En copy-mode: seleccionar (`v`) y **copiar al portapapeles** (`y` → `wl-copy`) |
-| `C-Space ]` | Pegar el último buffer |
-| `C-Space =` | Elegir buffer (historial de copias) |
+| `C-Space [` | Enter copy-mode (vi keys) |
+| `Alt+↑` / `Alt+↓` | Page up / down (enters copy-mode) |
+| `v` … `y` | In copy-mode: select (`v`) and **copy to the clipboard** (`y` → `wl-copy`) |
+| `C-Space ]` | Paste the last buffer |
+| `C-Space =` | Choose buffer (copy history) |
 
-El `y` envía la selección a `wl-copy` (portapapeles de Wayland), así que lo
-pegado está disponible en todo sway, no solo dentro de tmux.
+`y` sends the selection to `wl-copy` (the Wayland clipboard), so what you paste
+is available across all of sway, not only inside tmux.
 
-### Utilidades
+### Utilities
 
-| Atajo | Acción |
+| Shortcut | Action |
 |---|---|
-| `C-Space ?` | Lista de todos los atajos con su descripción |
-| `C-Space :` | Prompt de comandos de tmux (p. ej. `:kill-server`) |
-| `C-Space r` | **Recargar `tmux.conf`** |
-| `C-Space f` | Abrir el **sessionizer** en un popup (fzf) |
-| `C-Space t` | Reloj en la ventana |
+| `C-Space ?` | List of all shortcuts with their description |
+| `C-Space :` | tmux command prompt (e.g. `:kill-server`) |
+| `C-Space r` | **Reload `tmux.conf`** |
+| `C-Space f` | Open the **sessionizer** in a popup (fzf) |
+| `C-Space t` | Clock in the window |
 
 ---
 
 ## 8. Sessionizer (fzf)
 
-`tmux/scripts/tmux-sessionizer` abre un menú **fzf** con tres
-modos y crea/entra a una **sesión de tmux por proyecto** (el
-nombre es el del directorio):
+`tmux/scripts/tmux-sessionizer` opens an **fzf** menu with three
+modes and creates/enters one **tmux session per project** (the
+name is the directory's):
 
-- **`ctrl-s`: sesiones de tmux existentes** (por defecto; muestra
-  nombre y ruta). Elegir una **cambia a ella**.
-- **`ctrl-t`: proyectos** — primer nivel de `~/repos`,
-  `~/Downloads` y las rutas de
+- **`ctrl-s`: existing tmux sessions** (default; it shows
+  name and path). Choosing one **switches to it**.
+- **`ctrl-t`: projects** — first level of `~/repos`,
+  `~/Downloads` and the paths in
   `~/.config/tmux/sessionizer.dirs`.
-- **`ctrl-a`: todo `$HOME`** (hasta 5 niveles de profundidad).
+- **`ctrl-a`: all of `$HOME`** (up to 5 levels deep).
 
-Elegir una carpeta crea la sesión si no existe; si ya existe,
-solo cambia a ella (no reinicia nada).
+Choosing a folder creates the session if it doesn't exist; if it already
+exists, it only switches to it (nothing is restarted).
 
-- Desde **sway**: `$mod+Shift+Return`.
-- Desde **dentro de tmux**: `C-Space f` (popup).
-- Desde el **shell**: alias `ts`.
+- From **sway**: `$mod+Shift+Return`.
+- From **inside tmux**: `C-Space f` (popup).
+- From the **shell**: `ts` alias.
 
-Para que aparezcan carpetas que **no** están en `~/repos` ni
-`~/Downloads`, añade su ruta (una por línea) a
-`~/.config/tmux/sessionizer.dirs`:
+For folders that are **not** in `~/repos` or `~/Downloads` to show up, add their
+path (one per line) to `~/.config/tmux/sessionizer.dirs`:
 
 ```bash
-echo '~/mis-proyectos' >> ~/.config/tmux/sessionizer.dirs
+echo '~/my-projects' >> ~/.config/tmux/sessionizer.dirs
 ```
 
-Valen `~`, comentarios `#` y líneas en blanco. (Equivalente: edita
-`search_dirs` al inicio del script.)
+`~`, `#` comments and blank lines are accepted. (Equivalent: edit
+`search_dirs` at the top of the script.)
 
 ---
 
-## 9. Persistencia de sesiones (resurrect + continuum)
+## 9. Session persistence (resurrect + continuum)
 
-Las sesiones **sobreviven a reinicios y apagados** con
-[tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect) y
+Sessions **survive restarts and shutdowns** with
+[tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect) and
 [tmux-continuum](https://github.com/tmux-plugins/tmux-continuum)
-(clonados en `~/.config/tmux/plugins/` y cargados al final de
+(cloned into `~/.config/tmux/plugins/` and loaded at the end of
 `tmux.conf`):
 
-- **Guardado:** automático cada 10 min (continuum) o manual con
+- **Saving:** automatic every 10 min (continuum) or manual with
   `C-Space C-s`.
-- **Restauración:** automática al arrancar el servidor tmux; `C-Space C-r`
-  la fuerza a mano.
-- Se guardan sesiones, ventanas, panes, **directorios de trabajo** y el
-  **contenido de los panes** en `~/.local/share/tmux/resurrect/`.
+- **Restoring:** automatic when the tmux server starts; `C-Space C-r`
+  forces it by hand.
+- Sessions, windows, panes, **working directories** and **pane contents**
+  are saved in `~/.local/share/tmux/resurrect/`.
 
-Notas:
+Notes:
 
-- La restauración automática ocurre cuando **arranca el servidor**
-  (al crear/adjuntar la primera sesión tras el arranque).
-- El guardado es una **foto de todo el servidor**: sesiones que no
-  quieras recuperar, mátalas antes del siguiente guardado
+- Automatic restore happens when **the server starts**
+  (when creating/attaching the first session after boot).
+- The save is a **snapshot of the whole server**: kill the sessions you
+  don't want to recover before the next save
   (`C-Space X`).
-- Si un directorio guardado ya no existe (p. ej. un disco no
-  montado), el pane arranca en `$HOME`.
+- If a saved directory no longer exists (e.g. an unmounted disk),
+  the pane starts in `$HOME`.
 
 ---
 
-## 10. Aliases de zsh
+## 10. zsh aliases
 
-Añadidos a `.zshrc`:
+Added to `.zshrc`:
 
-| Alias | Equivale a |
+| Alias | Equivalent to |
 |---|---|
-| `ta <sesión>` | `tmux attach -t <sesión>` |
-| `tn <sesión>` | `tmux new -As <sesión>` (crear o adjuntar) |
+| `ta <session>` | `tmux attach -t <session>` |
+| `tn <session>` | `tmux new -As <session>` (create or attach) |
 | `tls` | `tmux ls` |
-| `tk <sesión>` | `tmux kill-session -t <sesión>` |
+| `tk <session>` | `tmux kill-session -t <session>` |
 | `ts` | `tmux-sessionizer` |
 
-Tras copiar el `.zshrc`, aplica con `source ~/.zshrc` o abre una shell nueva.
+After copying `.zshrc`, apply it with `source ~/.zshrc` or open a new shell.
 
 ---
 
-## 11. Estructura de archivos
+## 11. File structure
 
 ```
 ~/repos/dotfiles/tmux/
-├── tmux.conf                   # se instala en ~/.config/tmux/tmux.conf
-├── README.md                   # esta guía
+├── tmux.conf                   # installed to ~/.config/tmux/tmux.conf
+├── README.md                   # quick start (this file)
+├── GUIDE.md                    # extensive tmux guide
 └── scripts/
-    └── tmux-sessionizer        # enlazado en ~/.local/bin/
+    └── tmux-sessionizer        # symlinked in ~/.local/bin/
 ```
 
 ---
 
-## 12. Decisiones de la config (referencia)
+## 12. Config decisions (reference)
 
-- **Prefijo `C-Space`** (antes `C-b`), con `C-b` mantenido como `prefix2` por
-  compatibilidad. `C-Space` no choca con `C-b`/`C-a` de readline ni con kitty.
-- **`base-index 1`** — ventanas desde 1 (como tus workspaces de sway).
-- **`renumber-windows on`** — sin huecos al cerrar ventanas.
-- **`detach-on-destroy off`** — al matar una sesión salta a otra en vez de
-  cerrarse todo.
-- **`mode-keys vi` / `status-keys vi`** — coherente con nvim.
-- **`set-clipboard on` + `copy-command wl-copy`** — integración con el
-  portapapeles de Wayland.
-- **Sin atajos de split** — los panes no se usan; `%` y `"` siguen existiendo por
-  si algún día hacen falta, pero no se promueven.
+- **Prefix `C-Space`** (previously `C-b`), with `C-b` kept as `prefix2` for
+  compatibility. `C-Space` doesn't clash with readline's `C-b`/`C-a` or with kitty.
+- **`base-index 1`** — windows from 1 (like your sway workspaces).
+- **`renumber-windows on`** — no gaps when closing windows.
+- **`detach-on-destroy off`** — when killing a session it jumps to another one
+  instead of closing everything.
+- **`mode-keys vi` / `status-keys vi`** — consistent with nvim.
+- **`set-clipboard on` + `copy-command wl-copy`** — Wayland clipboard
+  integration.
+- **No split shortcuts** — panes are not used; `%` and `"` still exist in case
+  they are needed some day, but they are not promoted.
 
 ---
 
-## 13. Primeros pasos
+## 13. First steps
 
 ```bash
-# 1. Instala la config (ver §3) y abre una sesión de prueba
-tmux new -As prueba
+# 1. Install the config (see §3) and open a test session
+tmux new -As test
 
-# 2. Prueba: C-Space c (nueva ventana), C-Space 1/2, C-Space , (renombrar)
-# 3. Detach y reattach
-#    C-Space d   (vuelves al shell, tmux sigue vivo)
-tmux ls         # la sesión 'prueba' sigue listada
-tmux attach -t prueba
+# 2. Try: C-Space c (new window), C-Space 1/2, C-Space , (rename)
+# 3. Detach and reattach
+#    C-Space d   (you return to the shell, tmux keeps running)
+tmux ls         # the 'test' session is still listed
+tmux attach -t test
 
 # 4. Sessionizer
-#    C-Space f  o  ts  o  $mod+Shift+Return en sway
+#    C-Space f  or  ts  or  $mod+Shift+Return in sway
 
-# 5. Limpieza
-tmux kill-session -t prueba
+# 5. Cleanup
+tmux kill-session -t test
 ```
 
 ---
 
-## 14. Referencia
+## 14. Reference
 
-- Getting Started (wiki oficial): <https://github.com/tmux/tmux/wiki/Getting-Started>
+- Getting Started (official wiki): <https://github.com/tmux/tmux/wiki/Getting-Started>
 - Manual: `man 1 tmux` · <https://man.openbsd.org/tmux>
-- FAQ (problemas de config): <https://github.com/tmux/tmux/wiki/FAQ>
-- kitty + teclado extendido: <https://sw.kovidgoyal.net/kitty/keyboard-protocol/>
-- kitty FAQ (opinión sobre multiplexores): <https://sw.kovidgoyal.net/kitty/faq/>
+- FAQ (config problems): <https://github.com/tmux/tmux/wiki/FAQ>
+- kitty + extended keyboard: <https://sw.kovidgoyal.net/kitty/keyboard-protocol/>
+- kitty FAQ (opinion on multiplexers): <https://sw.kovidgoyal.net/kitty/faq/>

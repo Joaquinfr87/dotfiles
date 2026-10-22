@@ -1,49 +1,49 @@
 # ==============================================================================
-# Kanshi — Configuración dinámica de pantallas
+# Kanshi — Dynamic display configuration
 # ==============================================================================
-# Activa automáticamente el perfil correcto al conectar/desconectar pantalla.
+# Automatically activates the right profile when a display is connected/disconnected.
 # Docs: man 5 kanshi
 #
-# Flujo:
-#   1. Solo laptop → perfil "laptop" (1366x768)
-#   2. Laptop + HDMI → perfil "presentacion" (externa 1920x1080 a la derecha)
-#   3. Solo HDMI → perfil "externo" (1920x1080)
+# Flow:
+#   1. Laptop only → "laptop" profile (1366x768)
+#   2. Laptop + HDMI → "presentation" profile (external 1920x1080 on the right)
+#   3. HDMI only → "desktop_hdmi" profile (1920x1080)
 #
-# Si conectas una pantalla diferente, kanshi usa el perfil que mejor coincida.
-# Si ninguna coincide, sway usa su config por defecto.
+# If you connect a different display, kanshi uses the profile that matches best.
+# If none match, sway uses its default configuration.
 
-# --- 1. Solo laptop (1366x768) ---
+# --- 1. Laptop only (1366x768) ---
 profile laptop {
     output eDP-1 enable position 0,0 mode 1366x768@60Hz
 }
 
-# --- 2. Laptop + Pantalla externa HDMI (Presentación / Dual) ---
-# La externa se coloca a la derecha de la laptop (1366,0).
-profile presentacion {
+# --- 2. Laptop + external HDMI display (Presentation / Dual) ---
+# The external display is placed to the right of the laptop (1366,0).
+profile presentation {
     output eDP-1 enable position 0,0 mode 1366x768@60Hz
     output HDMI-A-1 enable position 1366,0 mode 1920x1080@60Hz
     exec swaymsg workspace 1, move workspace to HDMI-A-1
 }
 
-# --- 3. Laptop + Pantalla externa DisplayPort (Dock USB-C / Thunderbolt) ---
+# --- 3. Laptop + external DisplayPort display (USB-C / Thunderbolt dock) ---
 profile laptop_dp {
     output eDP-1 enable position 0,0 mode 1366x768@60Hz
     output DP-1 enable position 1366,0 mode 1920x1080@60Hz
     exec swaymsg workspace 1, move workspace to DP-1
 }
 
-# --- 4. Laptop con tapa cerrada + pantalla HDMI (Clamshell) ---
+# --- 4. Laptop with lid closed + HDMI display (Clamshell) ---
 profile laptop_clamshell {
     output eDP-1 disable
     output HDMI-A-1 enable position 0,0 mode 1920x1080@60Hz
 }
 
-# --- 5. PC de escritorio: Monitor único HDMI (1920x1080) ---
+# --- 5. Desktop PC: single HDMI monitor (1920x1080) ---
 profile desktop_hdmi {
     output HDMI-A-1 enable position 0,0 mode 1920x1080@60Hz
 }
 
-# --- 6. PC de escritorio: Monitor único DisplayPort (1920x1080) ---
+# --- 6. Desktop PC: single DisplayPort monitor (1920x1080) ---
 profile desktop_dp {
     output DP-1 enable position 0,0 mode 1920x1080@60Hz
 }
@@ -52,7 +52,7 @@ profile desktop_dp2 {
     output DP-2 enable position 0,0 mode 1920x1080@60Hz
 }
 
-# --- 7. PC de escritorio: Doble monitor (DP principal + HDMI secundario) ---
+# --- 7. Desktop PC: dual monitor (primary DP + secondary HDMI) ---
 profile desktop_dual {
     output DP-1 enable position 0,0 mode 1920x1080@60Hz
     output HDMI-A-1 enable position 1920,0 mode 1920x1080@60Hz

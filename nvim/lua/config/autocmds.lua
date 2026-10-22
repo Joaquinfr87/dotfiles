@@ -12,14 +12,14 @@ vim.api.nvim_create_autocmd("User", {
   callback = function(ev)
     local note = ev.data and ev.data.note
 
-    -- Conceal level 2: oculta el syntax markdown y muestra la UI bonita
+    -- Conceal level 2: hide markdown syntax and show the nice UI
     vim.opt_local.conceallevel = 2
 
-    -- Activa spell check en inglés/español
+    -- Enable spell check for English/Spanish
     vim.opt_local.spell = true
     vim.opt_local.spelllang = { "es", "en_us" }
 
-    -- Wrap largo (no cortar líneas)
+    -- Long wrapping (do not break lines)
     vim.opt_local.wrap = true
     vim.opt_local.linebreak = true
     if note and note.path and note.path:match("daily/") then

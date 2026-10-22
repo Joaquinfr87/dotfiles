@@ -1,13 +1,13 @@
 # ==============================================================================
 # Noctalia v5 - config.toml
-# Referencia: https://docs.noctalia.dev/v5/
-# Validar con: noctalia config validate
+# Reference: https://docs.noctalia.dev/v5/
+# Validate with: noctalia config validate
 # ==============================================================================
 
 # --- Shell ---------------------------------------------------------------
 [shell]
-font_family = "sans-serif"
-polkit_agent = true            # agente de autenticación integrado
+font_family = "Iosevka"
+polkit_agent = true            # built-in authentication agent
 password_style = "random"
 clipboard_enabled = true
 
@@ -19,27 +19,27 @@ categories = true
 show_icons = true
 sort_by_usage = true
 
-# --- Fondo de pantalla -----------------------------------------------------
+# --- Wallpaper -------------------------------------------------------------
 [wallpaper]
 enabled = true
 fill_mode = "crop"
 directory = "~/.config/sway/walls"
 
-# --- Tema (Gruvbox, igual que la paleta de Sway) ---------------------------
+# --- Theme (Gruvbox, matching the Sway palette) ----------------------------
 [theme]
 mode = "dark"
 source = "builtin"
 builtin = "Gruvbox"
 pure_black_dark = false
 
-# --- Barra (TopBar modificada con widgets personalizados) -------------------
+# --- Bar (modified TopBar with custom widgets) -----------------------------
 [bar]
 order = [ "topbar-right" ]
 
 [bar.topbar-right]
 auto_hide = true
 concave_edge_corners = false
-font_family = "Iosevka NF"
+font_family = "Iosevka"
 reserve_space = false
 start = [ "workspaces" ]
 end = [
@@ -56,11 +56,11 @@ end = [
     "battery"
 ]
 
-# --- Dock (desactivado, nunca lo usaste) -----------------------------------
+# --- Dock (disabled) -------------------------------------------------------
 [dock]
 enabled = false
 
-# --- Notificaciones ---------------------------------------------------------
+# --- Notifications ---------------------------------------------------------
 [notification]
 enable_daemon = true
 show_app_name = true
@@ -87,10 +87,10 @@ timeout = 660
 action = "screen_off"
 enabled = true
 
-# --- Acciones de sesión (suspend / reboot / poweroff) --------------------------
-# Por defecto Noctalia ejecuta `sudo -n ...`, que falla cuando no hay NOPASSWD.
-# systemctl va por logind/polkit; para la sesión activa está permitido sin clave
-# (verificado con pkcheck para login1.power-off/reboot/suspend).
+# --- Session actions (suspend / reboot / poweroff) ----------------------------
+# By default Noctalia runs `sudo -n ...`, which fails without NOPASSWD.
+# systemctl goes through logind/polkit; for the active session it is allowed
+# without a password (verified with pkcheck for login1.power-off/reboot/suspend).
 [shell.session.power]
 suspend = "systemctl suspend"
 reboot = "systemctl reboot"
@@ -101,11 +101,11 @@ shutdown = "systemctl poweroff"
 enable_overdrive = false
 enable_sounds = false
 
-# --- Brillo ------------------------------------------------------------------
+# --- Brightness --------------------------------------------------------------
 [brightness]
 enable_ddcutil = false
 
-# --- Localización & clima -----------------------------------------------------
+# --- Location & weather ------------------------------------------------------
 [location]
 auto_locate = true
 
@@ -114,6 +114,6 @@ enabled = true
 unit = "celsius"
 effects = true
 
-# --- Sistema ------------------------------------------------------------------
+# --- System ------------------------------------------------------------------
 [system.monitor]
 enabled = true

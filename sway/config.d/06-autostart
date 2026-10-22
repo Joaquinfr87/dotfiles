@@ -1,36 +1,37 @@
 # ==============================================================================
-# 06 - Autoarranque (autostart)
+# 06 - Autostart
 # ==============================================================================
-# --- Entorno de sesión (va primero: lo heredan Noctalia, kanshi y los portales) ---
-# Nota: /etc/sway/config.d/50-systemd-user.conf repite esto al final del include;
-# acá se adelanta para que los servicios D-Bus arrancados al inicio ya lo tengan.
-# DISPLAY solo existe si Xwayland está instalado; si falta, se ignora sin error
+# --- Session environment (goes first: Noctalia, kanshi and portals inherit it) ---
+# Note: /etc/sway/config.d/50-systemd-user.conf repeats this at the end of the include;
+# here it runs earlier so D-Bus services started at login already have it.
+# DISPLAY only exists when Xwayland is installed; if missing, it is ignored without error.
 exec systemctl --user import-environment PATH DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
 exec command -v dbus-update-activation-environment >/dev/null 2>&1 && dbus-update-activation-environment --systemd PATH DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP=sway
 
-# Kanshi — gestión automática de pantallas
+# Kanshi — automatic display management
 exec kanshi
 
-# Noctalia shell (barra, launcher, notificaciones, fondo, lock, OSD...)
+# Noctalia shell (bar, launcher, notifications, wallpaper, lock screen, OSD...)
+# Requires org.bluez to exist on the system bus. If bluetoothd is not active,
+# Noctalia blocks for ~25 s in "initServices" waiting for the BlueZ agent.
+# install/04-desktop-packages.sh loads the bluetooth module and enables the service.
 exec noctalia
 
-# Portales XDG: en Debian 13 viven en /usr/libexec y systemd los levanta por D-Bus
-# (activación verificada en el journal de la sesión), por eso no hace falta ejecutarlos.
-# Si querés forzarlos a mano:
+# XDG portals: on Debian 13 they live in /usr/libexec and systemd starts them over D-Bus
+# (activation verified in the session journal), so they do not need to be launched here.
+# If you want to force them manually:
 #   exec /usr/libexec/xdg-desktop-portal-wlr &
 #   exec /usr/libexec/xdg-desktop-portal -r
 
-# Tema oscuro GTK
+# GTK dark theme (in the background: gsettings talks over D-Bus and must not
+# delay the bar/shell startup)
 set $gnome-schema org.gnome.desktop.interface
-exec_always {
-    gsettings set $gnome-schema gtk-theme 'Adwaita-dark'
-    gsettings set $gnome-schema color-scheme 'prefer-dark'
-}
+exec_always sh -c 'gsettings set $gnome-schema gtk-theme Adwaita-dark >/dev/null 2>&1 & gsettings set $gnome-schema color-scheme prefer-dark >/dev/null 2>&1 &'
 
-# Aplicaciones iniciales por workspace (ajusta a tu gusto)
-# Zen desactivado para que Sway inicie rápido (sin pantalla negra al arrancar)
+# Startup applications per workspace (customize to your liking)
+# Zen disabled so Sway starts fast (no black screen at boot)
 # exec swaymsg "workspace 1; exec zen"
 # exec swaymsg "workspace 2; exec kitty -e fastfetch"
 
-# tmux — servidor en segundo plano (sin ventana)
+# tmux — background server (no window)
 exec tmux new-session -d -s main 2>/dev/null || true

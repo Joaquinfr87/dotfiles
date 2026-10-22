@@ -2,30 +2,32 @@
   <img src="Pictures/banner.png" alt="Dotfiles Banner" width="100%">
 </p>
 
-# Dotfiles — Sway + Noctalia v5 & Servidores SSH
+# Dotfiles — Sway + Noctalia v5 & SSH Servers
 
-Configuración modular, estética y profesional de entorno de trabajo para **Linux (Debian 13 Trixie, Ubuntu y servidores remotos por SSH)** con paleta **Gruvbox Material Dark**.
+Modular, polished and professional work environment for **Debian 13 (trixie)** with the **Gruvbox Material Dark** palette.
 
-El proyecto cuenta con un **asistente de instalación 100% CLI guiado por pasos**, donde puedes personalizar tu entorno (Escritorio o Servidor), elegir tu prompt favorito (**Starship** o **Oh My Zsh + p10k**) y marcar/tachar con casillas `[X]` / `[ ]` las herramientas extras que deseas instalar (**Node.js, pnpm, Docker, OpenCode, Freebuff, Codex, AGY**).
+The project includes a **guided 100% CLI installer** where you can customize your environment (Desktop or Server), pick your favorite prompt (**Starship** or **Oh My Zsh + p10k**), and toggle `[X]` / `[ ]` checkboxes for the extra tools you want (**Node.js, pnpm, Docker, OpenCode, Freebuff, Codex, AGY**).
 
-> **Sin dependencias externas como GNU Stow:** Las sincronizaciones se realizan mediante copias limpias (`cp`) gestionadas por el comando [`bin/dot-sync`](bin/dot-sync) con **backups automáticos previos** en `~/.dotfiles_backup/`.
+> **No external dependencies such as GNU Stow:** synchronization is done with clean copies (`cp`) managed by [`bin/dot-sync`](bin/dot-sync) with **automatic backups** in `~/.dotfiles_backup/`.
+
+> **Debian 13 only:** the installer deliberately supports only Debian 13 (trixie). Other distributions are rejected by a version guard instead of being partially supported.
 
 ---
 
-## 🚀 Guía de Instalación Paso a Paso
+## 🚀 Step-by-Step Installation
 
-### Paso 0: Requisitos Previos en una Máquina Limpia
+### Step 0: Prerequisites on a Clean Machine
 
-#### Caso A: En Debian Mínimo (Netinst)
-Si acabas de instalar Debian desde la imagen mínima, `sudo` no viene configurado. Ejecuta este comando como `root` una sola vez:
+#### Minimal Debian (netinst)
+If you just installed Debian from the minimal image, `sudo` may not be configured. Run this once as `root`:
 
 ```bash
 su -c "apt update && apt install -y sudo git curl && usermod -aG sudo $USER"
 ```
-*(Cierra y vuelve a abrir tu terminal para que tome efecto el grupo `sudo`).*
+*(Log out and back in so the `sudo` group takes effect.)*
 
-#### Caso B: En Servidores SSH / Ubuntu / Máquinas con `sudo` listo
-Solo asegúrate de tener `git` y `curl`:
+#### Machines that already have `sudo`
+Just make sure `git` and `curl` are available:
 
 ```bash
 sudo apt update && sudo apt install -y git curl
@@ -33,9 +35,9 @@ sudo apt update && sudo apt install -y git curl
 
 ---
 
-### Paso 1: Clonar el Repositorio
+### Step 1: Clone the Repository
 
-Clona el repositorio por **HTTPS** (no requiere claves SSH ni configuración previa):
+Clone over **HTTPS** (no SSH keys or extra configuration required):
 
 ```bash
 mkdir -p ~/repos && cd ~/repos
@@ -45,225 +47,263 @@ cd dotfiles
 
 ---
 
-### Paso 2: Iniciar el Asistente Guiado CLI
+### Step 2: Start the Guided CLI Installer
 
-Ejecuta el orquestador principal:
+Run the main orchestrator:
 
 ```bash
 ./install.sh
 ```
 
-El instalador te guiará interactivamente a través de 3 sencillos pasos en tu terminal:
+The installer walks you through the following steps:
 
-#### 1. Selección de Entorno
+#### 1. Environment Selection
 ```text
->> PASO 1: Selección de Entorno
-  1) Entorno de escritorio completo (Sway + Noctalia + Greeter + Terminal)
-  2) Entorno de servidor (Solo terminal para SSH, sin interfaz gráfica)
-  3) Sincronizar configuraciones (con backup automático)
-  4) Menú de herramientas extras (instalar solo Node, Docker, AI...)
-  5) Salir
+>> STEP 1: Environment selection
+  1) Full desktop environment (Sway + Noctalia + Greeter + Terminal)
+  2) Server environment (terminal only for SSH, no graphical interface)
+  3) Synchronize configurations (with automatic backup)
+  4) Extra tools menu (install only Node, Docker, AI tools...)
+  5) Reset the system (uninstall and clean the environment)
+  6) Exit
 ```
-* **Escritorio Completo:** Instala Sway, Noctalia v5, Noctalia Greeter (login con `greetd`), audio PipeWire, gestor Bluetooth `bluetuith`, fuentes Iosevka Nerd Font, Kitty y Zen Browser. Configura perfiles automáticos de resolución para Laptop (768p) y Monitores Externos/Desktop (1080p).
-* **Servidor SSH:** Instala únicamente herramientas CLI, Neovim (LazyVim), Tmux con persistencia y Git (cero paquetes gráficos).
+* **Full Desktop:** installs Sway, Noctalia v5, Noctalia Greeter (`greetd` login), PipeWire audio, the `bluetuith` Bluetooth TUI, Iosevka fonts (IosevkaTerm Nerd Font for the terminal, vanilla Iosevka for the GUI), Kitty and Zen Browser. It configures automatic resolution profiles for laptops (768p) and external monitors/desktops (1080p).
+* **SSH Server:** installs only CLI tools, Neovim (LazyVim), Tmux with persistence and Git (no graphical packages).
 
-#### 2. Selección de Shell y Prompt
+#### 2. Shell and Prompt Selection
 ```text
->> PASO 2: Selección de Shell y Prompt
-  1) Starship (Recomendado — Rust, ultrarrápido < 20ms, tema Gruvbox)
-  2) Oh My Zsh + Powerlevel10k (Entorno clásico con plugins OMZ)
+>> STEP 2: Shell and prompt selection
+  1) Starship (Recommended — Rust, < 20ms startup, Gruvbox theme)
+  2) Oh My Zsh + Powerlevel10k (classic environment with OMZ plugins)
 ```
 
-#### 3. Selector de Herramientas Extras (Casillas interactivas)
+#### 3. Extra Tools Selector (interactive checkboxes)
 ```text
->> PASO 3: Herramientas Extras & Agentes AI
-Marca o desmarca las herramientas escribiendo su número [1-7]:
+>> STEP 3: Extra tools and AI agents
+Toggle a tool by typing its number [1-7]:
 
-  [1] [X] Node.js LTS (JavaScript runtime vía NVM)
-  [2] [X] pnpm (Gestor de paquetes ultrarrápido)
+  [1] [X] Node.js LTS (JavaScript runtime via NVM)
+  [2] [X] pnpm (fast package manager)
   [3] [X] Docker Engine + Docker Compose + Lazydocker
-  [4] [X] OpenCode CLI (Agente AI para terminal)
-  [5] [X] Freebuff CLI (Agente AI para proyectos)
-  [6] [X] Codex CLI (Agente AI interactivo)
+  [4] [X] OpenCode CLI (AI agent for the terminal)
+  [5] [X] Freebuff CLI (AI agent for projects)
+  [6] [X] Codex CLI (interactive AI agent)
   [7] [X] Antigravity CLI (agy)
 
-  [A] Marcar todos   [N] Desmarcar todos
-  [C] Continuar con la instalación (o pulsa Enter)
-  [S] Saltar herramientas extras
+  [A] Select all   [N] Deselect all
+  [C] Continue with the installation (or press Enter)
+  [S] Skip extra tools
 ```
-* Escribe el número correspondiente para alternar cualquier herramienta entre `[X]` y `[ ]`.
-* Pulsa **`C`** (o simplemente **`Enter`**) para comenzar la instalación desatendida.
+* Type the corresponding number to toggle any tool between `[X]` and `[ ]`.
+* Press **`C`** (or simply **`Enter`**) to start the unattended installation.
+
+#### 4. Optional Boot Theme (opt-in)
+
+After the desktop install, the installer asks whether to apply the boot theme. It is optional and can also be run later:
+
+```bash
+./install.sh --grub
+```
+
+This step installs:
+
+* A **static Gruvbox GRUB theme** (`grub/themes/gruvbox`) using `Pictures/wallpaper3.png`, a plain high-contrast text menu (no opaque menu panel), Iosevka-based fonts when available, an orange highlighted selection and a timeout bar.
+* A **Plymouth animated splash** using Plymouth's built-in spinner and Gruvbox colors. GRUB itself has no native animation engine; the animation starts after GRUB hands off to the kernel.
+* The `splash` kernel option, `GRUB_GFXMODE=1920x1080,auto`, `GRUB_TERMINAL_OUTPUT=gfxterm` and `GRUB_TIMEOUT_STYLE=menu`.
+
+The original `/etc/default/grub` is saved to `/etc/default/grub.dotfiles-backup` before any change. A reboot is required. To undo it:
+
+```bash
+sudo ./install/09-grub.sh --remove
+```
+
+> [!NOTE]
+> GRUB 2 does not support animated GIF/video themes. Only the timeout progress bar moves inside GRUB; the looping animation is Plymouth.
 
 ---
 
-### Paso 3: Configurar Clave SSH para GitHub (Opcional)
+### Step 3: Configure an SSH Key for GitHub (Optional)
 
-Una vez terminada la instalación, si deseas configurar tu clave SSH para hacer `git push` a tus repositorios sin contraseñas:
+After the installation, if you want to `git push` to your repositories without passwords:
 
 ```bash
-# 1. Generar clave moderna Ed25519
-ssh-keygen -t ed25519 -C "tu@email.com"
+# 1. Generate a modern Ed25519 key
+ssh-keygen -t ed25519 -C "you@email.com"
 
-# 2. Iniciar el agente y añadir la clave
+# 2. Start the agent and add the key
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_ed25519
 
-# 3. Copiar la clave pública:
-# En Desktop (Wayland):
+# 3. Copy the public key:
+# On Desktop (Wayland):
 cat ~/.ssh/id_ed25519.pub | wl-copy
 
-# En Servidor SSH (mostrar en pantalla para copiarla):
+# On an SSH server (print it on screen to copy it):
 cat ~/.ssh/id_ed25519.pub
 
-# 4. Cambiar el remoto de este repositorio a SSH:
+# 4. Switch this repository's remote to SSH:
 git remote set-url origin git@github.com:Joaquinfr87/dotfiles.git
 ```
-*(Pega la clave en: GitHub ➔ Settings ➔ SSH and GPG keys).*
+*(Paste the key into: GitHub ➔ Settings ➔ SSH and GPG keys).*
 
 ---
 
-## 🔄 Gestión Diaria con `dot-sync` (Sin GNU Stow)
+## 🔄 Daily Management with `dot-sync` (No GNU Stow)
 
-El comando [`bin/dot-sync`](bin/dot-sync) (disponible también con el alias `dots`) te permite mantener sincronizado tu sistema y el repositorio de forma bidireccional y segura:
+The [`bin/dot-sync`](bin/dot-sync) command (also available through the `dots` alias) keeps your system and the repository synchronized in both directions, safely:
 
-| Comando | Función |
+| Command | Purpose |
 | --- | --- |
-| `dot-sync status` (o `dots status`) | Muestra qué archivos están sincronizados, modificados o faltantes. |
-| `dot-sync diff` (o `dots diff`) | Muestra las diferencias exactas de código entre tu sistema y el repo. |
-| `dot-sync deploy` (o `dots deploy`) | **Repo ➔ Sistema:** Despliega configs creando un **backup previo** en `~/.dotfiles_backup/`. |
-| `dot-sync save` (o `dots save`) | **Sistema ➔ Repo:** Copia los cambios que hiciste en `~/.config` de vuelta al repositorio. |
+| `dot-sync status` (or `dots status`) | Show which files are in sync, modified or missing. |
+| `dot-sync diff` (or `dots diff`) | Show the exact code differences between your system and the repo. |
+| `dot-sync deploy` (or `dots deploy`) | **Repo ➔ System:** deploy configs after creating a **backup** in `~/.dotfiles_backup/`. |
+| `dot-sync save` (or `dots save`) | **System ➔ Repo:** copy changes made in `~/.config` back into the repository. |
 
-### Flujo habitual de trabajo:
-1. Haces un cambio en tu editor (por ejemplo en `~/.config/sway/config.d/04-bindings`).
-2. Compruebas qué cambió: `dot-sync diff`
-3. Traes los cambios al repositorio: `dot-sync save`
-4. Haces commit en Git: `git add . && git commit -m "feat: nuevo atajo" && git push`
+### Typical workflow:
+1. Make a change in your editor (for example in `~/.config/sway/config.d/04-bindings`).
+2. Check what changed: `dot-sync diff`
+3. Bring the changes into the repository: `dot-sync save`
+4. Commit in Git: `git add . && git commit -m "feat: new keybind" && git push`
 
 ---
 
-## 📁 Estructura del Repositorio
+## 📁 Repository Layout
 
 ```text
 dotfiles/
-├── bin/                          # Comandos auxiliares en tu $PATH
-│   ├── dot-sync                  # Sincronizador bidireccional con backups automáticos
-│   └── tmux-sessionizer          # Selector fzf de sesiones y proyectos para Tmux
-├── git/                          # Configuración global de Git
-│   ├── config                    # .gitconfig con aliases, delta y rebase
-│   └── ignore                    # .gitignore global (.DS_Store, *.local, etc.)
-├── install/                      # Scripts de instalación modulares e idempotentes
-│   ├── 00-helpers.sh             # Funciones de log, colores y detección de distro
-│   ├── 01-base-packages.sh       # Paquetes esenciales (git, curl, fzf, ripgrep, direnv, build-essential)
-│   ├── 02-cli-tools.sh           # Neovim (bob/tarball), zoxide, eza, bat, lazygit, plugins tmux
-│   ├── 03-shell.sh               # Zsh nativo, Starship y plugins (soporta opción --omz)
-│   ├── 04-desktop-packages.sh    # Sway, Wayland, PipeWire, Kanshi, bluetuith, portales
-│   ├── 05-noctalia.sh            # Noctalia v5 y Noctalia Greeter (greetd display manager)
-│   ├── 06-fonts-wallpapers.sh    # Iosevka Nerd Font y Zen Browser
-│   ├── 07-copy-configs.sh        # Copiado con backup según el perfil (server/desktop)
-│   └── 08-dev-ai-tools.sh        # Node.js, pnpm, Docker, OpenCode, Freebuff, AGY, Codex
-├── kanshi/                       # Perfiles multirresolución automáticos (laptop 768p, desktop 1080p, dual)
+├── bin/                          # Helper commands in your $PATH
+│   ├── dot-sync                  # Bidirectional synchronizer with automatic backups
+│   └── tmux-sessionizer          # fzf project/session picker for Tmux
+├── git/                          # Global Git configuration
+│   ├── config                    # .gitconfig with aliases, delta and rebase
+│   └── ignore                    # Global .gitignore (.DS_Store, *.local, etc.)
+├── install/                      # Modular, idempotent installer scripts (Debian 13)
+│   ├── 00-helpers.sh             # Logging, colors and Debian 13 checks
+│   ├── 01-base-packages.sh       # Essential packages (git, curl, fzf, ripgrep, direnv, build-essential)
+│   ├── 02-cli-tools.sh           # Neovim (bob/tarball), zoxide, eza, bat, lazygit, tmux plugins
+│   ├── 03-shell.sh               # Native Zsh, Starship and plugins (supports --omz)
+│   ├── 04-desktop-packages.sh    # Sway, Wayland, PipeWire, Kanshi, bluetuith, portals
+│   ├── 05-noctalia.sh            # Noctalia v5 and Noctalia Greeter (greetd display manager)
+│   ├── 06-fonts-wallpapers.sh    # IosevkaTerm (terminal), Iosevka (GUI) and Zen Browser
+│   ├── 07-copy-configs.sh        # Copy with backup according to the profile (server/desktop)
+│   ├── 08-dev-ai-tools.sh        # Node.js, pnpm, Docker, OpenCode, Freebuff, AGY, Codex
+│   └── 09-grub.sh                # Optional Gruvbox GRUB theme + Plymouth splash
+├── grub/                         # Opt-in boot theme (static GRUB + animated Plymouth)
+│   ├── themes/gruvbox/           # GRUB theme: wallpaper3 background and theme.txt
+│   └── plymouth/                 # Plymouth theme definition (reuses plymouth-themes spinner)
+├── kanshi/                       # Automatic multi-resolution profiles (laptop 768p, desktop 1080p, dual)
 │   └── config
-├── kitty/                        # Terminal Kitty (tema Gruvbox Dark y teclado CSI-u)
+├── kitty/                        # Kitty terminal (Gruvbox Dark theme and CSI-u keys)
 │   ├── current-theme.conf
 │   └── kitty.conf
-├── noctalia/                     # Configuración de Noctalia v5
-│   ├── config.toml               # Estética, colores, atajos y lanzador
-│   └── settings.toml             # Configuración de barra, escala y plugins de estado
-├── noctalia-greeter/             # Configuración de greetd login manager
+├── noctalia/                     # Noctalia v5 configuration
+│   ├── config.toml               # Look and feel, colors, shortcuts and launcher
+│   └── settings.toml             # Bar, scaling and status plugin configuration
+├── noctalia-greeter/             # greetd login manager configuration
 │   └── greeter.toml
 ├── nvim/                         # Neovim (LazyVim, LSP, Blink, Obsidian, Gruvbox)
-├── Pictures/                     # Fondos de pantalla Gruvbox y banner
-├── starship/                     # Configuración de Starship prompt (Gruvbox Material Dark)
+├── Pictures/                     # Gruvbox wallpapers and banner
+├── starship/                     # Starship prompt configuration (Gruvbox Material Dark)
 │   └── starship.toml
-├── sway/                         # Sway tiling window manager (modular en config.d/)
-│   ├── config                    # Archivo principal que incluye config.d/
-│   └── config.d/                 # 01-outputs, 02-inputs, 03-windows, 04-bindings, 05-autostart
-├── tmux/                         # Tmux (persistencia con resurrect/continuum y sessionizer)
+├── sway/                         # Sway tiling window manager (modular config.d/)
+│   ├── config                    # Main file that includes config.d/
+│   └── config.d/                 # 00-variables, 01-outputs, 02-input, 03-theme, 04-bindings, 05-floating, 06-autostart
+├── tmux/                         # Tmux (resurrect/continuum persistence and sessionizer)
+│   ├── README.md                 # Quick start
+│   ├── GUIDE.md                  # Extensive tmux guide
+│   ├── scripts/tmux-sessionizer  # fzf project/session picker
 │   └── tmux.conf
-├── agents.md                     # Guía de integración de agentes AI (OpenCode y Freebuff)
-├── .gitignore                    # Exclusiones de Git (binarios .deb, backups, .freebuff)
-├── .zprofile                     # Entorno de login (ejecuta sway solo en tty1 y si existe)
-├── .zshrc                        # Shell interactivo ultrarrápido (Zsh nativo + Starship + direnv)
-└── install.sh                    # Orquestador principal de instalación 100% CLI
+├── agents.md                     # AI agent integration guide (OpenCode and Freebuff)
+├── .gitignore                    # Git exclusions (.deb binaries, backups, .freebuff)
+├── .zprofile                     # Login environment (runs sway only on tty1 and if present)
+├── .zshrc                        # Ultra-fast interactive shell (native Zsh + Starship + direnv)
+└── install.sh                    # Main 100% CLI installation orchestrator
 ```
 
 ---
 
-## ⌨️ Atajos de Teclado Clave (Sway + Wayland)
+## ⌨️ Key Keybinds (Sway + Wayland)
 
-| Atajo | Acción |
+| Keybind | Action |
 | --- | --- |
-| `$mod+Return` | Abrir terminal (**Kitty**) |
-| `$mod+Shift+Return` | Abrir **tmux-sessionizer** (selector de proyectos con fzf) |
-| `$mod+Shift+b` | Abrir navegador (**Zen Browser**) |
-| `$mod+d` | Abrir launcher de aplicaciones (Noctalia) |
-| `$mod+i` | Abrir Centro de Control (Noctalia) |
-| `$mod+comma` | Ajustes de Noctalia |
-| `$mod+t` | Bloquear pantalla (Lock screen) |
-| `Ctrl+Alt+Delete` | Menú de sesión (Apagar / Reiniciar / Suspender) |
-| `Print` / `$mod+Print` | Captura de pantalla región / pantalla completa |
-| `$mod+Shift+q` | Cerrar ventana activa |
-| `$mod+f` | Pantalla completa (Fullscreen) |
-| `$mod+Shift+space` | Alternar ventana flotante / tiling |
-| `$mod+1…0` | Cambiar de workspace |
-| `$mod+Shift+1…0` | Mover ventana a workspace |
-| `$mod+Shift+c` | Recargar configuración de Sway |
+| `$mod+Return` | Open terminal (**Kitty**) |
+| `$mod+Shift+Return` | Open **tmux-sessionizer** (fzf project picker) |
+| `$mod+Shift+b` | Open browser (**Zen Browser**) |
+| `$mod+d` | Open the application launcher (Noctalia) |
+| `$mod+i` | Open the Control Center (Noctalia) |
+| `$mod+comma` | Noctalia settings |
+| `$mod+t` | Lock the screen |
+| `Ctrl+Alt+Delete` | Session menu (Shutdown / Reboot / Suspend) |
+| `Print` / `$mod+Print` | Screenshot region / full screen |
+| `$mod+Shift+q` | Close the active window |
+| `$mod+f` | Fullscreen |
+| `$mod+Shift+space` | Toggle floating / tiling |
+| `$mod+1…0` | Switch workspace |
+| `$mod+Shift+1…0` | Move window to workspace |
+| `$mod+Shift+c` | Reload the Sway configuration |
 
 ---
 
-## 🖥️ Gestión Dinámica de Pantallas (Kanshi)
+## 🖥️ Dynamic Display Management (Kanshi)
 
-El daemon **Kanshi** detecta automáticamente la conexión y desconexión de monitores, aplicando la resolución, posición y asignación de workspaces adecuada al instante:
+The **Kanshi** daemon automatically detects monitor connection and disconnection, instantly applying the right resolution, position and workspace assignment:
 
-| Perfil | Dispositivo / Salida | Resolución | Comportamiento |
+| Profile | Device / Output | Resolution | Behavior |
 | --- | --- | --- | --- |
-| `laptop` | Pantalla integrada (`eDP-1`) | 1366x768 @ 60Hz | Modo portátil por defecto (escala 1.0) |
-| `desktop_hdmi` | PC de escritorio con HDMI (`HDMI-A-1`) | 1920x1080 @ 60Hz | Full HD nativo |
-| `desktop_dp` / `desktop_dp2` | PC de escritorio con DisplayPort (`DP-1`/`DP-2`) | 1920x1080 @ 60Hz | Full HD nativo |
-| `presentacion` | Laptop + Monitor externo HDMI | Dual (768p + 1080p) | HDMI a la derecha, workspace 1 en el monitor externo |
-| `laptop_dp` | Laptop + Monitor externo DP (Dock/USB-C) | Dual (768p + 1080p) | DP a la derecha, workspace 1 en el monitor externo |
-| `laptop_clamshell` | Laptop con tapa cerrada conectada a HDMI | 1920x1080 @ 60Hz | Apaga `eDP-1` y mantiene activo solo el monitor externo |
-| `desktop_dual` | PC de escritorio con doble monitor (DP + HDMI) | Dual 1080p | DP principal (workspace 1), HDMI secundario |
+| `laptop` | Integrated display (`eDP-1`) | 1366x768 @ 60Hz | Default laptop mode (scale 1.0) |
+| `desktop_hdmi` | Desktop PC with HDMI (`HDMI-A-1`) | 1920x1080 @ 60Hz | Native Full HD |
+| `desktop_dp` / `desktop_dp2` | Desktop PC with DisplayPort (`DP-1`/`DP-2`) | 1920x1080 @ 60Hz | Native Full HD |
+| `presentation` | Laptop + external HDMI monitor | Dual (768p + 1080p) | HDMI on the right, workspace 1 on the external monitor |
+| `laptop_dp` | Laptop + external DP monitor (Dock/USB-C) | Dual (768p + 1080p) | DP on the right, workspace 1 on the external monitor |
+| `laptop_clamshell` | Laptop with lid closed connected to HDMI | 1920x1080 @ 60Hz | Turns off `eDP-1` and keeps only the external monitor active |
+| `desktop_dual` | Desktop PC with two monitors (DP + HDMI) | Dual 1080p | Primary DP (workspace 1), secondary HDMI |
 
 ---
 
-## 🎧 Bluetooth & Utilidades de Terminal
+## 🎧 Bluetooth & Terminal Utilities
 
-* **Bluetooth TUI (`bluetuith`)**: Ejecuta `bluetuith` en cualquier terminal Kitty para buscar, emparejar y conectar auriculares o periféricos Bluetooth con una interfaz interactiva y ligera.
-* **Entornos automáticos (`direnv`)**: Integrado de forma nativa en `.zshrc`. Detecta archivos `.envrc` y carga variables o entornos virtuales de Python/Node automáticamente al entrar a tus directorios de trabajo.
+* **Bluetooth TUI (`bluetuith`)**: run `bluetuith` in any Kitty terminal to scan, pair and connect Bluetooth headphones or peripherals with a lightweight interactive interface.
+* **Fast Noctalia startup:** Noctalia registers a Bluetooth agent on startup. If `org.bluez` is not on the bus (because the `bluetooth` kernel module is not loaded), it waits 25 s and delays the whole bar. The installer loads the module, persists it in `/etc/modules-load.d/bluetooth.conf`, enables `bluetooth.service` and hooks it into `multi-user.target`. Verify with:
+  ```bash
+  systemctl status bluetooth
+  cat ~/.cache/noctalia/noctalia.log | grep "startup phase"
+  ```
+  The `initServices` phase should take milliseconds, not ~25,000 ms.
+* **Automatic environments (`direnv`)**: natively integrated into `.zshrc`. It detects `.envrc` files and loads variables or Python/Node virtual environments automatically when you enter your working directories.
 
 ---
 
-## 🔒 Variables y Personalizaciones Locales
+## 🔒 Local Variables and Customizations
 
-Para mantener tokens, claves API o rutas privadas sin subirlas al repositorio público:
-* **Shell:** Crea el archivo `~/.zshrc.local` (este archivo es leído automáticamente por `.zshrc` y está ignorado en Git).
-* **Git:** Crea el archivo `~/.gitconfig.local` para configurar tu nombre y email por máquina:
+To keep tokens, API keys or private paths out of the public repository:
+* **Shell:** create `~/.zshrc.local` (this file is read automatically by `.zshrc` and is ignored by Git).
+* **Git:** create `~/.gitconfig.local` to set your name and email per machine:
   ```ini
   [user]
-      name = Tu Nombre
-      email = tu@correo.com
+      name = Your Name
+      email = you@email.com
   ```
 
 ---
 
-## 🧹 Restablecer el Sistema a 0 (Desinstalador)
+## 🧹 Reset the System (Uninstaller)
 
-Si deseas probar la instalación nuevamente o limpiar el sistema sin necesidad de reinstalar el sistema operativo:
+If you want to test the installation again or clean the system without reinstalling the operating system:
 
 ```bash
 ./uninstall.sh
 ```
-O directamente desde el instalador:
+Or directly from the installer:
 ```bash
 ./install.sh --reset
 ```
 
 > [!TIP]
-> **¿Qué hace `uninstall.sh`?**
-> - Detiene y deshabilita `greetd`, `noctalia-greeter` y servicios de audio PipeWire.
-> - Purga paquetes instalados (`sway`, `noctalia`, `kitty`, etc.) y limpia repositorios APT de Noctalia.
-> - Elimina aplicaciones y binarios descargados (`zen-browser`, `starship`, fuentes Iosevka, etc.).
-> - Limpia configuraciones de `~/.config` y restaura automáticamente el backup previo de `~/.dotfiles_backup/`.
-> - Restablece la shell de login por defecto a `/bin/bash`.
-> - Permite usar `./uninstall.sh -y` para modo desatendido o `./uninstall.sh --keep-extras` para conservar Node.js y agentes de IA.
+> **What does `uninstall.sh` do?**
+> - Stops and disables `greetd`, `noctalia-greeter` and PipeWire audio services.
+> - Purges installed packages (`sway`, `noctalia`, `kitty`, etc.) and removes the Noctalia APT repositories.
+> - Removes downloaded applications and binaries (`zen-browser`, `starship`, IosevkaTerm/Iosevka fonts, etc.).
+> - Cleans `~/.config` configurations and restores the previous `~/.dotfiles_backup/` backup when `--restore-backup` is passed.
+> - Reverts the optional GRUB theme and Plymouth splash and restores the saved `/etc/default/grub`.
+> - Restores the default login shell to `/bin/bash`.
+> - Supports `./uninstall.sh -y` for unattended mode or `./uninstall.sh --keep-extras` to keep Node.js and AI agents.

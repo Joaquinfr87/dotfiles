@@ -1,0 +1,69 @@
+# ==============================================================================
+# Gruvbox GRUB theme (Debian 13)
+# ==============================================================================
+# Static theme: GRUB 2 has no animation engine. The only moving element is the
+# __timeout__ progress bar, which reflects the countdown. The animated boot
+# splash is handled by Plymouth after GRUB hands off to the kernel.
+#
+# Install with install/09-grub.sh. Fonts (Dotfiles Regular 16/28/36) are
+# generated from IosevkaTerm by the installer and loaded automatically from
+# this directory.
+#
+# The menu deliberately uses plain text without pixmap panels: the wallpaper is
+# already dark, and a solid highlight avoids the box padding that can cover the
+# next menu entry at high resolutions.
+
+desktop-image: "background.png"
+desktop-image-scale-method: "crop"
+desktop-image-h-align: "center"
+desktop-image-v-align: "center"
+desktop-color: "#1d2021"
+
+# The global title is disabled in favour of a left-aligned label, so the menu
+# and title share the same margin instead of being centred independently.
+title-text: ""
+
+title-font: "Dotfiles Regular 36"
+title-color: "#fabd2f"
+terminal-font: "Dotfiles Regular 16"
+
++ label {
+    left = 6%
+    top = 9%
+    width = 46%
+    height = 44
+    text = "Debian GNU/Linux"
+    font = "Dotfiles Regular 36"
+    color = "#fabd2f"
+    align = "left"
+}
+
++ boot_menu {
+    left = 6%
+    top = 20%
+    width = 46%
+    height = 36%
+    item_font = "Dotfiles Regular 28"
+    selected_item_font = "Dotfiles Regular 28"
+    item_color = "#ebdbb2"
+    selected_item_color = "#fe8019"
+    item_height = 38
+    item_padding = 0
+    item_icon_space = 0
+    item_spacing = 4
+    icon_width = 0
+    icon_height = 0
+}
+
++ progress_bar {
+    id = "__timeout__"
+    left = 6%
+    top = 92%
+    width = 46%
+    height = 12
+    fg_color = "#b8bb26"
+    bg_color = "#3c3836"
+    border_color = "#504945"
+    text_color = "#ebdbb2"
+    font = "Dotfiles Regular 16"
+}

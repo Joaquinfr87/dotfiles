@@ -1,5 +1,5 @@
 # ==============================================================================
-# 00 - Variables globales & paleta (Gruvbox Material Dark)
+# 00 - Global variables & palette (Gruvbox Material Dark)
 # ==============================================================================
 set $mod Mod4
 set $left h
@@ -7,20 +7,20 @@ set $down j
 set $up k
 set $right l
 
-# Aplicaciones por defecto
+# Default applications
 set $term kitty
 set $web-browser zen
 
-# Sessionizer de tmux (ver tmux/README.md)
+# tmux sessionizer (see tmux/README.md)
 set $sessionizer tmux-sessionizer
 
-# Fuente (títulos de ventanas y UI de sway)
+# Font (window titles and Sway UI)
 set $font pango:IosevkaTerm Nerd Font, Noto Color Emoji 10
 
 # Noctalia IPC
 set $ipc noctalia msg
 
-# Colores (Gruvbox + transparencias: E6=90%, 80=50%, CC=80%, B3=70%)
+# Colors (Gruvbox + transparencies: E6=90%, 80=50%, CC=80%, B3=70%)
 set $bg0    #282828
 set $bg1    #3c3836
 set $fg     #ebdbb2

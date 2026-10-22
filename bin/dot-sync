@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# dot-sync — Sincronizador inteligente de dotfiles (sin GNU Stow)
+# dot-sync — Smart dotfiles synchronizer (no GNU Stow)
 # ==============================================================================
-# Permite:
-#   dot-sync deploy [desktop|server]  -> Copia dotfiles del repo al sistema (con backup)
-#   dot-sync save [desktop|server]    -> Copia configs modificadas del sistema al repo
-#   dot-sync diff                     -> Muestra diferencias entre repo y sistema
-#   dot-sync status                   -> Estado resumido de diferencias
+# Usage:
+#   dot-sync deploy [desktop|server]  -> Copy repo dotfiles to the system (with backup)
+#   dot-sync save [desktop|server]    -> Copy modified system configs back to the repo
+#   dot-sync diff                     -> Show differences between repo and system
+#   dot-sync status                   -> Summarized synchronization status
 # ==============================================================================
 set -euo pipefail
 
-# Colores
+# Colors
 BOLD='\033[1m'
 GREEN='\033[38;5;142m'
 BLUE='\033[38;5;109m'
@@ -18,16 +18,16 @@ YELLOW='\033[38;5;214m'
 RED='\033[38;5;167m'
 NC='\033[0m'
 
-# Directorio del repositorio de dotfiles
+# Dotfiles repository directory
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BACKUP_ROOT="$HOME/.dotfiles_backup"
 
 log_info() { echo -e "${BLUE}==>${NC} ${BOLD}$*${NC}"; }
 log_ok() { echo -e "${GREEN}[OK]${NC} $*"; }
-log_warn() { echo -e "${YELLOW}[AVISO]${NC} $*"; }
+log_warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
 log_err() { echo -e "${RED}[ERROR]${NC} $*" >&2; }
 
-# Detección del perfil
+# Profile detection
 detect_profile() {
   if [[ -n "${DOTFILES_PROFILE:-}" ]]; then
     echo "$DOTFILES_PROFILE"
@@ -42,12 +42,12 @@ detect_profile() {
 
 PROFILE="${2:-$(detect_profile)}"
 
-# Listas de configuración según perfil
-# Formato: "ruta_en_repo:ruta_en_sistema"
+# Configuration lists per profile
+# Format: "repo_path:system_path"
 get_items() {
   local prof=$1
   local items=(
-    # Núcleo común (Servidor + Desktop)
+    # Core items (server + desktop)
     ".zshrc:$HOME/.zshrc"
     ".zprofile:$HOME/.zprofile"
     "git/config:$HOME/.config/git/config"
@@ -75,7 +75,7 @@ get_items() {
   printf '%s\n' "${items[@]}"
 }
 
-# Crear backup de un archivo o directorio
+# Back up a file or directory
 backup_target() {
   local target=$1
   local backup_dir=$2
@@ -89,7 +89,7 @@ backup_target() {
 }
 
 cmd_deploy() {
-  log_info "Desplegando dotfiles (Perfil: $PROFILE)..."
+  log_info "Deploying dotfiles (profile: $PROFILE)..."
   local timestamp
   timestamp="$(date +'%Y%m%d_%H%M%S')"
   local current_backup="$BACKUP_ROOT/$timestamp"
@@ -104,15 +104,15 @@ cmd_deploy() {
       continue
     fi
 
-    # Backup previo si existe en destino
+    # Back up the destination if it already exists
     if [[ -e "$sys_target" ]]; then
       backup_target "$sys_target" "$current_backup"
     fi
 
-    # Asegurar directorio padre
+    # Make sure the parent directory exists
     mkdir -p "$(dirname "$sys_target")"
 
-    # Copiar archivo o directorio
+    # Copy file or directory
     if [[ -d "$src" ]]; then
       rm -rf "$sys_target"
       cp -r "$src" "$sys_target"
@@ -123,26 +123,26 @@ cmd_deploy() {
       else
         cp -f "$src" "$sys_target"
       fi
-      # Si es binario o script, dar permisos de ejecución
+      # Give executable permissions to binaries and scripts
       if [[ "$sys_target" == *"/bin/"* ]]; then
         chmod +x "$sys_target"
       fi
     fi
 
-    log_ok "Copiado: $repo_rel -> $sys_target"
+    log_ok "Copied: $repo_rel -> $sys_target"
   done < <(get_items "$PROFILE")
 
-  # Guardar perfil seleccionado
+  # Save the selected profile
   echo "$PROFILE" > "$HOME/.dotfiles_profile"
 
   if [[ -d "$current_backup" ]]; then
-    log_info "Backup guardado en: $current_backup"
+    log_info "Backup saved to: $current_backup"
   fi
-  log_ok "Despliegue completado con éxito."
+  log_ok "Deployment completed successfully."
 }
 
 cmd_save() {
-  log_info "Guardando cambios del sistema en el repositorio (Perfil: $PROFILE)..."
+  log_info "Saving system changes back to the repository (profile: $PROFILE)..."
 
   while IFS=':' read -r repo_rel sys_target; do
     [[ -z "$repo_rel" ]] && continue
@@ -155,22 +155,22 @@ cmd_save() {
     mkdir -p "$(dirname "$dest")"
 
     if [[ -d "$sys_target" ]]; then
-      # Directorio: copiar preservando archivos limpios
+      # Directory: copy it, preserving clean files
       rm -rf "$dest"
       cp -r "$sys_target" "$dest"
     else
       cp -f "$sys_target" "$dest"
     fi
 
-    log_ok "Guardado en repo: $sys_target -> $repo_rel"
+    log_ok "Saved to repo: $sys_target -> $repo_rel"
   done < <(get_items "$PROFILE")
 
-  log_ok "Configuraciones guardadas en $DOTFILES_DIR."
-  log_info "Ejecuta 'git status' o 'git diff' para revisar y commitear tus cambios."
+  log_ok "Configurations saved to $DOTFILES_DIR."
+  log_info "Run 'git status' or 'git diff' to review and commit your changes."
 }
 
 cmd_diff() {
-  log_info "Comparando repositorio con el sistema..."
+  log_info "Comparing the repository with the system..."
   local found_diff=0
 
   while IFS=':' read -r repo_rel sys_target; do
@@ -180,24 +180,24 @@ cmd_diff() {
     if [[ ! -e "$src" && ! -e "$sys_target" ]]; then
       continue
     elif [[ ! -e "$src" ]]; then
-      log_warn "Solo existe en el sistema: $sys_target"
+      log_warn "Only exists on the system: $sys_target"
       found_diff=1
       continue
     elif [[ ! -e "$sys_target" ]]; then
-      log_warn "Solo existe en el repo: $repo_rel"
+      log_warn "Only exists in the repo: $repo_rel"
       found_diff=1
       continue
     fi
 
     if [[ -f "$src" && -f "$sys_target" ]]; then
       if ! diff -u "$src" "$sys_target" >/dev/null 2>&1; then
-        echo -e "\n${YELLOW}=== Diferencias en: $repo_rel <-> $sys_target ===${NC}"
+        echo -e "\n${YELLOW}=== Differences in file: $repo_rel <-> $sys_target ===${NC}"
         diff -u --color=auto "$src" "$sys_target" || true
         found_diff=1
       fi
     elif [[ -d "$src" && -d "$sys_target" ]]; then
       if ! diff -ru -x ".git" -x "lazy-lock.json" "$src" "$sys_target" >/dev/null 2>&1; then
-        echo -e "\n${YELLOW}=== Diferencias en carpeta: $repo_rel <-> $sys_target ===${NC}"
+        echo -e "\n${YELLOW}=== Differences in directory: $repo_rel <-> $sys_target ===${NC}"
         diff -ru --color=auto -x ".git" -x "lazy-lock.json" "$src" "$sys_target" || true
         found_diff=1
       fi
@@ -205,12 +205,12 @@ cmd_diff() {
   done < <(get_items "$PROFILE")
 
   if [[ $found_diff -eq 0 ]]; then
-    log_ok "No hay diferencias: el repositorio y el sistema están sincronizados."
+    log_ok "No differences: the repository and the system are in sync."
   fi
 }
 
 cmd_status() {
-  log_info "Estado de sincronización (Perfil: $PROFILE):"
+  log_info "Synchronization status (profile: $PROFILE):"
   while IFS=':' read -r repo_rel sys_target; do
     [[ -z "$repo_rel" ]] && continue
     local src="$DOTFILES_DIR/$repo_rel"
@@ -218,13 +218,13 @@ cmd_status() {
     if [[ ! -e "$src" && ! -e "$sys_target" ]]; then
       continue
     elif [[ ! -e "$sys_target" ]]; then
-      echo -e "  ${RED}Falta en sistema${NC} : $repo_rel"
+      echo -e "  ${RED}Missing on system${NC} : $repo_rel"
     elif [[ ! -e "$src" ]]; then
-      echo -e "  ${YELLOW}Falta en repo${NC}    : $sys_target"
+      echo -e "  ${YELLOW}Missing in repo${NC}   : $sys_target"
     elif diff -rq "$src" "$sys_target" >/dev/null 2>&1; then
-      echo -e "  ${GREEN}Sincronizado${NC}    : $repo_rel"
+      echo -e "  ${GREEN}In sync${NC}           : $repo_rel"
     else
-      echo -e "  ${YELLOW}Modificado${NC}      : $repo_rel (difiere del sistema)"
+      echo -e "  ${YELLOW}Modified${NC}          : $repo_rel (differs from the system)"
     fi
   done < <(get_items "$PROFILE")
 }
@@ -243,18 +243,18 @@ case "${1:-status}" in
     cmd_status
     ;;
   help|--help|-h)
-    echo "Uso: dot-sync [comando] [perfil]"
+    echo "Usage: dot-sync [command] [profile]"
     echo ""
-    echo "Comandos:"
-    echo "  deploy [perfil]  Copia configs del repo al sistema (con backup en ~/.dotfiles_backup)"
-    echo "  save [perfil]    Copia configs del sistema hacia el repositorio"
-    echo "  diff             Muestra las diferencias línea por línea"
-    echo "  status           Muestra el estado de sincronización (sincronizado/modificado)"
+    echo "Commands:"
+    echo "  deploy [profile]  Copy configs from the repo to the system (backup in ~/.dotfiles_backup)"
+    echo "  save [profile]    Copy configs from the system back into the repository"
+    echo "  diff              Show line-by-line differences"
+    echo "  status            Show sync status (in sync/modified)"
     echo ""
-    echo "Perfiles disponibles: 'desktop' (Sway + Wayland + Terminal) o 'server' (Solo CLI)"
+    echo "Available profiles: 'desktop' (Sway + Wayland + Terminal) or 'server' (CLI only)"
     ;;
   *)
-    log_err "Comando desconocido: $1. Usa 'dot-sync help'."
+    log_err "Unknown command: $1. Use 'dot-sync help'."
     exit 1
     ;;
 esac

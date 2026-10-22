@@ -1,10 +1,10 @@
 # ==============================================================================
-# .zshrc — Shell interactivo ultrarrápido (Zsh nativo + Starship Prompt)
+# .zshrc — Ultra-fast interactive shell (native Zsh + Starship prompt)
 # ==============================================================================
 
-# --- MODO ALTERNATIVO: OH MY ZSH + POWERLEVEL10K ------------------------------
-# Si prefieres usar Oh My Zsh en lugar de Zsh nativo + Starship,
-# define 'export USE_OH_MY_ZSH=true' en tu archivo ~/.zshrc.local
+# --- ALTERNATIVE MODE: OH MY ZSH + POWERLEVEL10K ------------------------------
+# If you prefer Oh My Zsh instead of native Zsh + Starship,
+# set 'export USE_OH_MY_ZSH=true' in your ~/.zshrc.local file
 if [[ "${USE_OH_MY_ZSH:-false}" == "true" && -d "$HOME/.oh-my-zsh" ]]; then
   if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
     source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
@@ -16,22 +16,22 @@ if [[ "${USE_OH_MY_ZSH:-false}" == "true" && -d "$HOME/.oh-my-zsh" ]]; then
   [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 fi
 
-# --- HISTORIAL NATIVO Y EFICIENTE ---------------------------------------------
+# --- NATIVE, EFFICIENT HISTORY ------------------------------------------------
 HISTFILE="$HOME/.zsh_history"
 HISTSIZE=50000
 SAVEHIST=50000
-setopt EXTENDED_HISTORY          # Guarda marca de tiempo y duración
-setopt INC_APPEND_HISTORY        # Escribe al archivo inmediatamente
-setopt SHARE_HISTORY             # Comparte historial entre terminales abiertas
-setopt HIST_IGNORE_DUPS          # Ignora comandos duplicados consecutivos
-setopt HIST_IGNORE_ALL_DUPS      # Elimina entradas antiguas duplicadas
-setopt HIST_IGNORE_SPACE         # No guarda comandos que empiecen con espacio
-setopt HIST_REDUCE_BLANKS        # Elimina espacios superfluos
+setopt EXTENDED_HISTORY          # Store timestamps and duration
+setopt INC_APPEND_HISTORY        # Write to the file immediately
+setopt SHARE_HISTORY             # Share history between open terminals
+setopt HIST_IGNORE_DUPS          # Ignore consecutive duplicate commands
+setopt HIST_IGNORE_ALL_DUPS      # Remove older duplicate entries
+setopt HIST_IGNORE_SPACE         # Do not store commands starting with a space
+setopt HIST_REDUCE_BLANKS        # Remove superfluous whitespace
 
-# --- AUTOCOMPLETADO NATIVO (< 5 ms con caché) ---------------------------------
+# --- NATIVE COMPLETION (< 5 ms with cache) ------------------------------------
 autoload -Uz compinit colors
 colors
-# Regenera zcompdump solo una vez por día para acelerar el inicio
+# Regenerate zcompdump only once per day to speed up startup
 typeset -i updated_at=$(date +'%j' -r ~/.zcompdump 2>/dev/null || stat -f '%Sm' -t '%j' ~/.zcompdump 2>/dev/null || echo 0)
 if [ $(date +'%j') != $updated_at ]; then
   compinit -i
@@ -39,22 +39,28 @@ else
   compinit -C -i
 fi
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' # Case-insensitive
-zstyle ':completion:*' menu select                       # Menú navegable con flechas
+zstyle ':completion:*' menu select                       # Arrow-key navigable menu
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 
-# --- ATAJOS DE TECLADO Y MODO DE EDICIÓN --------------------------------------
-bindkey -e # Modo emacs por defecto
+# --- KEYBOARD SHORTCUTS AND EDITING MODE --------------------------------------
+bindkey -e # Emacs mode by default
 bindkey '^[[A' up-line-or-search
 bindkey '^[[B' down-line-or-search
 bindkey '^[[H' beginning-of-line
 bindkey '^[[F' end-of-line
 bindkey '^[[3~' delete-char
 
-# Shift+Enter: no mostrar secuencias CSI-u crudas en el shell
+# Shift+Tab: go to the previous match in the completion menu
+#   ^[[Z     legacy sequence (kitty without extended keys)
+#   \e[9;2u  CSI-u sequence (kitty keyboard protocol / tmux extended-keys)
+bindkey '^[[Z' reverse-menu-complete
+bindkey '\e[9;2u' reverse-menu-complete
+
+# Shift+Enter: do not show raw CSI-u sequences in the shell
 bindkey '\e[13;2u' accept-line
 bindkey '\e[27;2;13~' accept-line
 
-# --- PLUGINS NATIVOS (Autosuggestions & Syntax Highlighting) ------------------
+# --- NATIVE PLUGINS (Autosuggestions & Syntax Highlighting) ------------------
 for f in \
   "$HOME/.local/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" \
   /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh \
@@ -75,14 +81,14 @@ for f in \
   fi
 done
 
-# --- PROMPT: STARSHIP (Rust, ultrarrápido y universal) ------------------------
+# --- PROMPT: STARSHIP (Rust, ultra-fast and universal) ------------------------
 if [[ "${USE_OH_MY_ZSH:-false}" != "true" ]]; then
   if command -v starship >/dev/null 2>&1; then
     eval "$(starship init zsh)"
   fi
 fi
 
-# --- EDITOR POR DEFECTO -------------------------------------------------------
+# --- DEFAULT EDITOR -----------------------------------------------------------
 if command -v nvim >/dev/null 2>&1; then
   export EDITOR='nvim'
   export VISUAL='nvim'
@@ -100,7 +106,7 @@ if [[ -s "$NVM_DIR/bash_completion" ]]; then
   \. "$NVM_DIR/bash_completion"
 fi
 
-# --- PATH UNIFICADO Y PORTABLE ------------------------------------------------
+# --- UNIFIED, PORTABLE PATH ---------------------------------------------------
 typeset -U path PATH
 path=(
   "$HOME/.local/bin"
@@ -110,7 +116,7 @@ path=(
 )
 export PATH
 
-# Android SDK & Java (solo si existen en el sistema)
+# Android SDK & Java (only if they exist on the system)
 if [[ -d "$HOME/android-sdk" ]]; then
   export ANDROID_HOME="$HOME/android-sdk"
   path=(
@@ -125,13 +131,13 @@ if [[ -d "/usr/lib/jvm/java-21-openjdk-amd64" ]]; then
   export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"
 fi
 
-# --- HERRAMIENTAS MODERNAS DE CLI ---------------------------------------------
-# zoxide (reemplazo inteligente de cd)
+# --- MODERN CLI TOOLS ---------------------------------------------------------
+# zoxide (smart cd replacement)
 if command -v zoxide >/dev/null 2>&1; then
   eval "$(zoxide init zsh)"
 fi
 
-# eza (reemplazo de ls)
+# eza (ls replacement)
 if command -v eza >/dev/null 2>&1; then
   alias ls='eza --icons'
   alias ll='eza -la --icons --git'
@@ -142,22 +148,22 @@ else
   alias la='ls -A'
 fi
 
-# bat / batcat (reemplazo de cat con resaltado)
+# bat / batcat (cat replacement with syntax highlighting)
 if command -v bat >/dev/null 2>&1; then
   alias cat='bat --paging=never'
 elif command -v batcat >/dev/null 2>&1; then
   alias cat='batcat --paging=never'
 fi
 
-# direnv (carga automática de variables de entorno por carpeta)
+# direnv (automatic per-directory environment loading)
 if command -v direnv >/dev/null 2>&1; then
   eval "$(direnv hook zsh)"
 fi
 
-# bluetuith (gestor Bluetooth en terminal)
+# bluetuith (terminal Bluetooth manager)
 alias blue='bluetuith'
 
-# --- ALIAS DE GIT MÁS USADOS (compatibles con OMZ) -----------------------------
+# --- MOST USED GIT ALIASES (OMZ compatible) ------------------------------------
 alias g='git'
 alias gst='git status'
 alias gco='git checkout'
@@ -172,17 +178,17 @@ alias gl='git pull'
 alias gd='git diff'
 alias glog='git log --oneline --decorate --graph'
 
-# --- SINCRONIZADOR DE DOTFILES ------------------------------------------------
+# --- DOTFILES SYNCHRONIZER ----------------------------------------------------
 alias dots='dot-sync'
 
-# --- TMUX (ver tmux/README.md) ------------------------------------------------
-alias ta='tmux attach -t'        # ta <sesión>: attach
-alias tn='tmux new -As'          # tn <sesión>: crear o adjuntar
-alias tls='tmux ls'              # listar sesiones
-alias tk='tmux kill-session -t'  # tk <sesión>: matar sesión
-ts() { tmux-sessionizer; }       # ts: selector fzf de sesiones por proyecto
+# --- TMUX (see tmux/README.md) ------------------------------------------------
+alias ta='tmux attach -t'        # ta <session>: attach
+alias tn='tmux new -As'          # tn <session>: create or attach
+alias tls='tmux ls'              # list sessions
+alias tk='tmux kill-session -t'  # tk <session>: kill session
+ts() { tmux-sessionizer; }       # ts: fzf project/session picker
 
-# Abrir vault de notas con Neovim
+# Open the notes vault with Neovim
 notes() {
   cd ~/repos/notas || return
   if [[ "$1" == "-n" ]]; then
@@ -193,5 +199,5 @@ notes() {
   fi
 }
 
-# --- CARGAR CONFIGURACIÓN LOCAL / PRIVADA SI EXISTE (no en git) ----------------
+# --- LOAD LOCAL / PRIVATE CONFIGURATION IF PRESENT (not in git) ----------------
 [[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"

@@ -1,36 +1,37 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# install.sh — Orquestador de instalación 100% CLI de dotfiles
+# install.sh — 100% CLI dotfiles installer for Debian 13 (trixie)
 # ==============================================================================
-# Flujo interactivo:
-#   1. Tipo de entorno: Escritorio completo o Servidor SSH
-#   2. Prompt / Shell : Starship (Recomendado) u Oh My Zsh + p10k
-#   3. Menú interactivo CLI con casillas [X]/[ ] para herramientas extras:
+# Interactive flow:
+#   1. Environment: full desktop or SSH server
+#   2. Prompt / shell: Starship (recommended) or Oh My Zsh + p10k
+#   3. Interactive CLI menu with [X]/[ ] checkboxes for extra tools:
 #      (Node.js, pnpm, Docker, OpenCode, Freebuff, Codex, AGY...)
+#   4. Optional (opt-in): Gruvbox GRUB theme + Plymouth boot splash
 # ==============================================================================
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INSTALL_DIR="$DOTFILES_DIR/install"
 
-# Asegurar permisos de ejecución en scripts
+# Make sure every script is executable
 chmod +x "$INSTALL_DIR"/*.sh "$DOTFILES_DIR"/bin/* 2>/dev/null || true
 
 # shellcheck disable=SC1091
 source "$INSTALL_DIR/00-helpers.sh"
 
 # ==============================================================================
-# REGISTRO EXTENSIBLE DE HERRAMIENTAS EXTRAS
-# Para añadir una nueva herramienta en el futuro, solo añade una línea aquí:
-# Formato: "ID:Nombre legible:Estado inicial (1=seleccionado, 0=deseleccionado)"
+# EXTENSIBLE EXTRA TOOLS REGISTRY
+# To add a new tool later, just add one line here:
+# Format: "ID:Human readable name:Initial state (1=selected, 0=unselected)"
 # ==============================================================================
 EXTRA_TOOLS_REGISTRY=(
-  "node:Node.js LTS (JavaScript runtime vía NVM):1"
-  "pnpm:pnpm (Gestor de paquetes ultrarrápido):1"
+  "node:Node.js LTS (JavaScript runtime via NVM):1"
+  "pnpm:pnpm (fast package manager):1"
   "docker:Docker Engine + Docker Compose + Lazydocker:1"
-  "opencode:OpenCode CLI (Agente AI para terminal):1"
-  "freebuff:Freebuff CLI (Agente AI para proyectos):1"
-  "codex:Codex CLI (Agente AI interactivo):1"
+  "opencode:OpenCode CLI (AI agent for the terminal):1"
+  "freebuff:Freebuff CLI (AI agent for projects):1"
+  "codex:Codex CLI (interactive AI agent):1"
   "agy:Antigravity CLI (agy):1"
 )
 
@@ -43,51 +44,64 @@ show_banner() {
   echo "  ██████╔╝╚██████╔╝   ██║   ██║     ██║███████╗███████╗███████║"
   echo "  ╚═════╝  ╚═════╝    ╚═╝   ╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝"
   echo -e "${NC}"
-  echo -e "${BOLD}Instalador modular 100% CLI para Debian / Linux${NC}"
-  echo -e "Repositorio: ${BLUE}$DOTFILES_DIR${NC}\n"
+  echo -e "${BOLD}Modular 100% CLI installer for Debian 13 (trixie)${NC}"
+  echo -e "Repository: ${BLUE}$DOTFILES_DIR${NC}\n"
+}
+
+# Detect the profile from the environment or the saved profile file
+detect_profile() {
+  if [[ -n "${DOTFILES_PROFILE:-}" ]]; then
+    echo "$DOTFILES_PROFILE"
+  elif [[ -f "$HOME/.dotfiles_profile" ]]; then
+    cat "$HOME/.dotfiles_profile"
+  elif command -v sway >/dev/null 2>&1 || [[ -d "$HOME/.config/sway" ]]; then
+    echo "desktop"
+  else
+    echo "server"
+  fi
 }
 
 # ==============================================================================
-# PASO 2: Selección de Prompt / Shell
+# STEP 2: Shell / prompt selection
 # ==============================================================================
 prompt_shell_choice() {
   echo -e "${CYAN}====================================================================${NC}"
-  echo -e "${BOLD}${CYAN}>> PASO 2: Selección de Shell y Prompt${NC}"
+  echo -e "${BOLD}${CYAN}>> STEP 2: Shell and prompt selection${NC}"
   echo -e "${CYAN}====================================================================${NC}"
-  echo "Selecciona tu entorno de Shell:"
-  echo -e "  1) ${BOLD}Starship${NC} (Recomendado — Rust, ultrarrápido < 20ms, tema Gruvbox)"
-  echo -e "  2) ${BOLD}Oh My Zsh + Powerlevel10k${NC} (Entorno clásico con plugins OMZ)"
+  echo "Choose your shell environment:"
+  echo -e "  1) ${BOLD}Starship${NC} (Recommended — Rust, < 20ms startup, Gruvbox theme)"
+  echo -e "  2) ${BOLD}Oh My Zsh + Powerlevel10k${NC} (classic environment with OMZ plugins)"
   echo ""
   local choice
   while true; do
-    read -r -p "Opción [1-2, por defecto 1]: " choice
+    read -r -p "Option [1-2, default 1]: " choice
     case "${choice:-1}" in
       1)
         SHELL_CHOICE="starship"
-        log_ok "Seleccionado: Starship Prompt (Zsh nativo)"
+        log_ok "Selected: Starship prompt (native Zsh)"
         break
         ;;
       2)
         SHELL_CHOICE="omz"
-        log_ok "Seleccionado: Oh My Zsh + Powerlevel10k"
+        log_ok "Selected: Oh My Zsh + Powerlevel10k"
         break
         ;;
       *)
-        log_err "Opción no válida. Introduce 1 o 2."
+        log_err "Invalid option. Enter 1 or 2."
         ;;
     esac
   done
 }
 
 # ==============================================================================
-# PASO 3: Menú Interactivo CLI de Selección de Herramientas (Tachando [X] / [ ])
+# STEP 3: Interactive CLI menu with [X]/[ ] checkboxes
 # ==============================================================================
 prompt_extras_selection() {
   local tool_ids=()
   local tool_labels=()
   local tool_selected=()
 
-  # Cargar herramientas desde el registro
+  # Load tools from the registry
   for entry in "${EXTRA_TOOLS_REGISTRY[@]}"; do
     IFS=':' read -r id label state <<< "$entry"
     tool_ids+=("$id")
@@ -97,9 +111,9 @@ prompt_extras_selection() {
 
   while true; do
     echo -e "\n${CYAN}====================================================================${NC}"
-    echo -e "${BOLD}${CYAN}>> PASO 3: Herramientas Extras & Agentes AI${NC}"
+    echo -e "${BOLD}${CYAN}>> STEP 3: Extra tools and AI agents${NC}"
     echo -e "${CYAN}====================================================================${NC}"
-    echo -e "Marca o desmarca las herramientas escribiendo su número [1-${#tool_ids[@]}]:\n"
+    echo -e "Toggle a tool by typing its number [1-${#tool_ids[@]}]:\n"
 
     for i in "${!tool_ids[@]}"; do
       local num=$((i + 1))
@@ -113,11 +127,11 @@ prompt_extras_selection() {
     done
 
     echo ""
-    echo -e "  ${BOLD}[A]${NC} Marcar todos   ${BOLD}[N]${NC} Desmarcar todos"
-    echo -e "  ${BOLD}[C]${NC} Continuar con la instalación (o pulsa Enter)"
-    echo -e "  ${BOLD}[S]${NC} Saltar herramientas extras"
+    echo -e "  ${BOLD}[A]${NC} Select all   ${BOLD}[N]${NC} Deselect all"
+    echo -e "  ${BOLD}[C]${NC} Continue with the installation (or press Enter)"
+    echo -e "  ${BOLD}[S]${NC} Skip extra tools"
     echo ""
-    read -r -p "Alternar opción o Continuar [1-${#tool_ids[@]}, A, N, C, S]: " opt_input
+    read -r -p "Toggle an option or continue [1-${#tool_ids[@]}, A, N, C, S]: " opt_input
 
     case "${opt_input,,}" in
       c|"")
@@ -142,14 +156,14 @@ prompt_extras_selection() {
             tool_selected[$idx]=1
           fi
         else
-          log_err "Opción no reconocida: $opt_input"
+          log_err "Unrecognized option: $opt_input"
           sleep 1
         fi
         ;;
     esac
   done
 
-  # Recolectar herramientas seleccionadas
+  # Collect the selected tools
   SELECTED_TOOLS=()
   for i in "${!tool_ids[@]}"; do
     if [[ "${tool_selected[$i]}" -eq 1 ]]; then
@@ -158,14 +172,14 @@ prompt_extras_selection() {
   done
 
   if [[ ${#SELECTED_TOOLS[@]} -gt 0 ]]; then
-    log_ok "Herramientas seleccionadas para instalar: ${SELECTED_TOOLS[*]}"
+    log_ok "Tools selected for installation: ${SELECTED_TOOLS[*]}"
   else
-    log_info "No se seleccionaron herramientas extras."
+    log_info "No extra tools selected."
   fi
 }
 
 # ==============================================================================
-# EJECUCIÓN DEL FLUJO DE INSTALACIÓN
+# INSTALLATION FLOW
 # ==============================================================================
 execute_installation() {
   local profile=$1
@@ -173,60 +187,65 @@ execute_installation() {
   shift 2
   local tools=("$@")
 
-  log_step "Iniciando instalación del sistema (Perfil: $profile)"
+  log_step "Starting the system installation (profile: $profile)"
 
-  # 1. Paquetes base y utilidades CLI
+  # 1. Base packages and CLI utilities
   "$INSTALL_DIR/01-base-packages.sh"
   "$INSTALL_DIR/02-cli-tools.sh"
 
-  # 2. Configuración de Shell según elección
+  # 2. Shell configuration according to the user's choice
   if [[ "$shell_mode" == "omz" ]]; then
     "$INSTALL_DIR/03-shell.sh" --omz
   else
     "$INSTALL_DIR/03-shell.sh" --starship
   fi
 
-  # 3. Componentes gráficos (solo para Desktop)
+  # 3. Graphical components (desktop profile only)
   if [[ "$profile" == "desktop" ]]; then
     "$INSTALL_DIR/04-desktop-packages.sh"
     "$INSTALL_DIR/05-noctalia.sh"
     "$INSTALL_DIR/06-fonts-wallpapers.sh"
   fi
 
-  # 4. Despliegue de configuraciones con backup previo
+  # 4. Deploy configurations with a previous backup
   "$INSTALL_DIR/07-copy-configs.sh" "$profile"
 
-  # 5. Herramientas extras seleccionadas
+  # 5. Selected extra tools
   if [[ ${#tools[@]} -gt 0 ]]; then
     "$INSTALL_DIR/08-dev-ai-tools.sh" "${tools[@]}"
   fi
 
-  log_step "¡Instalación completada con éxito!"
-  echo -e "Resumen:"
-  echo -e "  - Perfil       : ${BOLD}$profile${NC}"
+  # 6. Optional boot theme (desktop only, opt-in)
+  if [[ "$profile" == "desktop" ]]; then
+    "$INSTALL_DIR/09-grub.sh" || log_warn "Optional GRUB/Plymouth setup was skipped or failed."
+  fi
+
+  log_step "Installation completed successfully!"
+  echo -e "Summary:"
+  echo -e "  - Profile      : ${BOLD}$profile${NC}"
   echo -e "  - Shell        : ${BOLD}$shell_mode${NC}"
-  echo -e "  - Extras       : ${tools[*]:-ninguna}"
-  echo -e "  - Sincronizar  : Usa ${BOLD}dot-sync${NC} para gestionar cambios en tus dotfiles."
-  echo -e "\n${YELLOW}Nota:${NC} Para aplicar los cambios de shell, ejecuta: ${BOLD}exec zsh${NC}"
+  echo -e "  - Extras       : ${tools[*]:-none}"
+  echo -e "  - Sync         : Use ${BOLD}dot-sync${NC} to manage dotfiles changes."
+  echo -e "\n${YELLOW}Note:${NC} To apply the shell changes, run: ${BOLD}exec zsh${NC}"
 }
 
 # ==============================================================================
-# MENÚ PRINCIPAL
+# MAIN MENU
 # ==============================================================================
 show_main_menu() {
   while true; do
     show_banner
     echo -e "${CYAN}====================================================================${NC}"
-    echo -e "${BOLD}${CYAN}>> PASO 1: Selección de Entorno${NC}"
+    echo -e "${BOLD}${CYAN}>> STEP 1: Environment selection${NC}"
     echo -e "${CYAN}====================================================================${NC}"
-    echo "  1) Entorno de escritorio completo (Sway + Noctalia + Greeter + Terminal)"
-    echo "  2) Entorno de servidor (Solo terminal para SSH, sin interfaz gráfica)"
-    echo "  3) Sincronizar configuraciones (con backup automático)"
-    echo "  4) Menú de herramientas extras (instalar solo Node, Docker, AI...)"
-    echo "  5) Restablecer sistema a 0 (Desinstalar y limpiar entorno)"
-    echo "  6) Salir"
+    echo "  1) Full desktop environment (Sway + Noctalia + Greeter + Terminal)"
+    echo "  2) Server environment (terminal only for SSH, no graphical interface)"
+    echo "  3) Synchronize configurations (with automatic backup)"
+    echo "  4) Extra tools menu (install only Node, Docker, AI tools...)"
+    echo "  5) Reset the system (uninstall and clean the environment)"
+    echo "  6) Exit"
     echo ""
-    read -r -p "Elige una opción [1-6]: " MAIN_OPT
+    read -r -p "Choose an option [1-6]: " MAIN_OPT
     case "$MAIN_OPT" in
       1)
         prompt_shell_choice
@@ -243,7 +262,7 @@ show_main_menu() {
       3)
         local prof
         prof="$(detect_profile)"
-        log_info "Sincronizando configuraciones para perfil detectado: $prof"
+        log_info "Synchronizing configurations for detected profile: $prof"
         "$INSTALL_DIR/07-copy-configs.sh" "$prof"
         break
         ;;
@@ -259,28 +278,30 @@ show_main_menu() {
         break
         ;;
       6)
-        echo "Operación cancelada."
+        echo "Operation cancelled."
         exit 0
         ;;
       *)
-        log_err "Opción no válida."
+        log_err "Invalid option."
         sleep 1
         ;;
     esac
   done
 }
 
-# --- Procesar banderas de línea de comandos directas ---
+# --- Direct command-line flags ---
 ACTION="${1:-}"
 
 case "$ACTION" in
   --desktop|-d)
+    require_debian_13
     show_banner
     prompt_shell_choice
     prompt_extras_selection
     execute_installation "desktop" "$SHELL_CHOICE" "${SELECTED_TOOLS[@]}"
     ;;
   --server|--cli|-s)
+    require_debian_13
     show_banner
     prompt_shell_choice
     prompt_extras_selection
@@ -292,11 +313,17 @@ case "$ACTION" in
     "$INSTALL_DIR/07-copy-configs.sh" "$prof"
     ;;
   --extras|--dev-tools)
+    require_debian_13
     show_banner
     prompt_extras_selection
     if [[ ${#SELECTED_TOOLS[@]} -gt 0 ]]; then
       "$INSTALL_DIR/08-dev-ai-tools.sh" "${SELECTED_TOOLS[@]}"
     fi
+    ;;
+  --grub)
+    require_debian_13
+    show_banner
+    "$INSTALL_DIR/09-grub.sh"
     ;;
   --reset|--uninstall)
     shift
@@ -304,24 +331,28 @@ case "$ACTION" in
     ;;
   --help|-h)
     show_banner
-    echo "Uso: ./install.sh [OPCIÓN]"
+    echo "Usage: ./install.sh [OPTION]"
     echo ""
-    echo "Opciones CLI directas:"
-    echo "  --desktop, -d   Instala el entorno de escritorio completo (Sway, Noctalia, Greeter)"
-    echo "  --server,  -s   Instala el entorno de servidor para SSH (Zsh, Tmux, Neovim)"
-    echo "  --sync          Copia configuraciones con backup sin reinstalar paquetes"
-    echo "  --extras        Abre directamente el menú de selección de herramientas extras"
-    echo "  --reset         Restablece el sistema a 0 desinstalando paquetes y limpiando configs"
-    echo "  --help,    -h   Muestra esta ayuda"
+    echo "Direct CLI options:"
+    echo "  --desktop, -d   Install the full desktop environment (Sway, Noctalia, Greeter)"
+    echo "  --server,  -s   Install the server environment for SSH (Zsh, Tmux, Neovim)"
+    echo "  --sync          Copy configurations with backup without reinstalling packages"
+    echo "  --extras        Open the extra tools selection menu directly"
+    echo "  --grub          Install the optional Gruvbox GRUB theme and Plymouth splash"
+    echo "  --reset         Reset the system by uninstalling packages and cleaning configs"
+    echo "  --help,    -h   Show this help"
     echo ""
-    echo "Si se ejecuta sin opciones, iniciará el asistente guiado 100% CLI."
+    echo "If run without options, the guided 100% CLI wizard starts."
+    echo ""
+    echo "Supported platform: Debian 13 (trixie) only."
     exit 0
     ;;
   "")
+    require_debian_13
     show_main_menu
     ;;
   *)
-    log_err "Opción no reconocida: $ACTION. Usa './install.sh --help'."
+    log_err "Unrecognized option: $ACTION. Use './install.sh --help'."
     exit 1
     ;;
 esac

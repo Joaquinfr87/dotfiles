@@ -1,10 +1,10 @@
 [user]
-	# Configura tu usuario aquí o en ~/.gitconfig.local
-	# name = Tu Nombre
-	# email = tu@email.com
+	# Configure your user here or in ~/.gitconfig.local
+	# name = Your Name
+	# email = you@email.com
 
 [include]
-	# Permite sobrescribir configuraciones por máquina o credenciales privadas
+	# Allows overriding settings per machine or adding private credentials
 	path = ~/.gitconfig.local
 
 [init]
@@ -42,7 +42,7 @@
 [merge]
 	conflictstyle = diff3
 
-# Si 'delta' está instalado, Git lo usará automáticamente como pager
+# If 'delta' is installed, Git will use it automatically as the pager
 [pager]
 	diff = delta
 	log = delta

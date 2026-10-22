@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# install/00-helpers.sh — Funciones auxiliares, colores y detección de entorno
+# install/00-helpers.sh — Helpers, colors and Debian 13 environment checks
 # ==============================================================================
 set -euo pipefail
 
-# Asegurar que ~/.local/bin esté en el PATH durante la ejecución
+# Make sure ~/.local/bin is available during the installation
 export PATH="$HOME/.local/bin:$PATH"
 
-# Prevenir prompts interactivos en APT / debconf que bloqueen la terminal
+# Avoid interactive APT/debconf prompts blocking the terminal
 export DEBIAN_FRONTEND=noninteractive
 
-# Colores ANSI
+# ANSI colors
 BOLD='\033[1m'
 GREEN='\033[38;5;142m'
 BLUE='\033[38;5;109m'
@@ -27,89 +27,56 @@ log_step() {
 
 log_info() { echo -e "${BLUE}==>${NC} ${BOLD}$*${NC}"; }
 log_ok() { echo -e "${GREEN}[OK]${NC} $*"; }
-log_warn() { echo -e "${YELLOW}[AVISO]${NC} $*"; }
+log_warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
 log_err() { echo -e "${RED}[ERROR]${NC} $*" >&2; }
 
 has_cmd() {
   command -v "$1" >/dev/null 2>&1
 }
 
-# Detección de distribución
-detect_os() {
-  if [[ -f /etc/os-release ]]; then
-    # shellcheck disable=SC1091
-    . /etc/os-release
-    echo "${ID:-unknown}"
-  else
-    echo "unknown"
+# ------------------------------------------------------------------------------
+# Supported platform: Debian 13 (trixie) only
+# ------------------------------------------------------------------------------
+require_debian_13() {
+  local id="" version=""
+  if [[ -r /etc/os-release ]]; then
+    id="$(sed -n 's/^ID=//p' /etc/os-release | tr -d '"')"
+    version="$(sed -n 's/^VERSION_ID=//p' /etc/os-release | tr -d '"')"
+  fi
+
+  if [[ "$id" != "debian" || "$version" != "13" ]]; then
+    log_err "Unsupported system: ID=${id:-unknown} VERSION_ID=${version:-unknown}."
+    log_err "This installer only supports Debian 13 (trixie)."
+    log_err "Other distributions are intentionally not supported."
+    exit 1
   fi
 }
 
-# Ejecutar con sudo si es necesario
+# Run a command with sudo when needed
 run_sudo() {
   if [[ $EUID -eq 0 ]]; then
     "$@"
   elif has_cmd sudo; then
     sudo "$@"
   else
-    log_err "Se requieren permisos de administrador (sudo/root) para: $*"
+    log_err "Administrator privileges (sudo/root) are required for: $*"
     exit 1
   fi
 }
 
-# Gestor de paquetes unificado
+# ------------------------------------------------------------------------------
+# APT helpers (Debian only)
+# ------------------------------------------------------------------------------
 pkg_update() {
-  local os
-  os="$(detect_os)"
-  case "$os" in
-    debian|ubuntu|pop|linuxmint)
-      log_info "Actualizando repositorios APT..."
-      run_sudo apt update -y
-      ;;
-    arch|cachyos|manjaro)
-      log_info "Actualizando base de datos pacman..."
-      run_sudo pacman -Sy
-      ;;
-    fedora)
-      log_info "Actualizando repositorios dnf..."
-      run_sudo dnf check-update || true
-      ;;
-    *)
-      log_warn "Distribución '$os' no gestionada automáticamente para update."
-      ;;
-  esac
+  log_info "Updating APT repositories..."
+  run_sudo apt-get update -y
 }
 
 pkg_install() {
-  local os
-  os="$(detect_os)"
-  case "$os" in
-    debian|ubuntu|pop|linuxmint)
-      if ! run_sudo apt install -y "$@"; then
-        log_warn "No se pudieron instalar todos los paquetes en bloque. Intentando instalar paquetes disponibles individualmente..."
-        for p in "$@"; do
-          run_sudo apt install -y "$p" 2>/dev/null || log_warn "Paquete no disponible en este repositorio: $p"
-        done
-      fi
-      ;;
-    arch|cachyos|manjaro)
-      if ! run_sudo pacman -S --noconfirm --needed "$@"; then
-        log_warn "No se pudieron instalar todos los paquetes con pacman en bloque. Intentando individualmente..."
-        for p in "$@"; do
-          run_sudo pacman -S --noconfirm --needed "$p" 2>/dev/null || log_warn "Paquete no disponible en pacman: $p"
-        done
-      fi
-      ;;
-    fedora)
-      if ! run_sudo dnf install -y "$@"; then
-        log_warn "No se pudieron instalar todos los paquetes con dnf en bloque. Intentando individualmente..."
-        for p in "$@"; do
-          run_sudo dnf install -y "$p" 2>/dev/null || log_warn "Paquete no disponible en dnf: $p"
-        done
-      fi
-      ;;
-    *)
-      log_warn "No se pudo instalar paquetes automáticamente en '$os': $*"
-      ;;
-  esac
+  if ! run_sudo apt-get install -y "$@"; then
+    log_warn "Batch install failed. Retrying packages individually..."
+    for p in "$@"; do
+      run_sudo apt-get install -y "$p" 2>/dev/null || log_warn "Package not available in the configured repositories: $p"
+    done
+  fi
 }

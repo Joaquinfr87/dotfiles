@@ -1,6 +1,6 @@
-# Guía de Agentes AI — Freebuff y OpenCode
+# AI Agents Guide — Freebuff and OpenCode
 
-Configuración de agentes AI para proyectos: Freebuff y OpenCode.
+AI agent configuration for projects: Freebuff and OpenCode.
 
 > **Repos:**
 > - Freebuff: [CodebuffAI/freebuff](https://github.com/CodebuffAI/freebuff)
@@ -8,31 +8,31 @@ Configuración de agentes AI para proyectos: Freebuff y OpenCode.
 
 ---
 
-## 1. Estructura
+## 1. Structure
 
 ### Freebuff
 
-Cada proyecto tiene su configuración en `.agents/`:
+Each project keeps its configuration in `.agents/`:
 
 ```
-~/tu-proyecto/
+~/your-project/
 └── .agents/
-    ├── skills/              # skills instalados
+    ├── skills/              # installed skills
     │   ├── supabase/
     │   │   └── SKILL.md
     │   ├── shadcn/
     │   ├── vercel-*/
     │   └── ...
-    └── mcp.json             # servidores MCP configurados
+    └── mcp.json             # configured MCP servers
 ```
 
 ### OpenCode
 
-OpenCode busca skills en múltiples ubicaciones:
+OpenCode looks for skills in multiple locations:
 
 ```
-# Proyecto (prioridad alta)
-~/tu-proyecto/
+# Project (high priority)
+~/your-project/
 ├── .opencode/
 │   └── skills/<name>/SKILL.md
 ├── .claude/
@@ -40,78 +40,78 @@ OpenCode busca skills en múltiples ubicaciones:
 └── .agents/
     └── skills/<name>/SKILL.md
 
-# Global (todas las sesiones)
+# Global (all sessions)
 ~/.config/opencode/
-├── opencode.jsonc           # configuración global
+├── opencode.jsonc           # global configuration
 └── skills/<name>/SKILL.md
 ~/.claude/skills/<name>/SKILL.md
 ~/.agents/skills/<name>/SKILL.md
 ```
 
-> **Ventaja:** OpenCode reutiliza los mismos `.agents/skills/` que Freebuff. Instalar skills una vez funciona para ambos.
+> **Advantage:** OpenCode reuses the same `.agents/skills/` as Freebuff. Installing skills once works for both.
 
 ---
 
 ## 2. Skills
 
-Los skills son instrucciones reutilizables que los agentes cargan para tareas específicas.
+Skills are reusable instructions that agents load for specific tasks.
 
-### Instalar un skill (comunidad)
+### Install a skill (community)
 
 ```bash
-# Buscar skills disponibles
+# Search available skills
 npx skills find <query>
 
-# Previsualizar skills de un repo
+# Preview skills from a repo
 npx skills add <owner/repo> --list
 
-# Instalar un skill específico
-npx skills add <owner/repo> --skill <nombre> --yes
+# Install a specific skill
+npx skills add <owner/repo> --skill <name> --yes
 ```
 
-### Crear un skill personalizado
+### Create a custom skill
 
-Crear `SKILL.md` con frontmatter YAML:
+Create `SKILL.md` with YAML frontmatter:
 
 ```markdown
 ---
-name: mi-skill
-description: Descripción clara del skill
+name: my-skill
+description: Clear description of the skill
 license: MIT
 ---
 
-## Qué hago
-- Instrucciones específicas...
+## What I do
+- Specific instructions...
 
-## Cuándo usarme
-- Cuándo activar este skill...
+## When to use me
+- When to activate this skill...
 ```
 
-**Reglas de nombre:** minúsculas, alfanumérico, guiones simples (`^[a-z0-9]+(-[a-z0-9]+)*$`), 1-64 caracteres.
+**Name rules:** lowercase, alphanumeric, single hyphens (`^[a-z0-9]+(-[a-z0-9]+)*$`), 1-64 characters.
 
-### Skills instalados en este proyecto
+### Skills installed in this project
 
-| Skill | Descripción |
+| Skill | Description |
 |---|---|
-| `supabase` | Supabase CLI y config |
-| `supabase-postgres-best-practices` | Mejores prácticas PostgreSQL + Supabase |
-| `shadcn` | Componentes shadcn/ui |
-| `vercel-optimize` | Optimización de apps Vercel |
-| `vercel-react-best-practices` | Mejores prácticas React |
+| `supabase` | Supabase CLI and config |
+| `supabase-postgres-best-practices` | PostgreSQL + Supabase best practices |
+| `shadcn` | shadcn/ui components |
+| `vercel-optimize` | Vercel app optimization |
+| `vercel-react-best-practices` | React best practices |
 | `vercel-react-native-skills` | React Native + Vercel |
 | `vercel-react-view-transitions` | View Transitions API |
-| `vercel-composition-patterns` | Patrones de composición |
-| `vercel-cli-with-tokens` | CLI de Vercel con tokens |
-| `deploy-to-vercel` | Deploy a Vercel |
-| `interface-design` | Diseño de interfaces |
-| `web-design-guidelines` | Guías de diseño web |
-| `writing-guidelines` | Guías de escritura |
+| `vercel-composition-patterns` | Composition patterns |
+| `vercel-cli-with-tokens` | Vercel CLI with tokens |
+| `deploy-to-vercel` | Deploy to Vercel |
+| `interface-design` | Interface design |
+| `web-design-guidelines` | Web design guidelines |
+| `writing-guidelines` | Writing guidelines |
 
 ---
 
 ## 3. MCP Servers (Model Context Protocol)
 
-Los MCPs permiten a los agentes conectarse a servicios externos.
+MCPs let agents connect to external services.
 
 ### Freebuff — `.agents/mcp.json`
 
@@ -139,7 +139,7 @@ Los MCPs permiten a los agentes conectarse a servicios externos.
       "type": "remote",
       "url": "https://mcp.context7.com/mcp",
       "headers": {
-        "Authorization": "ctx7sk-TU_API_KEY"
+        "Authorization": "ctx7sk-YOUR_API_KEY"
       },
       "enabled": true
     }
@@ -147,82 +147,82 @@ Los MCPs permiten a los agentes conectarse a servicios externos.
 }
 ```
 
-> **Diferencia:** Freebuff usa MCPs vía `npx` (local), OpenCode soporta MCPs remotos directamente.
+> **Difference:** Freebuff uses MCPs via `npx` (local), while OpenCode supports remote MCPs directly.
 
-### MCPs disponibles
+### Available MCPs
 
-| MCP | Descripción | Variable de entorno |
+| MCP | Description | Environment variable |
 |---|---|---|
-| `context7` | Documentación contextual de librerías | `CONTEXT7_API_KEY` |
+| `context7` | Contextual library documentation | `CONTEXT7_API_KEY` |
 
 ---
 
-## 4. Sincronización entre PCs
+## 4. Synchronization between PCs
 
-### Opción recomendada: Incluir `.agents/` en git
+### Recommended option: include `.agents/` in git
 
-Los skills y MCPs son archivos ligeros (markdown y JSON). Es seguro subirlos al repo:
+Skills and MCPs are lightweight files (markdown and JSON). It is safe to commit them to the repo:
 
 ```bash
-# Verificar que .agents/ no esté en .gitignore
+# Verify that .agents/ is not in .gitignore
 cat .gitignore | grep -v ".agents"
 
-# Agregar y commitear
+# Add and commit
 git add .agents/
-git commit -m "feat: agregar skills y MCPs"
+git commit -m "feat: add skills and MCPs"
 git push
 ```
 
-En la otra PC, solo necesitas:
+On the other PC, you only need:
 
 ```bash
 git clone <repo>
-# Skills y MCPs ya vienen incluidos
+# Skills and MCPs are already included
 ```
 
-### Si `.agents/` está en .gitignore
+### If `.agents/` is in .gitignore
 
-Eliminar la línea de `.gitignore`:
+Remove the line from `.gitignore`:
 
 ```bash
-# Editar .gitignore y eliminar la línea que excluye .agents/
+# Edit .gitignore and remove the line that excludes .agents/
 nano .gitignore
 ```
 
 ---
 
-## 5. Configuración global
+## 5. Global configuration
 
 ### Freebuff — `~/.config/manicode/`
 
-| Archivo | Contenido |
+| File | Contents |
 |---|---|
-| `settings.json` | Modelo, modo, preferencias |
-| `credentials.json` | Autenticación |
-| `freebuff-metadata.json` | Metadata de la instalación |
-| `projects/` | Historial de chats por proyecto |
+| `settings.json` | Model, mode, preferences |
+| `credentials.json` | Authentication |
+| `freebuff-metadata.json` | Installation metadata |
+| `projects/` | Chat history per project |
 
 ### OpenCode — `~/.config/opencode/`
 
-| Archivo | Contenido |
+| File | Contents |
 |---|---|
-| `opencode.jsonc` | Configuración global (MCPs, permisos, modelo) |
-| `skills/` | Skills globales (disponibles en todos los proyectos) |
+| `opencode.jsonc` | Global configuration (MCPs, permissions, model) |
+| `skills/` | Global skills (available in all projects) |
 
-> **Freebuff:** `settings.json` se sincroniza automáticamente con tu cuenta.
-> **OpenCode:** `opencode.jsonc` se sincroniza vía git (agregar a dotfiles).
+> **Freebuff:** `settings.json` syncs automatically with your account.
+> **OpenCode:** `opencode.jsonc` syncs via git (add it to dotfiles).
 
 ---
 
-## 6. Referencia
+## 6. Reference
 
 ### Freebuff
-- Sitio: https://freebuff.com
+- Site: https://freebuff.com
 - Docs: https://www.codebuff.com/docs
 - Skills CLI: `npx skills --help`
 
 ### OpenCode
-- Sitio: https://opencode.ai
+- Site: https://opencode.ai
 - Docs: https://opencode.ai/docs
 - Skills: https://opencode.ai/docs/skills/
 - Agents: https://opencode.ai/docs/agents/

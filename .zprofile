@@ -1,6 +1,6 @@
-# ~/.zprofile: ejecutado por intérpretes de comandos para login shells.
+# ~/.zprofile: executed by shells for login shells.
 
-# Añadir binarios de usuario al PATH si existen
+# Add user binaries to PATH when they exist
 if [ -d "$HOME/bin" ]; then
     PATH="$HOME/bin:$PATH"
 fi
@@ -15,7 +15,7 @@ fi
 
 export PATH
 
-# Si estamos en tty1 y Sway está instalado, iniciar la sesión gráfica (Wayland)
+# If we are on tty1 and Sway is installed, start the graphical session (Wayland)
 if [ "$(tty)" = "/dev/tty1" ] && command -v sway >/dev/null 2>&1; then
     exec sway
 fi

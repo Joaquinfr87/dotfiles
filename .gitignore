@@ -20,6 +20,9 @@
 .freebuff/
 .claude/
 .opencode/logs/
+.opencode/*.db
+.opencode/*.db-shm
+.opencode/*.db-wal
 
 # OS artifacts
 .DS_Store

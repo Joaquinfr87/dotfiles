@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# install/08-dev-ai-tools.sh — Node.js, pnpm, Docker y Agentes de IA
+# install/08-dev-ai-tools.sh — Node.js, pnpm, Docker and AI agents (Debian 13)
 # ==============================================================================
-# Soporta ejecución individual o por lista:
+# Supports individual tools or a list:
 #   ./install/08-dev-ai-tools.sh node pnpm docker opencode freebuff codex agy
 # ==============================================================================
 set -euo pipefail
@@ -11,12 +11,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC1091
 source "$SCRIPT_DIR/00-helpers.sh"
 
-log_step "Instalando Herramientas de Desarrollo & Agentes AI Seleccionados"
+log_step "Installing selected development tools and AI agents"
+
+require_debian_13
 
 mkdir -p "$HOME/.local/bin"
 export PATH="$HOME/.local/bin:$HOME/.opencode/bin:$PATH"
 
-# Cargar NVM si ya existe en el sistema
+# Load NVM if it is already available
 export NVM_DIR="$HOME/.nvm"
 if [[ -s "$NVM_DIR/nvm.sh" ]]; then
   set +u
@@ -29,49 +31,49 @@ fi
 # 1. Node.js LTS
 # ------------------------------------------------------------------------------
 install_node() {
-  log_info "Configurando Node.js LTS..."
+  log_info "Setting up Node.js LTS..."
   export NVM_DIR="$HOME/.nvm"
   if [[ ! -d "$NVM_DIR" ]]; then
-    log_info "Instalando NVM (Node Version Manager)..."
+    log_info "Installing NVM (Node Version Manager)..."
     curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
   fi
 
-  # Cargar NVM protegiendo temporalmente contra variables no definidas en nvm.sh
+  # Load NVM while temporarily allowing unset variables inside nvm.sh
   set +u
   # shellcheck disable=SC1091
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
   if ! has_cmd node; then
-    log_info "Descargando última versión LTS de Node..."
+    log_info "Downloading the latest Node LTS release..."
     nvm install --lts
     nvm use --lts
     nvm alias default 'lts/*'
   fi
   set -u
 
-  # Enlazar node, npm y npx a ~/.local/bin para disponibilidad global inmediata en cualquier shell
+  # Link node, npm and npx into ~/.local/bin so every shell sees them immediately
   if has_cmd node; then
     mkdir -p "$HOME/.local/bin"
     ln -sf "$(command -v node)" "$HOME/.local/bin/node" 2>/dev/null || true
     ln -sf "$(command -v npm)" "$HOME/.local/bin/npm" 2>/dev/null || true
     ln -sf "$(command -v npx)" "$HOME/.local/bin/npx" 2>/dev/null || true
   fi
-  log_ok "Node.js $(node --version 2>/dev/null || echo '') instalado."
+  log_ok "Node.js $(node --version 2>/dev/null || echo '') installed."
 }
 
 # ------------------------------------------------------------------------------
-# 2. pnpm (Fast Node package manager)
+# 2. pnpm (fast Node package manager)
 # ------------------------------------------------------------------------------
 install_pnpm() {
-  log_info "Configurando pnpm..."
+  log_info "Setting up pnpm..."
   set +u
   [[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"
   set -u
   if ! has_cmd pnpm; then
     if has_cmd npm; then
-      log_info "Instalando pnpm vía npm..."
+      log_info "Installing pnpm via npm..."
       npm install -g pnpm || true
     else
-      log_info "Instalando pnpm vía script oficial..."
+      log_info "Installing pnpm via the official script..."
       curl -fsSL https://get.pnpm.io/install.sh | sh - || true
     fi
   fi
@@ -79,7 +81,7 @@ install_pnpm() {
   if has_cmd pnpm; then
     mkdir -p "$HOME/.local/bin"
     ln -sf "$(command -v pnpm)" "$HOME/.local/bin/pnpm" 2>/dev/null || true
-    log_ok "pnpm disponible: $(pnpm --version)"
+    log_ok "pnpm available: $(pnpm --version)"
   fi
 }
 
@@ -87,42 +89,42 @@ install_pnpm() {
 # 3. Docker & Docker Compose
 # ------------------------------------------------------------------------------
 install_docker() {
-  log_info "Configurando Docker Engine y Docker Compose..."
+  log_info "Setting up Docker Engine and Docker Compose..."
   if ! has_cmd docker; then
-    log_info "Descargando e instalando Docker mediante script oficial..."
+    log_info "Downloading and installing Docker via the official script..."
     curl -fsSL https://get.docker.com | run_sudo sh
-    log_ok "Docker Engine instalado."
+    log_ok "Docker Engine installed."
   else
-    log_ok "Docker ya está instalado: $(docker --version)"
+    log_ok "Docker is already installed: $(docker --version)"
   fi
 
-  # Permisos de usuario para docker sin sudo
+  # Allow the user to run docker without sudo
   if ! groups "$USER" | grep -q "\bdocker\b"; then
-    log_info "Añadiendo usuario '$USER' al grupo docker..."
+    log_info "Adding user '$USER' to the docker group..."
     run_sudo usermod -aG docker "$USER"
-    log_ok "Usuario añadido al grupo docker. (Requiere reiniciar sesión para aplicar)."
+    log_ok "User added to the docker group (log out and back in to apply)."
   fi
 
-  # Habilitar servicio systemd
+  # Enable the systemd service
   if has_cmd systemctl; then
     run_sudo systemctl enable --now docker || true
   fi
 
-  # Comprobar plugin docker-compose
+  # Check the docker compose plugin
   if docker compose version >/dev/null 2>&1; then
-    log_ok "Docker Compose está listo: $(docker compose version)"
+    log_ok "Docker Compose is ready: $(docker compose version)"
   elif has_cmd docker-compose; then
-    log_ok "docker-compose standalone está disponible: $(docker-compose --version)"
+    log_ok "Standalone docker-compose is available: $(docker-compose --version)"
   else
-    log_info "Instalando docker-compose-plugin vía gestor de paquetes..."
+    log_info "Installing docker-compose-plugin via APT..."
     pkg_install docker-compose-plugin || true
   fi
 
   # Lazydocker
   if ! has_cmd lazydocker; then
-    log_info "Instalando Lazydocker..."
+    log_info "Installing Lazydocker..."
     curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash || true
-    log_ok "Lazydocker instalado en ~/.local/bin/lazydocker"
+    log_ok "Lazydocker installed in ~/.local/bin/lazydocker"
   fi
 }
 
@@ -130,13 +132,40 @@ install_docker() {
 # 4. OpenCode CLI
 # ------------------------------------------------------------------------------
 install_opencode() {
-  log_info "Configurando OpenCode CLI..."
-  if ! has_cmd opencode; then
-    log_info "Instalando OpenCode desde el instalador oficial..."
-    curl -fsSL https://opencode.ai/v2/install | bash || true
-    log_ok "OpenCode instalado."
+  log_info "Setting up OpenCode CLI..."
+
+  if has_cmd opencode; then
+    log_ok "OpenCode is already installed: $(opencode --version 2>/dev/null || echo 'installed')"
+    return
+  fi
+
+  mkdir -p "$HOME/.local/bin" "$HOME/.opencode/bin"
+
+  # --no-modify-path: PATH is already managed by .zshrc and
+  # environment.d/10-path.conf, so the installer must not add duplicate lines.
+  log_info "Installing OpenCode from the official installer..."
+  if curl -fsSL https://opencode.ai/v2/install | bash -s -- --no-modify-path; then
+    log_ok "OpenCode installer finished."
   else
-    log_ok "OpenCode ya está instalado: $(opencode --version 2>/dev/null || echo 'instalado')"
+    log_warn "The OpenCode installer returned an error; looking for the binary anyway."
+  fi
+
+  # Link the binary into ~/.local/bin so any shell can find it
+  local candidate
+  for candidate in "$HOME/.opencode/bin/opencode" "$HOME/.local/bin/opencode"; do
+    if [[ -x "$candidate" ]]; then
+      ln -sf "$candidate" "$HOME/.local/bin/opencode"
+      break
+    fi
+  done
+
+  export PATH="$HOME/.local/bin:$HOME/.opencode/bin:$PATH"
+  if has_cmd opencode; then
+    log_ok "OpenCode installed: $(opencode --version 2>/dev/null || echo 'OK')"
+  else
+    log_err "The OpenCode binary was not found after installation."
+    log_warn "Check the output above or run it manually:"
+    log_warn "  curl -fsSL https://opencode.ai/v2/install | bash"
   fi
 }
 
@@ -144,23 +173,23 @@ install_opencode() {
 # 5. Freebuff CLI
 # ------------------------------------------------------------------------------
 install_freebuff() {
-  log_info "Configurando Freebuff CLI..."
+  log_info "Setting up Freebuff CLI..."
   set +u
   [[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"
   set -u
   if ! has_cmd freebuff; then
     if has_cmd npm; then
-      log_info "Instalando freebuff vía npm global..."
+      log_info "Installing freebuff via npm..."
       npm install -g freebuff || true
     else
-      log_warn "Se requiere Node/npm para instalar Freebuff. Instala Node primero."
+      log_warn "Node/npm is required to install Freebuff. Install Node first."
     fi
   fi
 
   if has_cmd freebuff; then
     mkdir -p "$HOME/.local/bin"
     ln -sf "$(command -v freebuff)" "$HOME/.local/bin/freebuff" 2>/dev/null || true
-    log_ok "Freebuff disponible: $(freebuff --version 2>/dev/null || echo 'instalado')"
+    log_ok "Freebuff available: $(freebuff --version 2>/dev/null || echo 'installed')"
   fi
 }
 
@@ -168,11 +197,27 @@ install_freebuff() {
 # 6. Codex CLI
 # ------------------------------------------------------------------------------
 install_codex() {
-  log_info "Verificando Codex CLI..."
-  if ! has_cmd codex; then
-    log_info "Codex CLI: asegúrate de colocar el binario ejecutable en ~/.local/bin/codex."
+  log_info "Setting up Codex CLI..."
+  set +u
+  [[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"
+  set -u
+
+  if has_cmd codex; then
+    log_ok "Codex CLI is already available: $(codex --version 2>/dev/null || echo 'installed')"
+    return
+  fi
+
+  if has_cmd npm; then
+    log_info "Installing Codex CLI via npm..."
+    npm install -g @openai/codex || true
   else
-    log_ok "Codex CLI ya está disponible: $(codex --version 2>/dev/null || echo 'instalado')"
+    log_warn "Node/npm is required to install Codex CLI. Install Node first."
+  fi
+
+  if has_cmd codex; then
+    mkdir -p "$HOME/.local/bin"
+    ln -sf "$(command -v codex)" "$HOME/.local/bin/codex" 2>/dev/null || true
+    log_ok "Codex CLI available: $(codex --version 2>/dev/null || echo 'installed')"
   fi
 }
 
@@ -180,19 +225,55 @@ install_codex() {
 # 7. Antigravity CLI (agy)
 # ------------------------------------------------------------------------------
 install_agy() {
-  log_info "Verificando Antigravity CLI (agy)..."
-  if ! has_cmd agy; then
-    log_info "Antigravity CLI: consulta la documentación oficial para autenticarte o instalar."
+  log_info "Setting up Antigravity CLI (agy)..."
+
+  if has_cmd agy; then
+    log_ok "Antigravity CLI (agy) is already installed: $(agy --version 2>/dev/null || echo 'installed')"
+    return
+  fi
+
+  mkdir -p "$HOME/.local/bin"
+
+  # Official Google installer (binary in ~/.local/bin/agy)
+  log_info "Installing Antigravity CLI from Google's official installer..."
+  if curl -fsSL https://antigravity.google/cli/install.sh | bash; then
+    log_ok "Antigravity CLI installer finished."
   else
-    log_ok "Antigravity CLI (agy) ya está instalado: $(agy --version 2>/dev/null || echo 'instalado')"
+    log_warn "The Antigravity CLI installer returned an error."
+  fi
+
+  # The installer appends an "export PATH=~/.local/bin" block to shell profiles.
+  # Our dotfiles already include ~/.local/bin, so drop the duplicate block to
+  # keep `dot-sync diff` clean.
+  local profile tmp
+  for profile in "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.bashrc" "$HOME/.profile"; do
+    [[ -f "$profile" ]] || continue
+    if grep -q "# Added by Antigravity CLI installer" "$profile"; then
+      tmp="$(mktemp)"
+      awk '
+        /# Added by Antigravity CLI installer/ { skip = 1; next }
+        skip > 0 { skip--; next }
+        { print }
+      ' "$profile" > "$tmp" && mv "$tmp" "$profile"
+    fi
+  done
+
+  export PATH="$HOME/.local/bin:$PATH"
+  if has_cmd agy; then
+    log_ok "Antigravity CLI (agy) installed: $(agy --version 2>/dev/null || echo 'OK')"
+  else
+    log_err "'agy' was not found after installation."
+    log_warn "Install it manually with:"
+    log_warn "  curl -fsSL https://antigravity.google/cli/install.sh | bash"
+    log_warn "And make sure ~/.local/bin is in your PATH."
   fi
 }
 
 # ------------------------------------------------------------------------------
-# Despachador de instalación
+# Dispatcher
 # ------------------------------------------------------------------------------
 if [[ $# -eq 0 ]]; then
-  echo "Uso: $0 [node|pnpm|docker|opencode|freebuff|codex|agy|all] ..."
+  echo "Usage: $0 [node|pnpm|docker|opencode|freebuff|codex|agy|all] ..."
   exit 0
 fi
 
@@ -215,9 +296,9 @@ for tool in "$@"; do
     codex) install_codex ;;
     agy) install_agy ;;
     *)
-      log_warn "Herramienta desconocida: $tool"
+      log_warn "Unknown tool: $tool"
       ;;
   esac
 done
 
-log_ok "Instalación de herramientas seleccionadas completada."
+log_ok "Selected tools installed."

@@ -148,13 +148,6 @@ else
   alias la='ls -A'
 fi
 
-# bat / batcat (cat replacement with syntax highlighting)
-if command -v bat >/dev/null 2>&1; then
-  alias cat='bat --paging=never'
-elif command -v batcat >/dev/null 2>&1; then
-  alias cat='batcat --paging=never'
-fi
-
 # direnv (automatic per-directory environment loading)
 if command -v direnv >/dev/null 2>&1; then
   eval "$(direnv hook zsh)"

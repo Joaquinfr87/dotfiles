@@ -9,7 +9,7 @@ return {
     workspaces = {
       {
         name = "study",
-        path = "~/repos/notas/",
+        path = "~/repos/notes/",
       },
       -- {
       --   name = "work",
@@ -70,7 +70,19 @@ return {
     { "<leader>oT", "<cmd>Obsidian tags<CR>", desc = "Obsidian: Tags" },
 
     -- Weekly notes
-    { "<leader>ow", function() require("utils.weekly_notes").open_weekly_note() end, desc = "Obsidian: Weekly note" },
-    { "<leader>oW", function() require("utils.weekly_notes").open_previous_week() end, desc = "Obsidian: Previous week" },
+    {
+      "<leader>ow",
+      function()
+        require("utils.weekly_notes").open_weekly_note()
+      end,
+      desc = "Obsidian: Weekly note",
+    },
+    {
+      "<leader>oW",
+      function()
+        require("utils.weekly_notes").open_previous_week()
+      end,
+      desc = "Obsidian: Previous week",
+    },
   },
 }

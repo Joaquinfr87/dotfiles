@@ -8,6 +8,7 @@
 #   3. Interactive CLI menu with [X]/[ ] checkboxes for extra tools:
 #      (Node.js, pnpm, Docker, OpenCode, Freebuff, Codex, AGY...)
 #   4. Optional (opt-in): Gruvbox GRUB theme + Plymouth boot splash
+#   5. Desktop only: switch the network backend to NetworkManager for Noctalia
 # ==============================================================================
 set -euo pipefail
 
@@ -186,6 +187,8 @@ execute_installation() {
   local shell_mode=$2
   shift 2
   local tools=("$@")
+  local network_status="NetworkManager"
+  local network_rc=0
 
   log_step "Starting the system installation (profile: $profile)"
 
@@ -218,12 +221,26 @@ execute_installation() {
   # 6. Optional boot theme (desktop only, opt-in)
   if [[ "$profile" == "desktop" ]]; then
     "$INSTALL_DIR/09-grub.sh" || log_warn "Optional GRUB/Plymouth setup was skipped or failed."
+
+    # 7. Network backend: NetworkManager owns the NICs so Noctalia can use them.
+    # This runs last because it stops ifupdown and briefly interrupts connectivity.
+    "$INSTALL_DIR/10-network-manager.sh" || network_rc=$?
+    if [[ "$network_rc" -eq 2 ]]; then
+      network_status="ifupdown (NetworkManager switch skipped)"
+      log_warn "NetworkManager switch skipped; ifupdown remains the network backend."
+    elif [[ "$network_rc" -ne 0 ]]; then
+      network_status="ifupdown (NetworkManager setup failed)"
+      log_warn "NetworkManager setup failed; ifupdown remains the network backend."
+    fi
   fi
 
   log_step "Installation completed successfully!"
   echo -e "Summary:"
   echo -e "  - Profile      : ${BOLD}$profile${NC}"
   echo -e "  - Shell        : ${BOLD}$shell_mode${NC}"
+  if [[ "$profile" == "desktop" ]]; then
+    echo -e "  - Network      : ${BOLD}$network_status${NC} (Noctalia integration)"
+  fi
   echo -e "  - Extras       : ${tools[*]:-none}"
   echo -e "  - Sync         : Use ${BOLD}dot-sync${NC} to manage dotfiles changes."
   echo -e "\n${YELLOW}Note:${NC} To apply the shell changes, run: ${BOLD}exec zsh${NC}"
@@ -325,6 +342,11 @@ case "$ACTION" in
     show_banner
     "$INSTALL_DIR/09-grub.sh"
     ;;
+  --network|--nm)
+    require_debian_13
+    show_banner
+    "$INSTALL_DIR/10-network-manager.sh"
+    ;;
   --reset|--uninstall)
     shift
     exec "$DOTFILES_DIR/uninstall.sh" "$@"
@@ -339,6 +361,7 @@ case "$ACTION" in
     echo "  --sync          Copy configurations with backup without reinstalling packages"
     echo "  --extras        Open the extra tools selection menu directly"
     echo "  --grub          Install the optional Gruvbox GRUB theme and Plymouth splash"
+    echo "  --network       Switch the desktop network backend to NetworkManager"
     echo "  --reset         Reset the system by uninstalling packages and cleaning configs"
     echo "  --help,    -h   Show this help"
     echo ""

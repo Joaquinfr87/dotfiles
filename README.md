@@ -67,7 +67,7 @@ The installer walks you through the following steps:
   5) Reset the system (uninstall and clean the environment)
   6) Exit
 ```
-* **Full Desktop:** installs Sway, Noctalia v5, Noctalia Greeter (`greetd` login), PipeWire audio, the `bluetuith` Bluetooth TUI, Iosevka fonts (IosevkaTerm Nerd Font for the terminal, vanilla Iosevka for the GUI), Kitty and Zen Browser. It configures automatic resolution profiles for laptops (768p) and external monitors/desktops (1080p).
+* **Full Desktop:** installs Sway, Noctalia v5, Noctalia Greeter (`greetd` login), PipeWire audio, the `bluetuith` Bluetooth TUI, Iosevka fonts (IosevkaTerm Nerd Font for the terminal, vanilla Iosevka for the GUI), Kitty and Zen Browser. It configures automatic resolution profiles for laptops (768p) and external monitors/desktops (1080p). At the end it switches the network backend to **NetworkManager** (disabling `ifupdown`) so Noctalia's network widget and Control Center work out of the box.
 * **SSH Server:** installs only CLI tools, Neovim (LazyVim), Tmux with persistence and Git (no graphical packages).
 
 #### 2. Shell and Prompt Selection
@@ -187,7 +187,8 @@ dotfiles/
 │   ├── 06-fonts-wallpapers.sh    # IosevkaTerm (terminal), Iosevka (GUI) and Zen Browser
 │   ├── 07-copy-configs.sh        # Copy with backup according to the profile (server/desktop)
 │   ├── 08-dev-ai-tools.sh        # Node.js, pnpm, Docker, OpenCode, Freebuff, AGY, Codex
-│   └── 09-grub.sh                # Optional Gruvbox GRUB theme + Plymouth splash
+│   ├── 09-grub.sh                # Optional Gruvbox GRUB theme + Plymouth splash
+│   └── 10-network-manager.sh     # NetworkManager backend for Noctalia (disables ifupdown)
 ├── grub/                         # Opt-in boot theme (static GRUB + animated Plymouth)
 │   ├── themes/gruvbox/           # GRUB theme: wallpaper3 background and theme.txt
 │   └── plymouth/                 # Plymouth theme definition (reuses plymouth-themes spinner)
@@ -273,6 +274,37 @@ The **Kanshi** daemon automatically detects monitor connection and disconnection
 
 ---
 
+## 🌐 Network Backend (NetworkManager + Noctalia)
+
+The desktop profile switches Debian's classic `ifupdown` stack to **NetworkManager** in the final installation step (`install/10-network-manager.sh`). Noctalia's network widget and Control Center communicate with NetworkManager through `nmcli` and D-Bus, so this is what makes Wi-Fi, Ethernet, VPN and connection switching work inside the shell.
+
+The installer:
+
+* Installs `network-manager`, `wpasupplicant` and `wireless-regdb`.
+* Adds your user to the `netdev` group, so Noctalia can modify system connections without a password prompt.
+* Backs up `/etc/network/interfaces`, `/etc/network/interfaces.d` and `wpa_supplicant.conf` under `/var/backups/dotfiles-network-<timestamp>/`.
+* Replaces `/etc/network/interfaces` with a loopback-only file and disables `networking.service` (`ifupdown`).
+* Enables and starts `NetworkManager`.
+
+> [!IMPORTANT]
+> Existing Wi-Fi credentials from `ifupdown` are **not imported automatically**. After the switch, connect to Wi-Fi from Noctalia's Control Center (click the network widget) or run `nmtui`. Wired DHCP connections normally reconnect by themselves.
+
+Run only this step at any time with:
+
+```bash
+./install.sh --network
+```
+
+Roll back to `ifupdown` at any time with:
+
+```bash
+sudo ./install/10-network-manager.sh --restore
+```
+
+`uninstall.sh` also performs this rollback automatically when it detects that the installer changed the network backend. It leaves the `network-manager` package installed but disabled, so the machine keeps working through `ifupdown`.
+
+---
+
 ## 🔒 Local Variables and Customizations
 
 To keep tokens, API keys or private paths out of the public repository:
@@ -305,5 +337,6 @@ Or directly from the installer:
 > - Removes downloaded applications and binaries (`zen-browser`, `starship`, IosevkaTerm/Iosevka fonts, etc.).
 > - Cleans `~/.config` configurations and restores the previous `~/.dotfiles_backup/` backup when `--restore-backup` is passed.
 > - Reverts the optional GRUB theme and Plymouth splash and restores the saved `/etc/default/grub`.
+> - Restores the original `ifupdown` backend and re-enables `networking.service` when the installer had switched to NetworkManager.
 > - Restores the default login shell to `/bin/bash`.
 > - Supports `./uninstall.sh -y` for unattended mode or `./uninstall.sh --keep-extras` to keep Node.js and AI agents.

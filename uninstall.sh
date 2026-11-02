@@ -9,7 +9,8 @@
 #   4. Uninstalls graphical packages and utilities (sway, kitty, noctalia, etc.)
 #   5. Removes downloaded binaries (zen-browser, fonts, starship, omz, etc.)
 #   6. Cleans deployed configs in ~/.config and restores backups
-#   7. Restores the default login shell to /bin/bash
+#   7. Restores the original ifupdown backend if NetworkManager was enabled
+#   8. Restores the default login shell to /bin/bash
 #
 # IMPORTANT: this script removes the graphical environment (Sway, greetd, etc.).
 # Do NOT run it from inside an active graphical session (Sway/Wayland/X11).
@@ -206,6 +207,13 @@ if has_cmd systemctl; then
   systemctl --user stop pipewire wireplumber pipewire-pulse 2>/dev/null || true
   systemctl --user disable pipewire wireplumber pipewire-pulse 2>/dev/null || true
   log_ok "Services stopped."
+fi
+
+# If the installer switched this machine from ifupdown to NetworkManager,
+# restore the original ifupdown configuration before continuing.
+if [[ -x "$INSTALL_DIR/10-network-manager.sh" && -f /etc/network/.dotfiles-networkmanager ]]; then
+  log_info "Restoring the original ifupdown network backend..."
+  "$INSTALL_DIR/10-network-manager.sh" --restore || log_warn "Could not restore ifupdown automatically."
 fi
 
 # ------------------------------------------------------------------------------
